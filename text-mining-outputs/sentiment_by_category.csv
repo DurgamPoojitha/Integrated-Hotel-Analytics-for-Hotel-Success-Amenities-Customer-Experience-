@@ -1,0 +1,7 @@
+hotel_category_clean,Reviews,Mean rating (5-pt),VADER Positive %,VADER Negative %,Rating-positive %
+2-star hotel,2153,3.67,69.95,24.01,65.16
+1-star hotel,347,3.74,70.61,22.19,67.72
+3-star hotel,10370,3.83,73.66,21.49,69.86
+Unknown,8569,4.07,76.81,17.41,76.26
+4-star hotel,2937,4.18,82.02,14.23,79.09
+5-star hotel,1799,4.49,88.22,7.56,87.38

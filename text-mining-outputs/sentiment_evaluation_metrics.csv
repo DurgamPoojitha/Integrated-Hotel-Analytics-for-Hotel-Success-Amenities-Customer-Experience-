@@ -1,0 +1,10 @@
+Metric,Value
+Accuracy,0.8737
+Macro Precision,0.6498
+Macro Recall,0.6243
+Macro F1,0.6356
+Weighted F1,0.8732
+Cohen's kappa (agreement beyond chance),0.6801
+Baseline: always predict 'Positive',0.7378
+Spearman corr (compound vs rating),0.6157
+"ROC-AUC (rating<=2 vs >=4, using compound)",0.9501

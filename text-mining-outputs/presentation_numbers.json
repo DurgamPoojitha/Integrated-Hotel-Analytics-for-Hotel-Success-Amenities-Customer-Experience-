@@ -1,0 +1,223 @@
+{
+  "dataset": {
+    "total_records": 29987,
+    "total_columns": 42,
+    "reviews_with_text": 26281,
+    "missing_review_text": 3706,
+    "unique_review_texts": 23557,
+    "hotels_with_text": 1659,
+    "final_corpus_reviews": 26175,
+    "final_corpus_hotels": 1659,
+    "mean_words": 32.4,
+    "median_words": 15.0,
+    "total_tokens": 483068,
+    "vocabulary": 16122
+  },
+  "top10_words": [
+    [
+      "room",
+      14400
+    ],
+    [
+      "good",
+      13450
+    ],
+    [
+      "stay",
+      12159
+    ],
+    [
+      "hotel",
+      11205
+    ],
+    [
+      "not",
+      10135
+    ],
+    [
+      "staff",
+      8306
+    ],
+    [
+      "service",
+      8228
+    ],
+    [
+      "experience",
+      5839
+    ],
+    [
+      "clean",
+      5268
+    ],
+    [
+      "place",
+      4027
+    ]
+  ],
+  "top_bigrams": [
+    [
+      "good service",
+      1351
+    ],
+    [
+      "room clean",
+      1211
+    ],
+    [
+      "well maintain",
+      1077
+    ],
+    [
+      "highly recommend",
+      1071
+    ],
+    [
+      "clean room",
+      815
+    ]
+  ],
+  "top_pos_themes": {
+    "Theme": {
+      "4": "Location",
+      "5": "Food",
+      "8": "Breakfast",
+      "2": "Service",
+      "1": "Staff"
+    },
+    "Total Mentions": {
+      "4": 4636,
+      "5": 3923,
+      "8": 1754,
+      "2": 6916,
+      "1": 8506
+    },
+    "% Positive": {
+      "4": 84.9,
+      "5": 82.9,
+      "8": 79.3,
+      "2": 79.0,
+      "1": 77.9
+    }
+  },
+  "top_neg_themes": {
+    "Theme": {
+      "9": "Bed / bedding",
+      "7": "Bathroom",
+      "11": "Air conditioning",
+      "6": "Price / value",
+      "10": "Facilities"
+    },
+    "Total Mentions": {
+      "9": 1360,
+      "7": 1996,
+      "11": 954,
+      "6": 3565,
+      "10": 1219
+    },
+    "% Negative": {
+      "9": 55.7,
+      "7": 52.0,
+      "11": 50.8,
+      "6": 29.9,
+      "10": 27.5
+    }
+  },
+  "vader_pct": {
+    "Negative": 18.6,
+    "Neutral": 5.1,
+    "Positive": 76.3
+  },
+  "rating_pct": {
+    "Negative": 21.3,
+    "Neutral": 4.9,
+    "Positive": 73.8
+  },
+  "metrics": {
+    "accuracy": 0.873658070678128,
+    "macro_precision": 0.6498008425611165,
+    "macro_recall": 0.6242500358828939,
+    "macro_f1": 0.635604170850489,
+    "weighted_f1": 0.873170200585269,
+    "kappa": 0.6801176440289749,
+    "majority_baseline": 0.7378032473734479,
+    "roc_auc_clear": 0.9500671428376043,
+    "spearman": 0.6156642792592737
+  },
+  "per_class_f1": {
+    "Negative": 0.8307986609277858,
+    "Neutral": 0.14225621414913958,
+    "Positive": 0.9337576374745418
+  },
+  "pain_points": {
+    "Pain Point": {
+      "0": "Cleanliness / hygiene",
+      "1": "Rude / unhelpful staff",
+      "2": "Broken / poorly maintained",
+      "3": "Bathroom / hot-water issues",
+      "4": "Price / value for money"
+    },
+    "Negative Mentions": {
+      "0": 1497,
+      "1": 992,
+      "2": 747,
+      "3": 599,
+      "4": 576
+    },
+    "% of negative reviews": {
+      "0": 30.7,
+      "1": 20.4,
+      "2": 15.3,
+      "3": 12.3,
+      "4": 11.8
+    }
+  },
+  "insights": {
+    "Area": {
+      "0": "A. Customer Experience",
+      "1": "B. Amenities",
+      "2": "C. Service",
+      "3": "D. Rooms / Cleanliness",
+      "4": "E. Food / Breakfast",
+      "5": "F. Value / Price",
+      "6": "G. Review Management"
+    },
+    "Finding": {
+      "0": "Guests are mostly positive in their own words, but a distinct negative minority exists.",
+      "1": "Amenity sentiment differs: Breakfast is discussed most positively and Air conditioning least positively (amenities with >=100 mentions).",
+      "2": "Staff and service are mentioned very often and mostly positively, yet staff behaviour and slow service are leading specific complaints.",
+      "3": "Cleanliness/hygiene is the most frequent specific complaint, and bathroom, bedding and AC themes are over-represented in negative reviews.",
+      "4": "Food and breakfast are broadly in line with the corpus average and mostly positive.",
+      "5": "Price and value-for-money comments are more negative than the corpus average.",
+      "6": "Ratings alone hide reasons, and many reviews are very short."
+    },
+    "Evidence": {
+      "0": "VADER: 76.3% positive / 5.1% neutral / 18.6% negative; rating-based reference: 73.8% / 4.9% / 21.3%.",
+      "1": "Net sentiment of sentences: Breakfast +55.0 pp (1754 mentions); Air conditioning +0.0 pp (954 mentions). Reviews of hotels listing Spa have a rating-positive share +13.2 pp higher than hotels not listing it.",
+      "2": "Staff: 77.9% positive / 20.8% negative among 8,506 mentions; Service: 79.0% / 19.6% among 6,916. Negative reviews cite rude/unhelpful staff 992 times and slow/poor service 570 times.",
+      "3": "1,497 negative reviews (30.7%) contain a cleanliness complaint. Share of negative reviews among mentions: Bathroom 52.0%; Bed / bedding 55.7%; Air conditioning 50.8% (overall 18.6%).",
+      "4": "Breakfast: 79.3% positive / 19.0% negative (1,754 mentions); Food: 82.9% / 15.0% vs 76.3% / 18.6% overall; 345 negative reviews describe a food/breakfast quality problem.",
+      "5": "3,565 reviews mention price/value: 29.9% negative vs 18.6% overall. 576 negative reviews cite overpricing/charges.",
+      "6": "22.3% of rating-negative reviews are not labelled negative by their text; 25.2% of reviews have <=5 words; hotel-level mean VADER compound vs customer_rating Spearman = 0.64."
+    },
+    "Business implication": {
+      "0": "Track the share of negative reviews (not just the average rating); the negative minority is where concrete problems are described.",
+      "1": "Amenities associated with more positive text deserve priority in positioning; amenities that are frequently mentioned alongside complaints need reliability checks (association, not proven cause).",
+      "2": "Staff conduct and responsiveness are controllable: training and a complaint-response routine can protect a strength.",
+      "3": "Prioritise housekeeping standards and a maintenance checklist (bathroom fittings, hot water, bedding, AC) - areas where a failure is explicitly described.",
+      "4": "Maintain quality; monitor the minority complaints.",
+      "5": "Align price with visible quality and communicate charges clearly; value complaints often travel with room-quality complaints.",
+      "6": "Combine rating and text signals, prompt guests for specifics, and respond to negative reviews that describe concrete problems."
+    }
+  },
+  "recs": [
+    "**Fix hygiene first.** Cleanliness/hygiene is the most frequent complaint (1,497 negative reviews, 30.7%). Introduce daily room/bathroom inspection checklists and follow up on any review that mentions dirt, smell or pests.",
+    "**Run preventive maintenance on bathrooms, bedding and AC.** Bathroom reviews are 52.0% negative; Bed / bedding reviews are 55.7% negative; Air conditioning reviews are 50.8% negative versus 18.6% overall - these are fixable equipment/linen issues.",
+    "**Invest in staff conduct and responsiveness.** Rude/unhelpful staff appears in 992 negative reviews and slow/poor service in 570. Add service-recovery training and a response-time target for complaints.",
+    "**Prioritise and quality-check amenities.** Spa and similar amenities are associated with a higher rating-positive share (+13.2 pp); amenities such as Air conditioning are often mentioned in complaints (net +0.0 pp), so guarantee they work reliably rather than just listing them.",
+    "**Use review sentiment as an early-warning indicator.** VADER's compound score separates 1-2 star from 4-5 star reviews well (ROC-AUC 0.95); alert managers when a hotel's share of negative reviews rises, and monitor the top pain-point counts monthly.",
+    "**Combine text sentiment with the hotel-success model.** Hotel-level mean sentiment is positively related to the hotel's rating (Spearman 0.64). Because success was defined from rating, use sentiment and pain points as *diagnostic* features beside Review 1's predictors, validated on a proper train/test split, rather than as extra predictors of the same label.",
+    "**Benchmark within hotel category.** Negative-text share ranges from 7.6% (5-star hotel) to 24.0% (2-star hotel); compare a hotel with peers of the same category rather than the overall average.",
+    "**Collect richer feedback.** 25.2% of reviews are 5 words or fewer and neutral (3-star) reviews are hardest to interpret (VADER F1 0.14); use short guided prompts (e.g. room, staff, value) to capture usable detail."
+  ]
+}
