@@ -1,0 +1,800 @@
+support,itemsets,itemset_size
+0.9538461538461539,Wi-Fi,1
+0.9118881118881119,Air conditioning,1
+0.872027972027972,"Air conditioning, Wi-Fi",2
+0.8503496503496504,Room service,1
+0.8447552447552448,"Room service, Wi-Fi",2
+0.8055944055944056,Full-service laundry,1
+0.8020979020979021,Breakfast,1
+0.8013986013986014,"Full-service laundry, Wi-Fi",2
+0.793006993006993,"Breakfast, Wi-Fi",2
+0.7825174825174825,Parking,1
+0.7811188811188812,"Air conditioning, Room service",2
+0.7755244755244756,"Air conditioning, Room service, Wi-Fi",3
+0.7643356643356644,"Parking, Wi-Fi",2
+0.7552447552447552,"Full-service laundry, Room service",2
+0.7517482517482518,"Full-service laundry, Room service, Wi-Fi",3
+0.7517482517482518,"Breakfast, Room service",2
+0.7468531468531469,"Breakfast, Room service, Wi-Fi",3
+0.7419580419580419,"Air conditioning, Breakfast",2
+0.7419580419580419,"Air conditioning, Full-service laundry",2
+0.7377622377622378,"Air conditioning, Full-service laundry, Wi-Fi",3
+0.734965034965035,"Air conditioning, Parking",2
+0.7328671328671329,"Air conditioning, Breakfast, Wi-Fi",3
+0.7174825174825175,"Air conditioning, Parking, Wi-Fi",3
+0.7097902097902098,"Breakfast, Full-service laundry",2
+0.706993006993007,"Breakfast, Full-service laundry, Wi-Fi",3
+0.6965034965034965,"Air conditioning, Breakfast, Room service",3
+0.6958041958041958,"Air conditioning, Full-service laundry, Room service",3
+0.6944055944055944,"Parking, Room service",2
+0.6902097902097902,"Parking, Room service, Wi-Fi",3
+0.6755244755244755,"Breakfast, Full-service laundry, Room service",3
+0.6650349650349651,"Full-service laundry, Parking",2
+0.6622377622377622,"Full-service laundry, Parking, Wi-Fi",3
+0.6594405594405595,"Air conditioning, Breakfast, Full-service laundry",3
+0.6594405594405595,"Breakfast, Parking",2
+0.6559440559440559,"Breakfast, Parking, Wi-Fi",3
+0.6524475524475525,"Air conditioning, Parking, Room service",3
+0.6328671328671329,Kid-friendly,1
+0.6321678321678321,"Full-service laundry, Parking, Room service",3
+0.6307692307692307,"Breakfast, Parking, Room service",3
+0.6272727272727273,"Air conditioning, Full-service laundry, Parking",3
+0.6195804195804195,"Air conditioning, Breakfast, Parking",3
+0.6090909090909091,"Air conditioning, Kid-friendly",2
+0.6055944055944056,"Kid-friendly, Wi-Fi",2
+0.6013986013986014,"Breakfast, Full-service laundry, Parking",3
+0.5853146853146853,"Air conditioning, Kid-friendly, Wi-Fi",3
+0.5720279720279721,Restaurant,1
+0.5664335664335665,"Restaurant, Wi-Fi",2
+0.5629370629370629,"Kid-friendly, Room service",2
+0.5573426573426573,"Kid-friendly, Room service, Wi-Fi",3
+0.5496503496503496,"Restaurant, Room service",2
+0.5454545454545454,"Air conditioning, Restaurant",2
+0.5447552447552447,"Restaurant, Room service, Wi-Fi",3
+0.5447552447552447,"Air conditioning, Kid-friendly, Room service",3
+0.544055944055944,"Breakfast, Restaurant",2
+0.5433566433566434,"Breakfast, Kid-friendly",2
+0.5405594405594406,"Air conditioning, Restaurant, Wi-Fi",3
+0.5391608391608391,"Full-service laundry, Restaurant",2
+0.5391608391608391,"Breakfast, Restaurant, Wi-Fi",3
+0.5363636363636364,"Full-service laundry, Restaurant, Wi-Fi",3
+0.5342657342657343,"Breakfast, Kid-friendly, Wi-Fi",3
+0.5300699300699301,"Air conditioning, Breakfast, Kid-friendly",3
+0.5265734265734265,"Full-service laundry, Kid-friendly",2
+0.5251748251748252,"Air conditioning, Restaurant, Room service",3
+0.5244755244755245,"Breakfast, Restaurant, Room service",3
+0.5230769230769231,"Full-service laundry, Kid-friendly, Wi-Fi",3
+0.5209790209790209,"Air conditioning, Breakfast, Restaurant",3
+0.5209790209790209,"Full-service laundry, Restaurant, Room service",3
+0.5209790209790209,"Breakfast, Kid-friendly, Room service",3
+0.5160839160839161,"Breakfast, Full-service laundry, Restaurant",3
+0.5160839160839161,"Air conditioning, Full-service laundry, Restaurant",3
+0.5153846153846153,"Kid-friendly, Parking",2
+0.5083916083916084,"Air conditioning, Full-service laundry, Kid-friendly",3
+0.5076923076923077,"Parking, Restaurant",2
+0.5041958041958042,"Parking, Restaurant, Wi-Fi",3
+0.5034965034965035,"Air conditioning, Kid-friendly, Parking",3
+0.5034965034965035,"Full-service laundry, Kid-friendly, Room service",3
+0.5,"Kid-friendly, Parking, Wi-Fi",3
+0.4916083916083916,"Parking, Restaurant, Room service",3
+0.4888111888111888,"Breakfast, Parking, Restaurant",3
+0.4874125874125874,"Breakfast, Full-service laundry, Kid-friendly",3
+0.4874125874125874,"Air conditioning, Parking, Restaurant",3
+0.4818181818181818,"Full-service laundry, Parking, Restaurant",3
+0.4755244755244755,Airport shuttle,1
+0.4671328671328671,"Air conditioning, Airport shuttle",2
+0.4671328671328671,"Kid-friendly, Parking, Room service",3
+0.4636363636363636,"Airport shuttle, Wi-Fi",2
+0.4552447552447552,"Air conditioning, Airport shuttle, Wi-Fi",3
+0.45104895104895104,"Breakfast, Kid-friendly, Parking",3
+0.44405594405594406,"Airport shuttle, Full-service laundry",2
+0.44405594405594406,"Full-service laundry, Kid-friendly, Parking",3
+0.44125874125874126,"Airport shuttle, Full-service laundry, Wi-Fi",3
+0.43916083916083914,"Airport shuttle, Room service",2
+0.43636363636363634,"Air conditioning, Airport shuttle, Full-service laundry",3
+0.43496503496503497,"Kid-friendly, Restaurant",2
+0.43496503496503497,"Airport shuttle, Room service, Wi-Fi",3
+0.4314685314685315,"Air conditioning, Airport shuttle, Room service",3
+0.43006993006993005,"Kid-friendly, Restaurant, Wi-Fi",3
+0.42727272727272725,"Air conditioning, Kid-friendly, Restaurant",3
+0.4223776223776224,"Kid-friendly, Restaurant, Room service",3
+0.4223776223776224,"Airport shuttle, Full-service laundry, Room service",3
+0.42097902097902096,"Airport shuttle, Breakfast",2
+0.41818181818181815,"Breakfast, Kid-friendly, Restaurant",3
+0.41468531468531467,"Air conditioning, Airport shuttle, Breakfast",3
+0.413986013986014,"Airport shuttle, Breakfast, Wi-Fi",3
+0.4111888111888112,"Full-service laundry, Kid-friendly, Restaurant",3
+0.4048951048951049,"Airport shuttle, Parking",2
+0.4020979020979021,"Airport shuttle, Breakfast, Full-service laundry",3
+0.4006993006993007,"Air conditioning, Airport shuttle, Parking",3
+0.4006993006993007,"Airport shuttle, Parking, Wi-Fi",3
+0.3986013986013986,"Airport shuttle, Breakfast, Room service",3
+0.39090909090909093,Accessible,1
+0.38741258741258744,"Kid-friendly, Parking, Restaurant",3
+0.3839160839160839,"Airport shuttle, Parking, Room service",3
+0.3832167832167832,"Airport shuttle, Full-service laundry, Parking",3
+0.3825174825174825,"Accessible, Air conditioning",2
+0.37832167832167835,"Accessible, Wi-Fi",2
+0.3706293706293706,"Accessible, Air conditioning, Wi-Fi",3
+0.36993006993006994,"Accessible, Parking",2
+0.3685314685314685,"Airport shuttle, Breakfast, Parking",3
+0.36293706293706296,"Accessible, Air conditioning, Parking",3
+0.36153846153846153,"Accessible, Parking, Wi-Fi",3
+0.3531468531468531,"Airport shuttle, Restaurant",2
+0.34965034965034963,"Airport shuttle, Restaurant, Wi-Fi",3
+0.34895104895104895,"Air conditioning, Airport shuttle, Restaurant",3
+0.34895104895104895,"Airport shuttle, Kid-friendly",2
+0.34685314685314683,"Accessible, Room service",2
+0.34685314685314683,"Air conditioning, Airport shuttle, Kid-friendly",3
+0.34545454545454546,"Accessible, Room service, Wi-Fi",3
+0.34405594405594403,"Airport shuttle, Full-service laundry, Restaurant",3
+0.34265734265734266,"Airport shuttle, Restaurant, Room service",3
+0.3412587412587413,"Airport shuttle, Breakfast, Restaurant",3
+0.33986013986013985,"Accessible, Air conditioning, Room service",3
+0.33986013986013985,"Airport shuttle, Kid-friendly, Wi-Fi",3
+0.33706293706293705,Kitchen in some rooms,1
+0.33636363636363636,"Kitchen in some rooms, Wi-Fi",2
+0.33356643356643356,"Accessible, Breakfast",2
+0.3328671328671329,"Accessible, Parking, Room service",3
+0.3321678321678322,"Accessible, Full-service laundry, Wi-Fi",3
+0.3321678321678322,"Accessible, Full-service laundry",2
+0.3321678321678322,"Accessible, Breakfast, Wi-Fi",3
+0.3300699300699301,"Airport shuttle, Full-service laundry, Kid-friendly",3
+0.32727272727272727,"Airport shuttle, Kid-friendly, Room service",3
+0.32727272727272727,"Accessible, Air conditioning, Full-service laundry",3
+0.3258741258741259,"Accessible, Air conditioning, Breakfast",3
+0.32447552447552447,"Accessible, Breakfast, Room service",3
+0.3230769230769231,"Airport shuttle, Breakfast, Kid-friendly",3
+0.32237762237762235,"Accessible, Full-service laundry, Room service",3
+0.3195804195804196,"Accessible, Breakfast, Parking",3
+0.3181818181818182,"Accessible, Full-service laundry, Parking",3
+0.3174825174825175,"Airport shuttle, Parking, Restaurant",3
+0.3111888111888112,"Accessible, Breakfast, Full-service laundry",3
+0.30699300699300697,"Kitchen in some rooms, Room service",2
+0.3062937062937063,"Kitchen in some rooms, Room service, Wi-Fi",3
+0.3041958041958042,Smoke-free,1
+0.3013986013986014,"Airport shuttle, Kid-friendly, Parking",3
+0.2965034965034965,"Full-service laundry, Kitchen in some rooms",2
+0.2958041958041958,"Full-service laundry, Kitchen in some rooms, Wi-Fi",3
+0.2902097902097902,"Airport shuttle, Kid-friendly, Restaurant",3
+0.2895104895104895,"Breakfast, Kitchen in some rooms",2
+0.28881118881118883,"Breakfast, Kitchen in some rooms, Wi-Fi",3
+0.2867132867132867,"Air conditioning, Kitchen in some rooms",2
+0.28601398601398603,"Air conditioning, Smoke-free",2
+0.28601398601398603,"Air conditioning, Kitchen in some rooms, Wi-Fi",3
+0.28321678321678323,"Smoke-free, Wi-Fi",2
+0.2811188811188811,"Accessible, Restaurant",2
+0.2804195804195804,Pool,1
+0.27972027972027974,"Accessible, Restaurant, Wi-Fi",3
+0.2776223776223776,"Accessible, Kid-friendly",2
+0.2762237762237762,"Accessible, Air conditioning, Kid-friendly",3
+0.2762237762237762,"Pool, Wi-Fi",2
+0.2755244755244755,"Accessible, Air conditioning, Restaurant",3
+0.2755244755244755,"Accessible, Restaurant, Room service",3
+0.27412587412587414,"Accessible, Breakfast, Restaurant",3
+0.27342657342657345,"Accessible, Parking, Restaurant",3
+0.27062937062937065,"Accessible, Kid-friendly, Wi-Fi",3
+0.2699300699300699,"Full-service laundry, Kitchen in some rooms, Room service",3
+0.2692307692307692,"Accessible, Kid-friendly, Parking",3
+0.26783216783216784,"Breakfast, Kitchen in some rooms, Room service",3
+0.2664335664335664,"Air conditioning, Smoke-free, Wi-Fi",3
+0.26573426573426573,"Accessible, Full-service laundry, Restaurant",3
+0.2601398601398601,"Air conditioning, Pool",2
+0.2601398601398601,"Air conditioning, Kitchen in some rooms, Room service",3
+0.25874125874125875,"Parking, Smoke-free",2
+0.25804195804195806,"Breakfast, Full-service laundry, Kitchen in some rooms",3
+0.25804195804195806,"Kitchen in some rooms, Parking",2
+0.2573426573426573,"Kitchen in some rooms, Parking, Wi-Fi",3
+0.25594405594405595,"Air conditioning, Pool, Wi-Fi",3
+0.25384615384615383,"Accessible, Kid-friendly, Room service",3
+0.25384615384615383,"Pool, Room service",2
+0.25244755244755246,"Air conditioning, Full-service laundry, Kitchen in some rooms",3
+0.25244755244755246,"Pool, Room service, Wi-Fi",3
+0.25034965034965034,"Air conditioning, Parking, Smoke-free",3
+0.24685314685314685,"Air conditioning, Breakfast, Kitchen in some rooms",3
+0.24615384615384617,"Accessible, Breakfast, Kid-friendly",3
+0.24475524475524477,"Room service, Smoke-free",2
+0.24475524475524477,"Parking, Smoke-free, Wi-Fi",3
+0.24265734265734265,"Room service, Smoke-free, Wi-Fi",3
+0.24195804195804196,"Accessible, Full-service laundry, Kid-friendly",3
+0.24125874125874125,"Kitchen in some rooms, Parking, Room service",3
+0.23916083916083916,"Accessible, Air conditioning, Airport shuttle",3
+0.23916083916083916,"Accessible, Airport shuttle",2
+0.23776223776223776,"Breakfast, Pool",2
+0.23706293706293707,"Accessible, Airport shuttle, Wi-Fi",3
+0.23636363636363636,"Breakfast, Pool, Wi-Fi",3
+0.23566433566433567,"Full-service laundry, Pool",2
+0.23496503496503496,"Full-service laundry, Pool, Wi-Fi",3
+0.23426573426573427,"Air conditioning, Pool, Room service",3
+0.23216783216783216,"Parking, Pool",2
+0.23076923076923078,"Accessible, Airport shuttle, Parking",3
+0.23076923076923078,"Accessible, Airport shuttle, Room service",3
+0.22937062937062938,"Breakfast, Pool, Room service",3
+0.22937062937062938,"Air conditioning, Room service, Smoke-free",3
+0.22797202797202798,"Parking, Pool, Wi-Fi",3
+0.22727272727272727,"Full-service laundry, Kitchen in some rooms, Parking",3
+0.22727272727272727,"Breakfast, Kitchen in some rooms, Parking",3
+0.22587412587412586,"Accessible, Airport shuttle, Full-service laundry",3
+0.22517482517482518,"Accessible, Kid-friendly, Restaurant",3
+0.22517482517482518,"Breakfast, Smoke-free",2
+0.22517482517482518,"Air conditioning, Kitchen in some rooms, Parking",3
+0.22447552447552446,"Full-service laundry, Pool, Room service",3
+0.22377622377622378,"Breakfast, Smoke-free, Wi-Fi",3
+0.2216783216783217,"Air conditioning, Breakfast, Pool",3
+0.21958041958041957,"Accessible, Airport shuttle, Breakfast",3
+0.21888111888111889,"Air conditioning, Full-service laundry, Pool",3
+0.21818181818181817,"Breakfast, Room service, Smoke-free",3
+0.21818181818181817,"Air conditioning, Parking, Pool",3
+0.2153846153846154,"Breakfast, Full-service laundry, Pool",3
+0.213986013986014,"Parking, Room service, Smoke-free",3
+0.21328671328671328,"Full-service laundry, Smoke-free",2
+0.2125874125874126,"Air conditioning, Breakfast, Smoke-free",3
+0.21188811188811188,"Full-service laundry, Smoke-free, Wi-Fi",3
+0.21188811188811188,"Air conditioning, Bar",2
+0.21188811188811188,Bar,1
+0.2097902097902098,"Parking, Pool, Room service",3
+0.20909090909090908,"Bar, Wi-Fi",2
+0.20909090909090908,"Air conditioning, Bar, Wi-Fi",3
+0.2076923076923077,"Air conditioning, Bar, Room service",3
+0.2076923076923077,"Bar, Room service",2
+0.206993006993007,"Air conditioning, Bar, Restaurant",3
+0.206993006993007,"Bar, Restaurant",2
+0.2062937062937063,"Bar, Breakfast",2
+0.2062937062937063,"Air conditioning, Bar, Breakfast",3
+0.2048951048951049,"Full-service laundry, Room service, Smoke-free",3
+0.2048951048951049,"Bar, Room service, Wi-Fi",3
+0.2041958041958042,"Bar, Restaurant, Wi-Fi",3
+0.2041958041958042,"Bar, Restaurant, Room service",3
+0.2034965034965035,"Bar, Breakfast, Wi-Fi",3
+0.20279720279720279,"Bar, Breakfast, Restaurant",3
+0.20279720279720279,"Air conditioning, Full-service laundry, Smoke-free",3
+0.20279720279720279,"Bar, Breakfast, Room service",3
+0.2013986013986014,"Breakfast, Parking, Pool",3
+0.2013986013986014,"Air conditioning, Bar, Full-service laundry",3
+0.2013986013986014,"Bar, Full-service laundry",2
+0.2006993006993007,"Bar, Parking",2
+0.2006993006993007,"Air conditioning, Bar, Parking",3
+0.2006993006993007,"Bar, Full-service laundry, Wi-Fi",3
+0.1993006993006993,"Kid-friendly, Pool",2
+0.1986013986013986,"Full-service laundry, Parking, Pool",3
+0.1986013986013986,"Breakfast, Parking, Smoke-free",3
+0.1986013986013986,"Bar, Parking, Wi-Fi",3
+0.1979020979020979,"Bar, Breakfast, Full-service laundry",3
+0.1979020979020979,"Bar, Full-service laundry, Room service",3
+0.1972027972027972,"Bar, Full-service laundry, Restaurant",3
+0.1972027972027972,"Bar, Parking, Room service",3
+0.1965034965034965,Fitness center,1
+0.1965034965034965,"Bar, Breakfast, Parking",3
+0.1965034965034965,"Bar, Parking, Restaurant",3
+0.1958041958041958,"Accessible, Airport shuttle, Restaurant",3
+0.1958041958041958,"Air conditioning, Kid-friendly, Pool",3
+0.1951048951048951,"Kid-friendly, Pool, Wi-Fi",3
+0.1944055944055944,"Pool, Restaurant",2
+0.193006993006993,"Fitness center, Wi-Fi",2
+0.193006993006993,"Pool, Restaurant, Wi-Fi",3
+0.1916083916083916,"Full-service laundry, Parking, Smoke-free",3
+0.1916083916083916,"Breakfast, Full-service laundry, Smoke-free",3
+0.1916083916083916,"Kid-friendly, Kitchen in some rooms",2
+0.1916083916083916,"Bar, Full-service laundry, Parking",3
+0.19090909090909092,"Air conditioning, Fitness center",2
+0.19090909090909092,"Kid-friendly, Kitchen in some rooms, Wi-Fi",3
+0.1902097902097902,Business center,1
+0.1902097902097902,"Fitness center, Parking",2
+0.1888111888111888,"Business center, Wi-Fi",2
+0.1888111888111888,"Air conditioning, Pool, Restaurant",3
+0.1888111888111888,"Pool, Restaurant, Room service",3
+0.1874125874125874,"Fitness center, Parking, Wi-Fi",3
+0.1874125874125874,"Air conditioning, Fitness center, Wi-Fi",3
+0.1867132867132867,"Air conditioning, Business center",2
+0.1867132867132867,"Air conditioning, Fitness center, Parking",3
+0.18601398601398603,"Fitness center, Room service",2
+0.1853146853146853,"Air conditioning, Business center, Wi-Fi",3
+0.1853146853146853,"Business center, Parking",2
+0.1853146853146853,"Breakfast, Pool, Restaurant",3
+0.1853146853146853,"Fitness center, Room service, Wi-Fi",3
+0.1853146853146853,"Breakfast, Business center",2
+0.18461538461538463,"Accessible, Airport shuttle, Kid-friendly",3
+0.18461538461538463,"Bar, Kid-friendly",2
+0.18461538461538463,"Air conditioning, Bar, Kid-friendly",3
+0.1839160839160839,"Breakfast, Business center, Wi-Fi",3
+0.1839160839160839,"Business center, Parking, Wi-Fi",3
+0.1839160839160839,"Business center, Room service",2
+0.18321678321678322,"Kid-friendly, Smoke-free",2
+0.1825174825174825,"Bar, Kid-friendly, Room service",3
+0.1825174825174825,"Air conditioning, Fitness center, Room service",3
+0.1825174825174825,"Full-service laundry, Pool, Restaurant",3
+0.1825174825174825,"Fitness center, Parking, Room service",3
+0.1825174825174825,"Air conditioning, Business center, Parking",3
+0.1825174825174825,"Business center, Room service, Wi-Fi",3
+0.1825174825174825,"Kid-friendly, Pool, Room service",3
+0.18181818181818182,"Breakfast, Fitness center",2
+0.18181818181818182,"Kitchen in some rooms, Restaurant",2
+0.18181818181818182,"Bar, Kid-friendly, Wi-Fi",3
+0.18181818181818182,"Bar, Kid-friendly, Restaurant",3
+0.18181818181818182,"Air conditioning, Breakfast, Business center",3
+0.1811188811188811,"Breakfast, Business center, Parking",3
+0.1811188811188811,"Breakfast, Fitness center, Wi-Fi",3
+0.1811188811188811,"Kitchen in some rooms, Restaurant, Wi-Fi",3
+0.1811188811188811,"Business center, Full-service laundry",2
+0.1811188811188811,"Kid-friendly, Kitchen in some rooms, Room service",3
+0.1811188811188811,"Breakfast, Fitness center, Room service",3
+0.1811188811188811,"Air conditioning, Kid-friendly, Smoke-free",3
+0.18041958041958042,"Business center, Full-service laundry, Wi-Fi",3
+0.18041958041958042,"Fitness center, Restaurant",2
+0.18041958041958042,"Air conditioning, Business center, Room service",3
+0.1797202797202797,"Fitness center, Restaurant, Wi-Fi",3
+0.17902097902097902,"Breakfast, Business center, Room service",3
+0.17902097902097902,"Bar, Breakfast, Kid-friendly",3
+0.17902097902097902,"Air conditioning, Kid-friendly, Kitchen in some rooms",3
+0.17902097902097902,"Fitness center, Restaurant, Room service",3
+0.17902097902097902,"Business center, Parking, Room service",3
+0.17902097902097902,"Breakfast, Fitness center, Parking",3
+0.17832167832167833,"Air conditioning, Business center, Full-service laundry",3
+0.17832167832167833,"Air conditioning, Breakfast, Fitness center",3
+0.17762237762237762,"Fitness center, Full-service laundry",2
+0.17762237762237762,"Air conditioning, Fitness center, Restaurant",3
+0.17762237762237762,"Fitness center, Full-service laundry, Wi-Fi",3
+0.17762237762237762,"Fitness center, Parking, Restaurant",3
+0.17762237762237762,"Breakfast, Business center, Full-service laundry",3
+0.17762237762237762,"Parking, Pool, Restaurant",3
+0.17622377622377622,"Business center, Full-service laundry, Parking",3
+0.17552447552447553,"Fitness center, Full-service laundry, Room service",3
+0.17552447552447553,"Breakfast, Kid-friendly, Pool",3
+0.17552447552447553,"Breakfast, Fitness center, Restaurant",3
+0.17552447552447553,"Bar, Full-service laundry, Kid-friendly",3
+0.17552447552447553,"Business center, Restaurant",2
+0.17482517482517482,"Air conditioning, Fitness center, Full-service laundry",3
+0.17482517482517482,"Business center, Full-service laundry, Room service",3
+0.17412587412587413,"Fitness center, Full-service laundry, Parking",3
+0.17412587412587413,"Bar, Kid-friendly, Parking",3
+0.17412587412587413,"Business center, Restaurant, Wi-Fi",3
+0.17272727272727273,"Air conditioning, Business center, Restaurant",3
+0.17272727272727273,"Breakfast, Fitness center, Full-service laundry",3
+0.17202797202797201,"Business center, Parking, Restaurant",3
+0.17202797202797201,"Kid-friendly, Parking, Pool",3
+0.17132867132867133,"Breakfast, Business center, Restaurant",3
+0.17062937062937064,"Fitness center, Full-service laundry, Restaurant",3
+0.17062937062937064,"Full-service laundry, Kid-friendly, Kitchen in some rooms",3
+0.16993006993006993,"Kid-friendly, Smoke-free, Wi-Fi",3
+0.16923076923076924,"Breakfast, Kid-friendly, Kitchen in some rooms",3
+0.16923076923076924,"Full-service laundry, Kid-friendly, Pool",3
+0.16923076923076924,"Kitchen in some rooms, Restaurant, Room service",3
+0.16923076923076924,"Business center, Restaurant, Room service",3
+0.16853146853146853,"Breakfast, Kitchen in some rooms, Restaurant",3
+0.16783216783216784,"Full-service laundry, Kitchen in some rooms, Restaurant",3
+0.16713286713286712,"Business center, Full-service laundry, Restaurant",3
+0.16503496503496504,"Kid-friendly, Parking, Smoke-free",3
+0.16293706293706295,"Air conditioning, Kitchen in some rooms, Restaurant",3
+0.16223776223776223,"Accessible, Smoke-free",2
+0.16153846153846155,"Kid-friendly, Pool, Restaurant",3
+0.16083916083916083,"Accessible, Air conditioning, Smoke-free",3
+0.15804195804195803,"Fitness center, Kid-friendly",2
+0.15664335664335666,"Air conditioning, Fitness center, Kid-friendly",3
+0.15594405594405594,"Restaurant, Smoke-free",2
+0.15594405594405594,"Fitness center, Kid-friendly, Wi-Fi",3
+0.15594405594405594,"Fitness center, Kid-friendly, Parking",3
+0.15594405594405594,"Kitchen in some rooms, Parking, Restaurant",3
+0.15524475524475526,"Restaurant, Room service, Smoke-free",3
+0.15454545454545454,"Accessible, Air conditioning, Bar",3
+0.15454545454545454,"Fitness center, Kid-friendly, Room service",3
+0.15454545454545454,"Restaurant, Smoke-free, Wi-Fi",3
+0.15454545454545454,"Accessible, Bar",2
+0.15454545454545454,"Air conditioning, Restaurant, Smoke-free",3
+0.15384615384615385,"Business center, Kid-friendly",2
+0.15314685314685314,"Accessible, Fitness center",2
+0.15314685314685314,"Accessible, Bar, Parking",3
+0.15314685314685314,"Accessible, Bar, Room service",3
+0.15314685314685314,"Accessible, Bar, Wi-Fi",3
+0.15314685314685314,"Accessible, Parking, Smoke-free",3
+0.15244755244755245,"Air conditioning, Business center, Kid-friendly",3
+0.15244755244755245,"Accessible, Air conditioning, Fitness center",3
+0.15244755244755245,"Business center, Kid-friendly, Wi-Fi",3
+0.15244755244755245,"Accessible, Smoke-free, Wi-Fi",3
+0.15174825174825174,"Air conditioning, Airport shuttle, Bar",3
+0.15174825174825174,"Accessible, Bar, Restaurant",3
+0.15174825174825174,"Airport shuttle, Bar",2
+0.15174825174825174,"Accessible, Fitness center, Wi-Fi",3
+0.15174825174825174,"Fitness center, Kid-friendly, Restaurant",3
+0.15104895104895105,"Breakfast, Fitness center, Kid-friendly",3
+0.15104895104895105,"Accessible, Business center",2
+0.15104895104895105,"Accessible, Fitness center, Parking",3
+0.15104895104895105,"Airport shuttle, Bar, Restaurant",3
+0.15034965034965034,"Kid-friendly, Room service, Smoke-free",3
+0.15034965034965034,"Accessible, Bar, Breakfast",3
+0.15034965034965034,"Business center, Kid-friendly, Parking",3
+0.15034965034965034,"Breakfast, Restaurant, Smoke-free",3
+0.15034965034965034,"Breakfast, Business center, Kid-friendly",3
+0.15034965034965034,"Accessible, Business center, Wi-Fi",3
+0.14965034965034965,"Kid-friendly, Kitchen in some rooms, Parking",3
+0.14965034965034965,"Airport shuttle, Bar, Breakfast",3
+0.14895104895104896,"Airport shuttle, Bar, Wi-Fi",3
+0.14895104895104896,"Airport shuttle, Bar, Room service",3
+0.14825174825174825,"Accessible, Business center, Parking",3
+0.14825174825174825,"Airport shuttle, Pool",2
+0.14825174825174825,"Accessible, Air conditioning, Business center",3
+0.14825174825174825,"Business center, Kid-friendly, Room service",3
+0.14825174825174825,"Parking, Restaurant, Smoke-free",3
+0.14755244755244756,"Accessible, Breakfast, Business center",3
+0.14755244755244756,"Accessible, Fitness center, Room service",3
+0.14755244755244756,"Business center, Kid-friendly, Restaurant",3
+0.14755244755244756,"Accessible, Business center, Room service",3
+0.14685314685314685,"Airport shuttle, Pool, Wi-Fi",3
+0.14615384615384616,"Accessible, Fitness center, Restaurant",3
+0.14615384615384616,"Fitness center, Full-service laundry, Kid-friendly",3
+0.14545454545454545,"Airport shuttle, Kitchen in some rooms, Wi-Fi",3
+0.14545454545454545,"Airport shuttle, Bar, Parking",3
+0.14545454545454545,"Airport shuttle, Kitchen in some rooms",2
+0.14545454545454545,"Business center, Full-service laundry, Kid-friendly",3
+0.14545454545454545,"Accessible, Bar, Full-service laundry",3
+0.14475524475524476,"Air conditioning, Airport shuttle, Pool",3
+0.14475524475524476,"Airport shuttle, Bar, Full-service laundry",3
+0.14405594405594405,"Accessible, Breakfast, Fitness center",3
+0.14335664335664336,"Breakfast, Kid-friendly, Smoke-free",3
+0.14335664335664336,"Accessible, Business center, Restaurant",3
+0.14265734265734265,"Accessible, Business center, Full-service laundry",3
+0.14195804195804196,"Airport shuttle, Smoke-free",2
+0.14125874125874127,"Airport shuttle, Pool, Room service",3
+0.14125874125874127,"Air conditioning, Airport shuttle, Kitchen in some rooms",3
+0.14055944055944056,"Air conditioning, Airport shuttle, Smoke-free",3
+0.14055944055944056,"Full-service laundry, Restaurant, Smoke-free",3
+0.14055944055944056,"Accessible, Fitness center, Full-service laundry",3
+0.13986013986013987,"Airport shuttle, Full-service laundry, Pool",3
+0.13986013986013987,"Airport shuttle, Smoke-free, Wi-Fi",3
+0.13986013986013987,"Accessible, Pool",2
+0.13916083916083916,"Accessible, Air conditioning, Pool",3
+0.13916083916083916,"Airport shuttle, Business center",2
+0.13846153846153847,"Airport shuttle, Full-service laundry, Kitchen in some rooms",3
+0.13846153846153847,"Accessible, Pool, Wi-Fi",3
+0.13846153846153847,"Air conditioning, Airport shuttle, Business center",3
+0.13846153846153847,"Airport shuttle, Business center, Wi-Fi",3
+0.13846153846153847,"Airport shuttle, Breakfast, Pool",3
+0.13636363636363635,"Airport shuttle, Business center, Parking",3
+0.13636363636363635,"Airport shuttle, Business center, Room service",3
+0.13636363636363635,"Accessible, Parking, Pool",3
+0.13566433566433567,"Airport shuttle, Fitness center",2
+0.13566433566433567,"Accessible, Room service, Smoke-free",3
+0.13566433566433567,"Accessible, Bar, Kid-friendly",3
+0.13566433566433567,"Airport shuttle, Breakfast, Business center",3
+0.13496503496503495,"Air conditioning, Airport shuttle, Fitness center",3
+0.13426573426573427,"Airport shuttle, Business center, Full-service laundry",3
+0.13426573426573427,"Airport shuttle, Fitness center, Wi-Fi",3
+0.13356643356643358,"Airport shuttle, Bar, Kid-friendly",3
+0.13356643356643358,"Airport shuttle, Fitness center, Parking",3
+0.13356643356643358,"Airport shuttle, Fitness center, Room service",3
+0.13356643356643358,"Airport shuttle, Kitchen in some rooms, Room service",3
+0.13286713286713286,"Airport shuttle, Room service, Smoke-free",3
+0.13146853146853146,"Airport shuttle, Fitness center, Restaurant",3
+0.13076923076923078,"Airport shuttle, Parking, Pool",3
+0.13076923076923078,"Airport shuttle, Breakfast, Fitness center",3
+0.13006993006993006,"Airport shuttle, Fitness center, Full-service laundry",3
+0.13006993006993006,"Airport shuttle, Parking, Smoke-free",3
+0.13006993006993006,"Airport shuttle, Breakfast, Kitchen in some rooms",3
+0.12937062937062938,"Accessible, Fitness center, Kid-friendly",3
+0.12937062937062938,"Full-service laundry, Kid-friendly, Smoke-free",3
+0.12937062937062938,"Airport shuttle, Business center, Restaurant",3
+0.12867132867132866,"Airport shuttle, Pool, Restaurant",3
+0.12727272727272726,"Bar, Pool",2
+0.12727272727272726,"Accessible, Business center, Kid-friendly",3
+0.12727272727272726,"Air conditioning, Bar, Pool",3
+0.12727272727272726,"Airport shuttle, Full-service laundry, Smoke-free",3
+0.12657342657342657,"Bar, Pool, Wi-Fi",3
+0.12657342657342657,"Accessible, Pool, Room service",3
+0.12517482517482517,"Bar, Pool, Restaurant",3
+0.12517482517482517,"Accessible, Breakfast, Smoke-free",3
+0.12447552447552447,"Bar, Pool, Room service",3
+0.12447552447552447,"Airport shuttle, Breakfast, Smoke-free",3
+0.12377622377622377,"Accessible, Full-service laundry, Smoke-free",3
+0.12377622377622377,"Accessible, Breakfast, Pool",3
+0.12307692307692308,"Bar, Parking, Pool",3
+0.12307692307692308,"Accessible, Full-service laundry, Pool",3
+0.12237762237762238,"Accessible, Pool, Restaurant",3
+0.12237762237762238,"Bar, Breakfast, Pool",3
+0.12167832167832168,"Airport shuttle, Kid-friendly, Pool",3
+0.12097902097902098,"Kid-friendly, Kitchen in some rooms, Restaurant",3
+0.12027972027972028,"Bar, Full-service laundry, Pool",3
+0.11958041958041958,"Bar, Fitness center",2
+0.11958041958041958,Spa,1
+0.11958041958041958,"Air conditioning, Bar, Fitness center",3
+0.11958041958041958,"Bar, Fitness center, Room service",3
+0.11958041958041958,"Bar, Fitness center, Restaurant",3
+0.11888111888111888,"Bar, Fitness center, Wi-Fi",3
+0.11888111888111888,"Fitness center, Pool",2
+0.11888111888111888,"Room service, Spa",2
+0.11818181818181818,"Bar, Fitness center, Parking",3
+0.11818181818181818,"Fitness center, Parking, Pool",3
+0.11818181818181818,"Accessible, Kid-friendly, Pool",3
+0.11818181818181818,"Spa, Wi-Fi",2
+0.11748251748251748,"Airport shuttle, Kitchen in some rooms, Parking",3
+0.11748251748251748,"Room service, Spa, Wi-Fi",3
+0.11748251748251748,"Parking, Spa",2
+0.11748251748251748,"Air conditioning, Spa",2
+0.11678321678321678,"Air conditioning, Room service, Spa",3
+0.11678321678321678,"Fitness center, Pool, Wi-Fi",3
+0.11678321678321678,"Bar, Breakfast, Fitness center",3
+0.11678321678321678,"Air conditioning, Fitness center, Pool",3
+0.11678321678321678,"Airport shuttle, Business center, Kid-friendly",3
+0.11678321678321678,"Parking, Room service, Spa",3
+0.11608391608391608,"Air conditioning, Spa, Wi-Fi",3
+0.11608391608391608,"Breakfast, Room service, Spa",3
+0.11608391608391608,"Parking, Spa, Wi-Fi",3
+0.11608391608391608,"Breakfast, Spa",2
+0.11608391608391608,"Air conditioning, Parking, Spa",3
+0.11538461538461539,"Restaurant, Spa",2
+0.11538461538461539,"Restaurant, Room service, Spa",3
+0.11538461538461539,"Accessible, Kid-friendly, Smoke-free",3
+0.11468531468531469,"Breakfast, Spa, Wi-Fi",3
+0.11468531468531469,"Airport shuttle, Fitness center, Kid-friendly",3
+0.11468531468531469,Pet-friendly,1
+0.11398601398601399,"Air conditioning, Breakfast, Spa",3
+0.11398601398601399,"Kid-friendly, Restaurant, Smoke-free",3
+0.11398601398601399,"Fitness center, Pool, Room service",3
+0.11398601398601399,"Breakfast, Parking, Spa",3
+0.11398601398601399,"Restaurant, Spa, Wi-Fi",3
+0.11328671328671329,"Parking, Restaurant, Spa",3
+0.11328671328671329,"Bar, Fitness center, Full-service laundry",3
+0.11328671328671329,"Full-service laundry, Spa",2
+0.11328671328671329,"Air conditioning, Restaurant, Spa",3
+0.11258741258741259,"Full-service laundry, Spa, Wi-Fi",3
+0.11258741258741259,"Full-service laundry, Room service, Spa",3
+0.11258741258741259,"Bar, Kid-friendly, Pool",3
+0.11258741258741259,"Breakfast, Restaurant, Spa",3
+0.11188811188811189,"Accessible, Airport shuttle, Business center",3
+0.11188811188811189,"Fitness center, Pool, Restaurant",3
+0.11118881118881119,"Breakfast, Full-service laundry, Spa",3
+0.11118881118881119,"Air conditioning, Full-service laundry, Spa",3
+0.11118881118881119,"Full-service laundry, Parking, Spa",3
+0.11048951048951049,"Accessible, Airport shuttle, Bar",3
+0.10979020979020979,"Breakfast, Fitness center, Pool",3
+0.10979020979020979,"Full-service laundry, Restaurant, Spa",3
+0.10909090909090909,"Air conditioning, Pet-friendly",2
+0.10839160839160839,"Accessible, Airport shuttle, Fitness center",3
+0.10839160839160839,"Fitness center, Full-service laundry, Pool",3
+0.1076923076923077,"Bar, Fitness center, Kid-friendly",3
+0.106993006993007,"Accessible, Bar, Fitness center",3
+0.1062937062937063,"Business center, Fitness center",2
+0.1055944055944056,"Bar, Business center, Room service",3
+0.1055944055944056,"Business center, Fitness center, Wi-Fi",3
+0.1055944055944056,"Business center, Fitness center, Restaurant",3
+0.1055944055944056,"Bar, Business center, Restaurant",3
+0.1055944055944056,"Accessible, Restaurant, Smoke-free",3
+0.1055944055944056,"Air conditioning, Bar, Business center",3
+0.1055944055944056,"Air conditioning, Business center, Fitness center",3
+0.1055944055944056,"Pet-friendly, Wi-Fi",2
+0.1055944055944056,"Bar, Business center",2
+0.1055944055944056,"Business center, Fitness center, Room service",3
+0.1055944055944056,"Business center, Fitness center, Parking",3
+0.1048951048951049,"Bar, Business center, Wi-Fi",3
+0.1048951048951049,"Kid-friendly, Spa",2
+0.1041958041958042,"Bar, Business center, Parking",3
+0.1041958041958042,"Kid-friendly, Room service, Spa",3
+0.1041958041958042,"Air conditioning, Kid-friendly, Spa",3
+0.1034965034965035,"Kid-friendly, Parking, Spa",3
+0.1034965034965035,"Kid-friendly, Spa, Wi-Fi",3
+0.1027972027972028,"Kitchen in some rooms, Pool, Wi-Fi",3
+0.1027972027972028,"Kid-friendly, Restaurant, Spa",3
+0.1027972027972028,"Bar, Breakfast, Business center",3
+0.1027972027972028,"Breakfast, Business center, Fitness center",3
+0.1027972027972028,"Fitness center, Kid-friendly, Pool",3
+0.1027972027972028,"Kitchen in some rooms, Pool",2
+0.10139860139860139,"Airport shuttle, Kid-friendly, Kitchen in some rooms",3
+0.10139860139860139,"Breakfast, Kid-friendly, Spa",3
+0.1006993006993007,"Airport shuttle, Kitchen in some rooms, Restaurant",3
+0.1006993006993007,"Bar, Business center, Full-service laundry",3
+0.1006993006993007,"Accessible, Fitness center, Pool",3
+0.1006993006993007,"Accessible, Bar, Pool",3
+0.1,"Airport shuttle, Kid-friendly, Smoke-free",3
+0.1,"Air conditioning, Pet-friendly, Wi-Fi",3
+0.0993006993006993,"Airport shuttle, Restaurant, Smoke-free",3
+0.0986013986013986,"Full-service laundry, Kid-friendly, Spa",3
+0.0986013986013986,"Business center, Fitness center, Full-service laundry",3
+0.0972027972027972,"Accessible, Business center, Fitness center",3
+0.0972027972027972,"Kitchen in some rooms, Pool, Room service",3
+0.0958041958041958,"Accessible, Room service, Spa",3
+0.0958041958041958,"Accessible, Spa",2
+0.0951048951048951,"Accessible, Parking, Spa",3
+0.0951048951048951,"Accessible, Airport shuttle, Smoke-free",3
+0.0951048951048951,"Accessible, Air conditioning, Spa",3
+0.0951048951048951,"Accessible, Spa, Wi-Fi",3
+0.0944055944055944,"Accessible, Bar, Business center",3
+0.0944055944055944,"Bar, Business center, Kid-friendly",3
+0.0937062937062937,"Fitness center, Spa",2
+0.0937062937062937,"Bar, Room service, Spa",3
+0.0937062937062937,"Business center, Fitness center, Kid-friendly",3
+0.0937062937062937,"Bar, Restaurant, Spa",3
+0.0937062937062937,"Bar, Fitness center, Pool",3
+0.0937062937062937,"Bar, Spa",2
+0.0937062937062937,"Air conditioning, Bar, Spa",3
+0.0937062937062937,"Fitness center, Room service, Spa",3
+0.09300699300699301,"Accessible, Kitchen in some rooms",2
+0.09300699300699301,"Fitness center, Spa, Wi-Fi",3
+0.09300699300699301,"Pool, Spa",2
+0.09300699300699301,"Air conditioning, Fitness center, Spa",3
+0.09300699300699301,"Fitness center, Parking, Spa",3
+0.09300699300699301,"Accessible, Kitchen in some rooms, Wi-Fi",3
+0.09300699300699301,"Accessible, Restaurant, Spa",3
+0.09300699300699301,"Accessible, Breakfast, Spa",3
+0.09300699300699301,"Pool, Room service, Spa",3
+0.09230769230769231,"Pool, Restaurant, Spa",3
+0.09230769230769231,"Pool, Spa, Wi-Fi",3
+0.09230769230769231,"Parking, Pool, Spa",3
+0.09230769230769231,"Bar, Spa, Wi-Fi",3
+0.09230769230769231,"Accessible, Airport shuttle, Pool",3
+0.09230769230769231,"Fitness center, Restaurant, Spa",3
+0.09230769230769231,"Bar, Parking, Spa",3
+0.09160839160839161,"Air conditioning, Pool, Spa",3
+0.09160839160839161,"Parking, Pet-friendly",2
+0.09090909090909091,"Bar, Breakfast, Spa",3
+0.09090909090909091,"Breakfast, Fitness center, Spa",3
+0.09020979020979021,"Breakfast, Pool, Spa",3
+0.09020979020979021,"Airport shuttle, Bar, Pool",3
+0.08951048951048951,"Accessible, Full-service laundry, Spa",3
+0.08951048951048951,"Breakfast, Pet-friendly",2
+0.08951048951048951,"Pool, Smoke-free",2
+0.08951048951048951,"Full-service laundry, Pet-friendly",2
+0.08951048951048951,"Air conditioning, Kitchen in some rooms, Pool",3
+0.08951048951048951,"Parking, Pet-friendly, Wi-Fi",3
+0.08951048951048951,"Breakfast, Kitchen in some rooms, Pool",3
+0.08881118881118881,"Business center, Pool",2
+0.08881118881118881,"Accessible, Kitchen in some rooms, Parking",3
+0.08881118881118881,"Breakfast, Pet-friendly, Wi-Fi",3
+0.08881118881118881,"Full-service laundry, Pet-friendly, Wi-Fi",3
+0.08881118881118881,"Air conditioning, Parking, Pet-friendly",3
+0.08881118881118881,"Bar, Full-service laundry, Spa",3
+0.08881118881118881,"Accessible, Air conditioning, Kitchen in some rooms",3
+0.08811188811188811,"Accessible, Kitchen in some rooms, Room service",3
+0.08811188811188811,"Fitness center, Full-service laundry, Spa",3
+0.08811188811188811,"Air conditioning, Business center, Pool",3
+0.08741258741258741,"Airport shuttle, Bar, Fitness center",3
+0.08741258741258741,"Business center, Parking, Pool",3
+0.08741258741258741,"Bar, Kid-friendly, Spa",3
+0.08741258741258741,"Business center, Pool, Room service",3
+0.08741258741258741,"Full-service laundry, Pool, Spa",3
+0.08741258741258741,"Airport shuttle, Spa",2
+0.08741258741258741,"Business center, Pool, Wi-Fi",3
+0.08671328671328671,"Airport shuttle, Parking, Spa",3
+0.08671328671328671,"Air conditioning, Airport shuttle, Spa",3
+0.08671328671328671,"Airport shuttle, Room service, Spa",3
+0.08601398601398601,"Accessible, Kid-friendly, Spa",3
+0.08601398601398601,"Airport shuttle, Spa, Wi-Fi",3
+0.08531468531468532,"Business center, Pool, Restaurant",3
+0.08531468531468532,"Air conditioning, Breakfast, Pet-friendly",3
+0.08531468531468532,"Air conditioning, Full-service laundry, Pet-friendly",3
+0.08531468531468532,"Pool, Smoke-free, Wi-Fi",3
+0.08531468531468532,"Airport shuttle, Breakfast, Spa",3
+0.08461538461538462,"Full-service laundry, Kitchen in some rooms, Pool",3
+0.08461538461538462,"Breakfast, Business center, Pool",3
+0.08461538461538462,"Accessible, Breakfast, Kitchen in some rooms",3
+0.08391608391608392,"Fitness center, Kid-friendly, Spa",3
+0.08391608391608392,"Business center, Full-service laundry, Pool",3
+0.08391608391608392,"Airport shuttle, Restaurant, Spa",3
+0.08321678321678322,"Breakfast, Full-service laundry, Pet-friendly",3
+0.08321678321678322,"Kid-friendly, Pool, Spa",3
+0.08321678321678322,"Bar, Business center, Fitness center",3
+0.08251748251748252,"Airport shuttle, Fitness center, Pool",3
+0.08251748251748252,"Airport shuttle, Full-service laundry, Spa",3
+0.08251748251748252,"Bar, Pool, Spa",3
+0.08181818181818182,"Fitness center, Pool, Spa",3
+0.08181818181818182,"Air conditioning, Pool, Smoke-free",3
+0.08111888111888112,"Airport shuttle, Bar, Business center",3
+0.08111888111888112,"Accessible, Fitness center, Spa",3
+0.08041958041958042,"Accessible, Full-service laundry, Kitchen in some rooms",3
+0.07972027972027972,"Pet-friendly, Room service, Wi-Fi",3
+0.07972027972027972,"Pet-friendly, Room service",2
+0.07972027972027972,"Airport shuttle, Business center, Fitness center",3
+0.07902097902097902,"Kitchen in some rooms, Parking, Pool",3
+0.07902097902097902,"Accessible, Bar, Spa",3
+0.07902097902097902,"Bar, Fitness center, Spa",3
+0.07832167832167833,"Accessible, Pool, Spa",3
+0.07832167832167833,"Airport shuttle, Kid-friendly, Spa",3
+0.07762237762237763,"Kitchen in some rooms, Smoke-free, Wi-Fi",3
+0.07762237762237763,"Kitchen in some rooms, Smoke-free",2
+0.07762237762237763,"Business center, Kid-friendly, Pool",3
+0.07762237762237763,"Accessible, Business center, Pool",3
+0.07762237762237763,"Breakfast, Parking, Pet-friendly",3
+0.07692307692307693,"Full-service laundry, Pet-friendly, Room service",3
+0.07692307692307693,"Full-service laundry, Parking, Pet-friendly",3
+0.07692307692307693,"Business center, Room service, Spa",3
+0.07692307692307693,"Parking, Pool, Smoke-free",3
+0.07692307692307693,"Business center, Spa",2
+0.07692307692307693,"Business center, Restaurant, Spa",3
+0.07622377622377623,"Pool, Room service, Smoke-free",3
+0.07622377622377623,"Business center, Room service, Smoke-free",3
+0.07622377622377623,"Air conditioning, Business center, Spa",3
+0.07622377622377623,"Business center, Spa, Wi-Fi",3
+0.07622377622377623,"Air conditioning, Pet-friendly, Room service",3
+0.07622377622377623,"Business center, Smoke-free",2
+0.07552447552447553,Kitchen,1
+0.07552447552447553,"Business center, Parking, Spa",3
+0.07482517482517483,"Breakfast, Pet-friendly, Room service",3
+0.07482517482517483,"Air conditioning, Business center, Smoke-free",3
+0.07482517482517483,"Business center, Smoke-free, Wi-Fi",3
+0.07412587412587412,"Breakfast, Business center, Spa",3
+0.07412587412587412,"Air conditioning, Kitchen",2
+0.07412587412587412,"Business center, Parking, Smoke-free",3
+0.07342657342657342,"Breakfast, Business center, Smoke-free",3
+0.07342657342657342,"Kitchen in some rooms, Room service, Smoke-free",3
+0.07342657342657342,"Kid-friendly, Pet-friendly",2
+0.07272727272727272,"Business center, Full-service laundry, Spa",3
+0.07202797202797202,"Bar, Business center, Pool",3
+0.07132867132867132,"Air conditioning, Kid-friendly, Pet-friendly",3
+0.07062937062937064,"Business center, Kid-friendly, Spa",3
+0.07062937062937064,"Parking, Pet-friendly, Room service",3
+0.07062937062937064,"Business center, Fitness center, Pool",3
+0.07062937062937064,"Accessible, Business center, Spa",3
+0.06993006993006994,"Kid-friendly, Pet-friendly, Wi-Fi",3
+0.06923076923076923,"Fitness center, Smoke-free",2
+0.06923076923076923,"Business center, Fitness center, Spa",3
+0.06853146853146853,"Air conditioning, Fitness center, Smoke-free",3
+0.06853146853146853,"Fitness center, Parking, Smoke-free",3
+0.06783216783216783,"Airport shuttle, Pool, Spa",3
+0.06783216783216783,"Business center, Restaurant, Smoke-free",3
+0.06783216783216783,"Accessible, Airport shuttle, Spa",3
+0.06783216783216783,"Airport shuttle, Fitness center, Spa",3
+0.06783216783216783,"Business center, Full-service laundry, Smoke-free",3
+0.06713286713286713,"Accessible, Kitchen in some rooms, Restaurant",3
+0.06713286713286713,"Pet-friendly, Restaurant, Wi-Fi",3
+0.06713286713286713,"Pet-friendly, Restaurant",2
+0.06713286713286713,"Airport shuttle, Bar, Spa",3
+0.06643356643356643,"Breakfast, Kitchen in some rooms, Smoke-free",3
+0.06643356643356643,"Fitness center, Smoke-free, Wi-Fi",3
+0.06643356643356643,"Breakfast, Pool, Smoke-free",3
+0.06643356643356643,"Air conditioning, Kitchen in some rooms, Smoke-free",3
+0.06573426573426573,"Business center, Pool, Spa",3
+0.06503496503496503,"Fitness center, Room service, Smoke-free",3
+0.06503496503496503,"Air conditioning, Pet-friendly, Restaurant",3
+0.06503496503496503,"Breakfast, Pet-friendly, Restaurant",3
+0.06503496503496503,"Full-service laundry, Pet-friendly, Restaurant",3
+0.06433566433566433,"Airport shuttle, Pet-friendly",2
+0.06433566433566433,"Bar, Business center, Spa",3
+0.06433566433566433,"Airport shuttle, Business center, Pool",3
+0.06433566433566433,"Kitchen in some rooms, Parking, Smoke-free",3
+0.06363636363636363,"Kid-friendly, Parking, Pet-friendly",3
+0.06293706293706294,"Breakfast, Fitness center, Smoke-free",3
+0.06293706293706294,"Kitchen in some rooms, Pool, Restaurant",3
+0.06293706293706294,"Air conditioning, Airport shuttle, Pet-friendly",3
+0.062237762237762236,"Fitness center, Restaurant, Smoke-free",3
+0.062237762237762236,"Airport shuttle, Pet-friendly, Wi-Fi",3
+0.062237762237762236,"Kid-friendly, Pool, Smoke-free",3
+0.06153846153846154,"Kid-friendly, Kitchen in some rooms, Pool",3
+0.06153846153846154,"Full-service laundry, Kid-friendly, Pet-friendly",3
+0.06083916083916084,"Air conditioning, Bar, Smoke-free",3
+0.06083916083916084,"Breakfast, Kid-friendly, Pet-friendly",3
+0.06083916083916084,"Bar, Smoke-free",2
+0.06083916083916084,"Airport shuttle, Breakfast, Pet-friendly",3
+0.06013986013986014,"Bar, Room service, Smoke-free",3
+0.06013986013986014,"Bar, Smoke-free, Wi-Fi",3
+0.06013986013986014,"Business center, Kid-friendly, Smoke-free",3
+0.05944055944055944,"Accessible, Business center, Smoke-free",3
+0.05944055944055944,"Bar, Parking, Smoke-free",3
+0.05944055944055944,"Airport shuttle, Full-service laundry, Pet-friendly",3
+0.05874125874125874,"Full-service laundry, Pool, Smoke-free",3
+0.05874125874125874,"Full-service laundry, Kitchen in some rooms, Smoke-free",3
+0.05874125874125874,"Pet-friendly, Restaurant, Room service",3
+0.05874125874125874,"Accessible, Fitness center, Smoke-free",3
+0.05804195804195804,"Parking, Pet-friendly, Restaurant",3
+0.05804195804195804,"Bar, Restaurant, Smoke-free",3
+0.05804195804195804,"Bar, Breakfast, Smoke-free",3
+0.057342657342657345,"Airport shuttle, Business center, Spa",3
+0.056643356643356645,"Fitness center, Kid-friendly, Smoke-free",3
+0.055944055944055944,"Accessible, Pet-friendly",2
+0.055944055944055944,"Accessible, Airport shuttle, Kitchen in some rooms",3
+0.05524475524475524,"Kitchen, Parking",2
+0.05524475524475524,"Kid-friendly, Pet-friendly, Room service",3
+0.05524475524475524,"Air conditioning, Kitchen, Parking",3
+0.05524475524475524,"Fitness center, Full-service laundry, Smoke-free",3
+0.05524475524475524,"Accessible, Air conditioning, Pet-friendly",3
+0.05454545454545454,"Accessible, Kid-friendly, Kitchen in some rooms",3
+0.05384615384615385,"Airport shuttle, Business center, Smoke-free",3
+0.05384615384615385,"Bar, Full-service laundry, Smoke-free",3
+0.05384615384615385,"Airport shuttle, Parking, Pet-friendly",3
+0.05314685314685315,"Airport shuttle, Pet-friendly, Room service",3
+0.05244755244755245,"Pool, Restaurant, Smoke-free",3
+0.05244755244755245,"Kitchen, Wi-Fi",2
+0.05244755244755245,"Accessible, Bar, Smoke-free",3
+0.05174825174825175,"Accessible, Pet-friendly, Wi-Fi",3
+0.05104895104895105,"Accessible, Pool, Smoke-free",3
+0.05104895104895105,"Bar, Kid-friendly, Smoke-free",3
+0.05104895104895105,"Air conditioning, Kitchen, Wi-Fi",3
+0.05034965034965035,"Accessible, Parking, Pet-friendly",3
+0.05034965034965035,"Airport shuttle, Pet-friendly, Restaurant",3
+0.05034965034965035,"Kid-friendly, Pet-friendly, Restaurant",3

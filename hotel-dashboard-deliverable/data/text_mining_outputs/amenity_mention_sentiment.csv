@@ -1,0 +1,16 @@
+Amenity,Mentions,Positive %,Neutral %,Negative %,Net (Pos% - Neg%),Positive % margin (+/- pp),Sample
+Breakfast,1754,70.7,13.6,15.7,55.0,2.1,adequate
+Air conditioning,954,37.5,24.9,37.5,0.0,3.1,adequate
+Restaurant,803,65.1,18.1,16.8,48.3,3.3,adequate
+Room service,542,59.4,13.1,27.5,31.9,4.1,adequate
+Parking,436,40.1,24.3,35.6,4.5,4.6,adequate
+Wi-Fi,395,43.3,22.3,34.4,8.9,4.9,adequate
+Accessibility,388,44.8,22.2,33.0,11.8,4.9,adequate
+Pool,320,70.0,13.8,16.2,53.8,5.0,adequate
+Kid-friendly,197,57.4,19.3,23.4,34.0,6.9,adequate
+Bar,151,57.0,22.5,20.5,36.5,7.9,adequate
+Spa,73,84.9,13.7,1.4,83.5,8.2,SMALL (<100): caution
+Pet-friendly,66,72.7,15.2,12.1,60.6,10.7,SMALL (<100): caution
+Laundry,61,44.3,31.1,24.6,19.7,12.5,SMALL (<100): caution
+Fitness / gym,57,70.2,14.0,15.8,54.4,11.9,SMALL (<100): caution
+Airport shuttle,47,46.8,23.4,29.8,17.0,14.3,SMALL (<100): caution
