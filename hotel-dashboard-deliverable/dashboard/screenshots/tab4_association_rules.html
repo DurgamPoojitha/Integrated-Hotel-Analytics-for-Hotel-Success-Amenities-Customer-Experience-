@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Tab 4: Association Rules</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    margin: 0;
+    padding: 24px;
+}
+.dashboard-wrapper {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+.header-banner {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 22px 28px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    border: 1px solid #1e293b;
+}
+.header-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+}
+.header-subtitle {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: #94a3b8;
+    margin: 0;
+}
+.badge-pill {
+    display: inline-block;
+    background: #1e293b;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.8px;
+}
+.notice-bar {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #64748b;
+    color: #334155;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+.filter-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+}
+.filter-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.kpi-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    min-width: 155px;
+    flex: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    border-top: 3px solid #64748b;
+}
+.kpi-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.kpi-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+.tabs-nav {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 20px;
+    gap: 6px;
+}
+.tab-btn {
+    flex: 1 1 0px;
+    min-width: 180px;
+    height: 44px;
+    line-height: 44px;
+    padding: 0 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    text-decoration: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.tab-btn.active {
+    color: #1e293b;
+    background: #ffffff;
+    border-top: 3px solid #3b82f6;
+    border-bottom: 2px solid #ffffff;
+    margin-bottom: -2px;
+    font-weight: 700;
+}
+.tab-note-banner {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #0284c7;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    color: #334155;
+}
+.model-champion-card {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #0284c7;
+    color: #0f172a;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+.chart-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.apriori-controls-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+</style>
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        
+    <div class="header-banner">
+        <div class="badge-pill">Business Analytics (23CSE452) • Review 2</div>
+        <h1 class="header-title">Hotel Success Intelligence & Decision Support Dashboard</h1>
+        <p class="header-subtitle">Interactive Integration of Exploratory Analytics, Machine Learning Models, Text Mining, and Apriori Association Rules</p>
+    </div>
+    <div class="notice-bar">
+        <b>Methodological Notice:</b> "Success" is defined as <code>customer_rating &ge; 4.0</code> (rating-based proxy).
+        All relationships are empirical <b>associations</b> and do not imply causality.
+        The analysis incorporates both scraped real hotels and synthetic properties (63.4%); text mining applies to real hotels only.
+    </div>
+    
+        
+    <div class="filter-box">
+        <div class="filter-title">Interactive Global Filters</div>
+        <div style="display: flex; gap: 20px; margin-bottom: 14px; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 220px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569;">Location:</span>
+                <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; background: #ffffff; height: 95px; overflow-y: hidden;">
+                    <div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; background: #0284c7; color: #fff;">All Locations</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Agra</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Bengaluru</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Chennai</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Delhi</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Goa</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Jaipur</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Kolkata</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Mumbai</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 220px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569;">Category:</span>
+                <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; background: #ffffff; height: 95px; overflow-y: hidden;">
+                    <div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; background: #0284c7; color: #fff;">All Categories</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">5-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">4-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">3-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">2-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">1-star hotel</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 200px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569;">Data Type:</span>
+                <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; background: #ffffff; font-size: 13px; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Both</span>
+                    <span style="color: #64748b; font-size: 10px;">▼</span>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px; width: 310px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569; width: 70px;">Price (₹):</span>
+                <div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; position: relative;">
+                    <div style="position: absolute; left: 20%; width: 80%; height: 100%; background: #0284c7; border-radius: 3px;"></div>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; color: #0f172a; min-width: 95px; text-align: right;">₹360 - ₹25,000</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; width: 280px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569; width: 55px;">Rating:</span>
+                <div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; position: relative;">
+                    <div style="position: absolute; left: 0; width: 100%; height: 100%; background: #0284c7; border-radius: 3px;"></div>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; color: #0f172a; min-width: 65px; text-align: right;">0.0 - 5.0</span>
+            </div>
+            <div style="margin-left: auto;">
+                <button style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; padding: 7px 16px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer;">Reset All Filters</button>
+            </div>
+        </div>
+        <div style="font-size: 12.5px; color: #475569; padding-top: 6px; border-top: 1px solid #f1f5f9;">
+            <b>Selected Hotels:</b> <b>4,551</b> / 4,551 (100.0%)
+        </div>
+    </div>
+    
+        
+    <div class="kpi-row">
+        <div class="kpi-card" style="border-top-color: #475569;">
+            <div class="kpi-label">Hotels Selected</div>
+            <div class="kpi-value">4,551</div>
+            <div class="kpi-sub">100.0% of total corpus</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #0284c7;">
+            <div class="kpi-label">Average Rating</div>
+            <div class="kpi-value">4.45 <span style="font-size:14px; font-weight:normal; color:#64748b;">/ 5.0</span></div>
+            <div class="kpi-sub">Range: 1.0 – 5.0</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #d97706;">
+            <div class="kpi-label">Average Price</div>
+            <div class="kpi-value">₹4,077</div>
+            <div class="kpi-sub">Median: ₹2,650</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #6366f1;">
+            <div class="kpi-label">Average Review Count</div>
+            <div class="kpi-value">2,257</div>
+            <div class="kpi-sub">Median: 748 reviews</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #0d9488;">
+            <div class="kpi-label">Success Rate (≥ 4.0)</div>
+            <div class="kpi-value">81.7%</div>
+            <div class="kpi-sub">3,718 successful hotels</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #64748b;">
+            <div class="kpi-label">Avg Amenities</div>
+            <div class="kpi-value">10.5</div>
+            <div class="kpi-sub">Across 15 monitored amenities</div>
+        </div>
+    </div>
+    
+        <div class="tabs-nav"><span class="tab-btn">1. Overview & EDA</span><span class="tab-btn">2. Predictive Models</span><span class="tab-btn">3. Text Mining</span><span class="tab-btn active">4. Association Rules</span></div>
+        
+    <div class="apriori-controls-box">
+        <div style="font-size:14px; font-weight:600; color:#334155; margin-bottom:8px;">⚙️ Association Rules Filtering & Dynamic Mining Controls</div>
+        <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center;">
+            <div class="filter-item"><span class="filter-label">Min Support</span><span class="filter-val-badge">0.05 (5.0%)</span></div>
+            <div class="filter-item"><span class="filter-label">Min Confidence</span><span class="filter-val-badge">0.60 (60.0%)</span></div>
+            <div class="filter-item"><span class="filter-label">Min Lift</span><span class="filter-val-badge">2.0</span></div>
+            <div class="filter-item"><span class="filter-label">Search</span><span class="filter-val-badge">All Amenities</span></div>
+            <div class="filter-item"><span class="filter-label">Dynamic mlxtend</span><span class="filter-val-badge">☐ Inactive (Precomputed)</span></div>
+        </div>
+    </div>
+    <div class="tab-note-banner">
+        <b>Filter Applicability:</b> Amenity association rules mined on hotel-level transaction data.<br>
+        <i>Note: Amenity names are standardized (merging free/paid variants, 33 total) and differ from the 15 model columns.</i>
+    </div>
+    <div class="chart-box"><div style="height:360px; width:100%;">                        <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-4.1.1.min.js" integrity="sha256-O24V1F27f8pb0glCkelh3cVHLNiHAJ5gCaVtq2aNch8=" crossorigin="anonymous"></script>                <div id="82b72b7f-1929-4229-a408-6984e7c89584" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("82b72b7f-1929-4229-a408-6984e7c89584")) {                    Plotly.newPlot(                        "82b72b7f-1929-4229-a408-6984e7c89584",                        [{"marker":{"color":"#0284c7"},"orientation":"h","text":["19.6%","21.2%","28.0%","30.4%","33.7%","39.1%","47.5%","57.2%","63.3%","78.2%","80.2%","80.6%","85.0%","91.2%","95.4%"],"textposition":"inside","x":{"dtype":"f8","bdata":"ZmZmZmamM0BxPQrXozA1QArXo3A9CjxA7FG4HoVrPkB7FK5H4dpAQOxRuB6Fi0NAZmZmZmbGR0CamZmZmZlMQIXrUbgepU9AAAAAAACQU0A9CtejcA1UQKRwPQrXI1RAUrgehetBVUBcj8L1KMxWQLgehetR2FdA"},"y":["Fitness center","Bar","Pool","Smoke-free","Kitchen in some rooms","Accessible","Airport shuttle","Restaurant","Kid-friendly","Parking","Breakfast","Full-service laundry","Room service","Air conditioning","Wi-Fi"],"type":"bar"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"font":{"size":14,"color":"#1e293b"},"text":"Top 15 Standardized Amenities by Overall Support (%)","x":0.01,"xanchor":"left"},"margin":{"l":25,"r":25,"t":45,"b":25},"height":360},                        {"responsive": true}                    )                };            </script>        </div></div>
+    <div class="chart-box"><div style="height:400px; width:100%;">                            <div id="cd28f0c0-c6bb-4e34-b3a5-06ea7e63c679" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("cd28f0c0-c6bb-4e34-b3a5-06ea7e63c679")) {                    Plotly.newPlot(                        "cd28f0c0-c6bb-4e34-b3a5-06ea7e63c679",                        [{"marker":{"color":"#8b5cf6"},"orientation":"h","showlegend":false,"text":["Lift: 4.29","Lift: 4.31","Lift: 4.48","Lift: 4.58","Lift: 5.10","Lift: 5.42","Lift: 5.45","Lift: 5.53","Lift: 5.76","Lift: 6.19"],"textposition":"inside","x":{"dtype":"f8","bdata":"ZrYOEnAqEUCjgHAqUjwRQP0oIB006BFAwTWNLf5REkDA4xQJXGEUQADbAGwDsBVAiWc+aGXJFUAg+JqzxRoWQMKZ6kiMBRdAqk8yBCzCGEA="},"y":["Bar, Spa \u2192 Fitness center","Accessible, Spa \u2192 Fitness center","Pool, Spa \u2192 Fitness center","Business center, Spa \u2192 Fitness center","Bar, Business center \u2192 Spa","Bar, Pool \u2192 Spa","Business center, Fitness center \u2192 Spa","Bar, Fitness center \u2192 Spa","Fitness center, Pool \u2192 Spa","Business center, Pool \u2192 Spa"],"type":"bar","xaxis":"x","yaxis":"y"},{"hovertemplate":"\u003cb\u003eRule:\u003c\u002fb\u003e %{text}\u003cbr\u003eSupport: %{x:.2f}%\u003cbr\u003eConfidence: %{y:.2f}%\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":{"dtype":"f8","bdata":"qk8yBCzCGEDCmepIjAUXQCD4mrPFGhZAiWc+aGXJFUAA2wBsA7AVQMDjFAlcYRRAwTWNLf5REkD9KCAdNOgRQKOAcCpSPBFAZrYOEnAqEUDk4KKIsb8QQOX2me\u002fhSBBA5faZ7+FIEEAGgZJfQzAQQFJccOp0HRBAUlxw6nQdEEAllblRkwsQQPuHinHDChBAmrAItAsFEED5StjuG+cPQA+h\u002fQf44Q9AlDWDR73WD0BmtQAZKaoPQPhe8tWhlw9AdJs409qTD0DlmsLBkHYPQD\u002fTFYtBJA9AghhhcMQSD0C+LNE5wgEPQPKWiEeKqQ5AJ0qWce6eDkBm3dOqXh0OQPaJ5Bx++Q1Ag5IE3KvCDUCDkgTcq8INQEJhkQzNuQ1A6EiE+E2qDUCltwYEQpkNQO8BGCEelg1Au3KCxVmRDUAZ6X5iDY8NQLdgECxefQ1AaLyuFf1PDUBOZDeR3UQNQHmtBWgW\u002fwxAyoBxHU\u002fgDEDS0dHR0VEMQBV6iqhfLwxACgoKCgoKDECY\u002fWPKMJcLQDTF6TLFSQtAvwlVoOs2C0ChUoUBJS8LQDVvIDRvIAtA1sHlnS0OC0BBrolArgkLQNC945cvAAtAfXIDz1nbCkDyzYf74rEKQBPy1DeYYApAFpbgAOIyCkDyXhoHNroJQAuTGqIpsQlAM86oBE0fCUDNLQF0MAYJQBSukV3M6AhAfeZ7OBLMCEC2bfrU7n0IQImoeJMJYQhAcPZmvcFTCEBNtviidE8IQOtSyZyFRQhAsmOWEjZACEASucW3mBQIQDtK0WozpgdALfRRkeyYB0B9M4ylY3UHQKWGG3WdUgdAwIgg3V9BB0AOctfPFisHQCLNp9nW+QZAUDJEPlr5BkCy2XterNIGQAZ6TrawtgZAFWvU\u002f\u002fuhBkDQNV4BV2oGQAy4qiAWWwZAE+L8cspRBkD\u002faN6bYkgGQDHckRrePgZAUb5NeGAwBkBD\u002fvUGfSsGQHxLVKNkIwZACwwIY0sDBkCC6cDlv3UDQMNXRNrg9AJAs6asKWvKAkAR+cB+MsICQJn2fc79tgJAt4\u002ftCr2WAkD94b9UZ44CQMo8nreWTwJAyimMwe9LAkB5MB6MB+MBQHxOFu68uQFAQDChalC3AUDHJU5BNLEBQAdHGoBwpAFAZJr+S7R+AUAr7+kgW3sBQDo19aaccwFAXy55e8NoAUD03d+M7mUBQFfUFXVFXQFAaS+cHT1aAUBzArvezFUBQLAIQR8WRQFAvSZRCQ1DAUDm+EVJZEIBQBvQWoIFQgFASW7oPYxAAUCgokkl2TsBQCreZEIYOgFAZkRxX9MiAUBmRHFf0yIBQDvijrgj7gBAmICMhgnIAEDpCYx6nsAAQEHv8ejrtgBAPY7ieQ2UAEAkgOTWJpEAQCSA5NYmkQBAH\u002fAH\u002fAF\u002fAEDklTzpEn4AQCKZd18OeABAiG8wQVF0AECu77RDNWsAQJIh7GSRZQBA8bhAJWJlAEAY9AV9QV8AQPu\u002fWM7aWQBAAkGBW5RXAEC9hPYS2ksAQN4mall8SwBAS1LPEHBAAEBLUs8QcEAAQLy421LcPwBA5+6xr807AEDmRw2N9DYAQAweg8fgMQBAl8HpszIxAEAny9wMgysAQH03kqeGHgBA2GZoqh8XAEA="},"colorbar":{"title":{"text":"Lift"},"x":1.02},"colorscale":[[0.0,"#440154"],[0.1111111111111111,"#482878"],[0.2222222222222222,"#3e4989"],[0.3333333333333333,"#31688e"],[0.4444444444444444,"#26828e"],[0.5555555555555556,"#1f9e89"],[0.6666666666666666,"#35b779"],[0.7777777777777778,"#6ece58"],[0.8888888888888888,"#b5de2b"],[1.0,"#fde725"]],"showscale":true,"size":{"dtype":"f8","bdata":"lOM+BbfyLkAyQCVb78YsQCi2gSB3oStAawFOwr47K0DAEQFHBBwrQLAcWguzeSlAMYPwuH3mJkA8M2gkQWImQMygDLVmiyVAAGSSFgx1JUAdmcvqne8kQJ50gGsaWyRAnnSAaxpbJEBIIXc3VDwkQGZzDCXSJCRAZnMMJdIkJEBu+icmeA4kQPop7U10DSRAwNwKoU4GJEDcLkd1cfAjQKmE\u002fgQ77SNAfAGyTDbmI0BgcaCvWcojQFt7tyXFviNAKGEDxGi8I0DPoBl5GqojQAek7faodiNAUa88xrprI0D3uyJkGWEjQFdetWz2KSNAWO79BlUjI0BgasQqW9IiQDrWDtLuuyJAktuCaauZIkCS24Jpq5kiQMnc2icglCJAka1Su3CKIkDHMoRCyX8iQDUBr9TSfSJAtYdxG9h6IkCwUY9daHkiQHI8ittabiJAwTWNLf5RIkCxnsJ6CksiQGyMAwFuHyJAfvBmcjEMIkAjIyMjI7MhQE2MVsmbnSFARkZGRkaGIUB\u002ffn5+fj4hQEAb0j8bDiFAFyY1RFMCIUClU\u002fMgd\u002f0gQIFFlIBF9CBAJpmvgtzoIEDpDFboDOYgQKJW7r4d4CBAjidiIRjJIEC34DTdLa8gQEwX5SJffCBAzl2MQM1fIEBXe3DEYRQgQOebUAW6DiBAwAHTRSBnH0BAeQGRvEcfQJkZ9nT\u002fIh9AHOCaxhb\u002fHkAkCTmKap0eQKvSVvhLeR5ADLTALLJoHkDg47bLUWMeQKan+wPnVh5Anvw7l0NQHkBWJ7flvhkeQMqchUXAjx1AOHGmtSd\u002fHUBcQO+OvFIdQE5oYtJEJx1A8Kpo1LcRHUCSTs2D3PUcQGrAEZBMuBxA5D7VzbC3HEAe0Bp2V4ccQIgY4uNcZBxA2oXJ\u002f3pKHEBEw7XB7AQcQA9m1ajb8RtAmBq8Dz3mG0A\u002fA9ZCe9obQD1TNqGVzhtA5S1hlni8G0DUfbNIXLYbQFteKcw9rBtADg\u002fKOx6EG0DiIzHfL1MYQLRt1RAZshdAYNAX9AV9F0BVN3Eev3IXQD90HUK9ZBdApfOoTWw8F0B82u8pATIXQPzLhWV84xZAPDTvseveFkCXvCVvyVsWQBvimyksKBZAUHxJhSQlFkA5r6FRgR0WQMnYIKCMDRZA\u002fUD+XmHeFUD2aiTpMdoVQIiCstCD0BVA93lXWvTCFUBx1Rcwar8VQG1JW9KWtBVAQzsDZcywFUAQw2kWQKsVQNxKEadblhVAbHClS9CTFUAgd5db\u002fZIVQCKE8eKGkhVA24liTa+QFUBIC5xuz4oVQLQV\u002flKeiBVAgJVNN4hrFUCAlU03iGsVQMqasqasKRVAvqAv6Av6FEBjDC8ZxvAUQBFrLuOm5BRAzDFb2BC5FEAtoJ2McLUUQC2gnYxwtRRAJ+wJe8KeFEBdu4ujl50UQGp\u002fVfcRlhRAaot8kWWRFECaK6KUAoYUQPYpJ771fhRALeeQrrp+FEAecUfcEXcUQPrv7oFRcBRAQpFhcnltFEDsJbSX0F4UQJawxG9bXhRA3iYDFYxQFEDeJgMVjFAUQOumkmfTTxRAoWqeG8FKFEDgmVCwsUQUQI\u002flY\u002flYPhRA\u002fTHkYH89FEDx\u002fRPQYzYUQFzFdlEoJhRAjoACleccFEA="}},"mode":"markers","showlegend":false,"text":["Business center, Pool \u2192 Spa","Fitness center, Pool \u2192 Spa","Bar, Fitness center \u2192 Spa","Business center, Fitness center \u2192 Spa","Bar, Pool \u2192 Spa","Bar, Business center \u2192 Spa","Business center, Spa \u2192 Fitness center","Pool, Spa \u2192 Fitness center","Accessible, Spa \u2192 Fitness center","Bar, Spa \u2192 Fitness center","Pool, Spa \u2192 Bar","Restaurant, Spa \u2192 Fitness center","Kid-friendly, Spa \u2192 Fitness center","Business center, Pool \u2192 Fitness center","Air conditioning, Spa \u2192 Fitness center","Parking, Spa \u2192 Fitness center","Room service, Spa \u2192 Fitness center","Bar, Business center \u2192 Fitness center","Spa, Wi-Fi \u2192 Fitness center","Spa \u2192 Fitness center","Breakfast, Spa \u2192 Fitness center","Fitness center, Spa \u2192 Bar","Full-service laundry, Spa \u2192 Fitness center","Airport shuttle, Spa \u2192 Fitness center","Business center, Spa \u2192 Bar","Kid-friendly, Spa \u2192 Bar","Accessible, Spa \u2192 Bar","Fitness center, Spa \u2192 Business center","Accessible, Spa \u2192 Business center","Restaurant, Spa \u2192 Bar","Business center, Pool \u2192 Bar","Air conditioning, Spa \u2192 Bar","Bar, Pool \u2192 Fitness center","Fitness center, Pool \u2192 Bar","Room service, Spa \u2192 Bar","Pool, Spa \u2192 Business center","Parking, Spa \u2192 Bar","Full-service laundry, Spa \u2192 Bar","Spa \u2192 Bar","Breakfast, Spa \u2192 Bar","Business center, Fitness center \u2192 Bar","Spa, Wi-Fi \u2192 Bar","Accessible, Pool \u2192 Fitness center","Bar, Fitness center \u2192 Business center","Airport shuttle, Spa \u2192 Bar","Bar, Spa \u2192 Business center","Kid-friendly, Spa \u2192 Business center","Accessible, Bar \u2192 Fitness center","Restaurant, Spa \u2192 Business center","Airport shuttle, Spa \u2192 Business center","Air conditioning, Spa \u2192 Business center","Room service, Spa \u2192 Business center","Accessible, Pool \u2192 Bar","Spa, Wi-Fi \u2192 Business center","Spa \u2192 Business center","Parking, Spa \u2192 Business center","Full-service laundry, Spa \u2192 Business center","Breakfast, Spa \u2192 Business center","Accessible, Fitness center \u2192 Business center","Accessible, Fitness center \u2192 Bar","Accessible, Business center \u2192 Fitness center","Fitness center, Kid-friendly \u2192 Bar","Accessible, Bar \u2192 Business center","Bar, Spa \u2192 Pool","Fitness center, Restaurant \u2192 Bar","Fitness center, Spa \u2192 Pool","Business center, Kid-friendly \u2192 Fitness center","Business center, Restaurant \u2192 Fitness center","Business center, Spa \u2192 Pool","Airport shuttle, Fitness center \u2192 Bar","Pool, Restaurant \u2192 Bar","Fitness center, Room service \u2192 Bar","Breakfast, Fitness center \u2192 Bar","Fitness center, Full-service laundry \u2192 Bar","Air conditioning, Fitness center \u2192 Bar","Accessible, Business center \u2192 Bar","Fitness center, Parking \u2192 Bar","Accessible, Spa \u2192 Pool","Fitness center, Wi-Fi \u2192 Bar","Business center, Kid-friendly \u2192 Bar","Fitness center \u2192 Bar","Airport shuttle, Pool \u2192 Bar","Restaurant, Spa \u2192 Pool","Business center, Restaurant \u2192 Bar","Kid-friendly, Spa \u2192 Pool","Parking, Spa \u2192 Pool","Bar, Fitness center \u2192 Pool","Room service, Spa \u2192 Pool","Spa, Wi-Fi \u2192 Pool","Air conditioning, Spa \u2192 Pool","Spa \u2192 Pool","Breakfast, Spa \u2192 Pool","Airport shuttle, Spa \u2192 Pool","Full-service laundry, Spa \u2192 Pool","Bar, Business center \u2192 Pool","Business center, Fitness center \u2192 Pool","Business center, Spa \u2192 Accessible","Accessible, Fitness center \u2192 Pool","Business center, Fitness center \u2192 Accessible","Accessible, Bar \u2192 Pool","Fitness center, Kid-friendly \u2192 Pool","Bar, Fitness center \u2192 Accessible","Bar, Business center \u2192 Accessible","Business center, Pool \u2192 Accessible","Fitness center, Parking \u2192 Pool","Fitness center, Spa \u2192 Accessible","Fitness center, Restaurant \u2192 Pool","Bar, Smoke-free \u2192 Accessible","Bar, Parking \u2192 Pool","Fitness center, Room service \u2192 Pool","Air conditioning, Fitness center \u2192 Pool","Fitness center, Full-service laundry \u2192 Pool","Bar, Kid-friendly \u2192 Pool","Fitness center, Smoke-free \u2192 Accessible","Airport shuttle, Fitness center \u2192 Pool","Fitness center, Pool \u2192 Accessible","Bar, Wi-Fi \u2192 Pool","Fitness center, Wi-Fi \u2192 Pool","Fitness center \u2192 Pool","Bar, Spa \u2192 Accessible","Bar, Restaurant \u2192 Pool","Pool, Spa \u2192 Accessible","Breakfast, Fitness center \u2192 Pool","Bar \u2192 Pool","Air conditioning, Bar \u2192 Pool","Business center, Kid-friendly \u2192 Accessible","Kid-friendly, Spa \u2192 Accessible","Fitness center, Kid-friendly \u2192 Accessible","Business center, Restaurant \u2192 Accessible","Fitness center, Restaurant \u2192 Accessible","Air conditioning, Spa \u2192 Accessible","Parking, Spa \u2192 Accessible","Restaurant, Spa \u2192 Accessible","Room service, Spa \u2192 Accessible","Spa, Wi-Fi \u2192 Accessible","Airport shuttle, Business center \u2192 Accessible","Business center, Room service \u2192 Accessible","Breakfast, Spa \u2192 Accessible","Spa \u2192 Accessible","Business center, Parking \u2192 Accessible","Airport shuttle, Fitness center \u2192 Accessible","Air conditioning, Fitness center \u2192 Accessible","Business center, Wi-Fi \u2192 Accessible","Breakfast, Business center \u2192 Accessible","Business center \u2192 Accessible","Fitness center, Parking \u2192 Accessible","Air conditioning, Business center \u2192 Accessible","Fitness center, Room service \u2192 Accessible","Breakfast, Fitness center \u2192 Accessible","Fitness center, Full-service laundry \u2192 Accessible","Bar, Pool \u2192 Accessible","Full-service laundry, Spa \u2192 Accessible","Business center, Full-service laundry \u2192 Accessible","Fitness center, Wi-Fi \u2192 Accessible"],"x":{"dtype":"f8","bdata":"DRnuVTBLGkBcdNFFF10gQOgzbY2\u002fmx9AETuxEzuxG0D2Kpgl5YAgQKU+09b4uxlAETuxEzuxG0BcdNFFF10gQMK9CmZJOSBA6DNtjb+bH0D2Kpgl5YAgQGIndmIndiJAKpgl5YDIIEB4FcySckAcQPzdPEL1mSJA\u002fN08QvWZIkCWlAMiw70iQJDhXgWzpCBA\u002fN08QvWZIkCWlAMiw70iQC666KKLLiJA6DNtjb+bH0DG380jVJ8hQKlglpQDIhtApT7T1vi7GUAsKQdEhnshQOgzbY2\u002fmx9AETuxEzuxG0B4FcySckAcQJaUAyLDvSJA4O\u002fmEarPHECWlAMiw70iQJaUAyLDvSJAlpQDIsO9IkCWlAMiw70iQA0Z7lUwSxpAYid2Yid2IkBglpQDIsMhQJaUAyLDvSJALrrooosuIkCQ4V4Fs6QgQGIndmIndiJAmrbG380jJECQ4V4Fs6QgQHXzCNVn2hpApT7T1vi7GUB4FcySckAcQAQiw70KZiVATOzETuzEHkCc+kxb4+8WQBh\u002fN49QfR5ATOzETuzEHkCatsbfzSMkQBh\u002fN49QfR5ATOzETuzEHkDkEarPtDUeQBRddNFFFx1AfDePUH2mHUCYJeWAyHAjQAQiw70KZiVAmCXlgMhwI0Ce2Imd2IklQDBLygGR4SJA9iqYJeWAIEDS+Lt5hOonQFx00UUXXSBAlpQDIsO9IkDQtDX+bh4lQA0Z7lUwSxpALCkHRIZ7IUCirfF38wgpQNL4u3mE6idAah6h+kxbJ0Bpjb+bR6gmQNL4u3mE6idAMEvKAZHhIkCeiy666KInQLTG380jVB9AOEL1mbbGJ0AwS8oBkeEiQNL4u3mE6idAlAMiw70KIkBiJ3ZiJ3YiQNC0Nf5uHiVAkOFeBbOkIEBiJ3ZiJ3YiQJaUAyLDvSJA\u002fN08QvWZIkBiJ3ZiJ3YiQMhwr4JZUiJA\u002fN08QvWZIkCUAyLDvQoiQKlglpQDIhtALCkHRIZ7IUDg7+YRqs8cQHgVzJJyQBxAeBXMknJAHECatsbfzSMkQJgl5YDIcCNAmrbG380jJEBo2hp\u002fN48kQAQiw70KZiVAMEvKAZHhIkCAWVIOiAwfQJ6LLrrooidAwr0KZkk5IEA1IDLcq2AmQDD+bh6h+hRA1Imd2ImdKEADRIZ7FcwmQGoeofpMWydAMo9QfaatJUDP1vi7eYQmQATVZ9oafxdA9iqYJeWAIECatsbfzSMkQNYafzePUClAah6h+kxbJ0A4QvWZtsYnQOgzbY2\u002fmx9Aoq3xd\u002fMIKUC0xt\u002fNI1QfQGb83TxC9SVAcNFFF110KUBw0UUXXXQpQHDRRRdddClA+Lt5hOozIUA+9Zm2xt8pQEY5IDLcqyxArxM7sRM7LUDKAZHhXgUjQMoBkeFeBSNA\u002fN08QvWZIkBkuFfBLCkjQMoBkeFeBSNANSAy3KtgJkDjgMhwr4ItQPzdPEL1mSJAZLhXwSwpI0B8N49QfaYtQDKPUH2mrSVAGH83j1B9LkBLW+Pv5hEuQOOAyHCvgi1A5BGqz7Q1LkDkEarPtDUuQHw3j1B9pi1A44DIcK+CLUDg7+YRqs8sQN5eBbOkHCxAmrbG380jJED6TFvj7+YhQKyCWVIOiCxAf8hwr4JZLkA="},"y":{"dtype":"f8","bdata":"IBAIBAKBUkC1tLS0tDRRQFNYT2E9hVBAh\u002fIaymtIUEBXczVXczVQQLLaWe2sdk5AAAAAAACAVkDgz4Q\u002fE\u002f5VQEG152T6KlVAfjUm0gMVVUDjgowLMi5WQAAAAAAAAFRAAAAAAAAAVEA5HA6Hw+FTQKuqqqqqylNAq6qqqqrKU0C1tLS0tLRTQNbOame1s1NAkDlKt6+sU0BzGc1lNJdTQLeHXFYMlFNAfjUm0gMVVUAdx3Ecx3FTQGdmZmZmZlNA6KKLLrroVEBVVVVVVdVUQEsYmwXVnlRA0wOVs1t4UkBxpGiIP25SQE022WSTTVRA0mg0Go1GVEAMwzAMw\u002fBTQIIWaIEWaFJAtbS0tLS0U0C1tLS0tLRTQLW60+pOq1FASpIkSZKkU0Dp1vywSJlTQHMZzWU0l1NAt4dcVgyUU0Apr6G8hpJTQEaCmgrRhlNAAAAAAAAAUkBdRnMZzWVRQDMzMzMzM1NA\u002fGpMpAcqUUBVVVVVVdVQQO3ETuzETlFAqqqqqqqqUEBnZmZmZmZQQIZhGIZhOFBALS0tLS0tUEAAAAAAAABSQJsK0YbPH1BAUGE9hfUUUEAlSZIkSRJQQHVrflikDFBACm80dX7tT0DE2wxvM7xPQHTnzp07d1FAaC+hvYQWUED+kMDbDwlRQCgBiygBi05AGH41JtIDVkDEHXFH3JFQQPnVmEgP1FVAc9FFF110TkABzfX9ZRROQF100UUXXVVA5UlkGrYbUEBle9cB3RhQQCRJkiRJElBA7MRO7MQOUEB5PB6Px+NPQBmVURmVUU9AAAAAAABAT0Dx8PDw8BBPQPnj1uUdcFRAXDsw1w7MTkAtuuiii65OQFbyZudSbU5AiNQE461sTkAAAAAAAABUQAHN9f1lFE5AVVVVVVXVU0BKkiRJkqRTQHMZzWU0l1NAEA8PDw+PU0BGgpoK0YZTQOh5nud5flNAHcdxHMdxU0AJbzR1fm1TQGdmZmZmZlNAT7fmh0VKU0BANiAbkA1RQMprKK+hnFBAddFFF130VkAEBw4cOHBQQMtrKK+h3FZAwCJKwCJKUEBPLaz01EJQQOU1lNdQXlZAame1s9pZVkA3m81ms9lVQPHw8PDwEE9A2i38akykVUDAH\u002fAH\u002fAFPQNzTCMs9jVVAhjW8M3qpTkA5+ubom6NOQGAJlmAJlk5AYTAYDAaDTkA++OCDD35OQDbZZJNNNlVA2G6WJ5FpTkAuLS0tLS1VQFRdObd+RE5AzLUDc+1ATkAIuKaxxT9OQH41JtIDFVVAyGfdYIo8TkDYUF5DeQ1VQBM7sRM7MU5A2pN\u002f53IITkDak3\u002fncghOQC666KKLrlRAAAAAAACAVEADbz8k8HZUQEV0SnUXa1RA8Af8AX9AVEDP8zzP8zxUQM\u002fzPM\u002fzPFRAJ5tssskmVECmpaWlpSVUQG9fWb1LHlRAhZ9ciLoZVEBu8G\u002fLmQ5UQL3R1Pm1B1RAeBDfQXwHVEAAAAAAAABUQBKZhu1m+VNAap\u002f2aZ\u002f2U0CF9hLaS+hTQKkJxlvZ51NAW1paWlraU0BbWlpaWtpTQH2XZt+l2VNAS0UsFbHUU0DsxE7sxM5TQBKJRCKRyFNAfbzHe7zHU0C35odFysBTQA\u002f7VjjtsFNARomfUeKnU0A="},"type":"scatter","xaxis":"x2","yaxis":"y2"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,0.41000000000000003]},"yaxis":{"anchor":"x","domain":[0.0,1.0]},"xaxis2":{"anchor":"y2","domain":[0.5900000000000001,1.0],"title":{"text":"Support (%)"}},"yaxis2":{"anchor":"x2","domain":[0.0,1.0],"title":{"text":"Confidence (%)"}},"annotations":[{"font":{"size":12,"color":"#1e293b","family":"Inter, sans-serif"},"showarrow":false,"text":"Top Rules by Lift","x":0.20500000000000002,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":12,"color":"#1e293b","family":"Inter, sans-serif"},"showarrow":false,"text":"Support vs. Confidence (Size = Lift)","x":0.795,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"}],"margin":{"l":25,"r":25,"t":45,"b":25},"height":400},                        {"responsive": true}                    )                };            </script>        </div></div>
+    <div class="chart-box">
+        <div style='font-size:14px; font-weight:600; margin-bottom:10px;'>Top 15 Ranked Rules Table (154 Strong Rules Available):</div>
+        <table style='width:100%; border-collapse:collapse; font-size:13px; background:#fff;'><tr style='background:#f1f5f9; border-bottom:2px solid #cbd5e1;'><th style='padding:8px 12px; text-align:left;'>Rule</th><th style='padding:8px 12px; text-align:left;'>Support (%)</th><th style='padding:8px 12px; text-align:left;'>Confidence (%)</th><th style='padding:8px 12px; text-align:left;'>Lift</th></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Business center, Pool → Spa</td><td style='padding:8px 12px;'>6.57</td><td style='padding:8px 12px;'>74.02</td><td style='padding:8px 12px;'>6.19</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Fitness center, Pool → Spa</td><td style='padding:8px 12px;'>8.18</td><td style='padding:8px 12px;'>68.82</td><td style='padding:8px 12px;'>5.755</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Bar, Fitness center → Spa</td><td style='padding:8px 12px;'>7.9</td><td style='padding:8px 12px;'>66.08</td><td style='padding:8px 12px;'>5.526</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Business center, Fitness center → Spa</td><td style='padding:8px 12px;'>6.92</td><td style='padding:8px 12px;'>65.13</td><td style='padding:8px 12px;'>5.447</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Bar, Pool → Spa</td><td style='padding:8px 12px;'>8.25</td><td style='padding:8px 12px;'>64.84</td><td style='padding:8px 12px;'>5.422</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Bar, Business center → Spa</td><td style='padding:8px 12px;'>6.43</td><td style='padding:8px 12px;'>60.93</td><td style='padding:8px 12px;'>5.095</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Business center, Spa → Fitness center</td><td style='padding:8px 12px;'>6.92</td><td style='padding:8px 12px;'>90.0</td><td style='padding:8px 12px;'>4.58</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Pool, Spa → Fitness center</td><td style='padding:8px 12px;'>8.18</td><td style='padding:8px 12px;'>87.97</td><td style='padding:8px 12px;'>4.477</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Accessible, Spa → Fitness center</td><td style='padding:8px 12px;'>8.11</td><td style='padding:8px 12px;'>84.67</td><td style='padding:8px 12px;'>4.309</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Bar, Spa → Fitness center</td><td style='padding:8px 12px;'>7.9</td><td style='padding:8px 12px;'>84.33</td><td style='padding:8px 12px;'>4.291</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Pool, Spa → Bar</td><td style='padding:8px 12px;'>8.25</td><td style='padding:8px 12px;'>88.72</td><td style='padding:8px 12px;'>4.187</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Restaurant, Spa → Fitness center</td><td style='padding:8px 12px;'>9.23</td><td style='padding:8px 12px;'>80.0</td><td style='padding:8px 12px;'>4.071</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Kid-friendly, Spa → Fitness center</td><td style='padding:8px 12px;'>8.39</td><td style='padding:8px 12px;'>80.0</td><td style='padding:8px 12px;'>4.071</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Business center, Pool → Fitness center</td><td style='padding:8px 12px;'>7.06</td><td style='padding:8px 12px;'>79.53</td><td style='padding:8px 12px;'>4.047</td></tr><tr style='border-bottom:1px solid #e2e8f0;'><td style='padding:8px 12px;'>Air conditioning, Spa → Fitness center</td><td style='padding:8px 12px;'>9.3</td><td style='padding:8px 12px;'>79.17</td><td style='padding:8px 12px;'>4.029</td></tr></table>
+    </div>
+    <div style="background:#fdf4ff; border:1px solid #f0abfc; border-radius:10px; padding:16px; margin-top:20px;">
+        <h4 style="margin:0 0 8px 0; color:#86198f;">Strategic Amenity Bundling Insights:</h4>
+        <ul style="margin:0; padding-left:20px; font-size:13px; color:#701a75; line-height:1.6;">
+            <li><b>Premium Wellness Hub:</b> <i>Business center + Pool → Spa</i> boasts the highest lift across the corpus (<b>Lift: 6.190</b>, Confidence: 74.02%, Support: 6.57%). Guests expect premium spas when both business facilities and leisure pools exist.</li>
+            <li><b>Fitness & Leisure Core:</b> <i>Fitness center + Pool → Spa</i> (<b>Lift: 5.755</b>, Confidence: 68.82%) and <i>Bar + Fitness center → Spa</i> (<b>Lift: 5.526</b>, Confidence: 66.08%) identify strong complementary synergies for full-service properties.</li>
+            <li><b>Operational Strategy:</b> Standalone spas rarely succeed without co-located fitness and business infrastructure. Investment in luxury amenities should follow established bundle co-occurrences.</li>
+        </ul>
+    </div>
+    
+    </div>
+</body>
+</html>
