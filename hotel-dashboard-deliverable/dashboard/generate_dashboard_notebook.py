@@ -22,8 +22,9 @@ cell0_md = """# Hotel Success Intelligence & Review 2 Integration Dashboard
 * **Review 2 Deliverable**: One integrated, interactive analytical dashboard synthesizing the entire team's work:
   1. **Exploratory Data Analysis (EDA)**: Dynamic distributions, pricing dynamics, amenity associations, and success drivers across 10 coordinated visualizations.
   2. **Predictive Modeling**: Tuned benchmarks for Logistic Regression, Decision Tree, and Random Forest (Champion Model) evaluated with dynamic test-set filtering.
-  3. **Text Mining (Poojitha)**: VADER sentiment analysis, customer themes, pain points, word frequencies, and review insights on real hotels.
+  3. **Text Mining (Poojitha)**: Dynamic sentiment recomputation, customer pain points, experience themes, amenity aspect sentiment, dynamic word clouds, and searchable review explorer on real hotels.
   4. **Association Rule Mining (Anupama)**: Apriori algorithm on 33 standardized amenities discovering key amenity bundles (e.g., *Business Center + Pool → Spa*, Lift 6.190) with interactive parameter filtering and dynamic re-mining.
+  5. **Final Dataset & Export**: Interactive, searchable, paged table displaying the final project dataset with dual CSV download capabilities (supporting Google Colab and local Jupyter).
 
 > **Important Analytical & Methodological Disclaimers**:
 > * **Association vs. Causation**: All findings, correlations, and feature importances describe statistical associations and co-occurrences in the data; they do not establish causal effects.
@@ -107,9 +108,21 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score, balanced_accuracy_score,
     precision_score, recall_score, f1_score,
-    roc_auc_score, roc_curve, confusion_matrix
+    roc_auc_score, roc_curve, confusion_matrix,
+    cohen_kappa_score
 )
 from mlxtend.frequent_patterns import apriori, association_rules
+import base64
+import io
+import time
+import re
+from collections import Counter
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import RegexpTokenizer
+from nltk.stem import WordNetLemmatizer
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+from wordcloud import WordCloud
 
 # Inject Custom Modern CSS Design System
 display(HTML(\"\"\"
@@ -283,7 +296,7 @@ display(HTML(\"\"\"
     .jupyter-widgets .p-TabBar-tab,
     .jupyter-widgets .lm-TabBar-tab {
         flex: 1 1 0px !important;
-        min-width: 180px !important;
+        min-width: 140px !important;
         max-width: none !important;
         width: auto !important;
         height: 44px !important;
@@ -336,6 +349,86 @@ display(HTML(\"\"\"
     .jupyter-widgets .lm-TabBar-tabIcon {
         display: none !important;
     }
+
+    /* Final Dataset & Review Explorer Table Styles */
+    .dataset-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12.5px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+    .dataset-table th {
+        background: #f1f5f9;
+        color: #334155;
+        font-weight: 600;
+        padding: 9px 12px;
+        text-align: left;
+        border-bottom: 2px solid #cbd5e1;
+    }
+    .dataset-table td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+        vertical-align: middle;
+    }
+    .dataset-table tr:hover {
+        background: #f8fafc;
+    }
+    .status-badge-success {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+    .status-badge-unsuccess {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #cbd5e1;
+    }
+    .badge-vader-pos {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #ecfdf5;
+        color: #059669;
+        border: 1px solid #a7f3d0;
+    }
+    .badge-vader-neg {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+    .badge-vader-neu {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #f8fafc;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+
 </style>
 \"\"\"))
 
@@ -411,6 +504,130 @@ apriori_trans_df = pd.read_csv(TRANSACTION_MATRIX_CSV)
 
 print(f"Loaded Text Mining: {len(rev_sentiment_df):,} reviews, {len(hotel_sentiment_df):,} hotel sentiment summaries.")
 print(f"Loaded Apriori: {len(apriori_rules_df):,} strong rules, {len(apriori_itemsets_df):,} itemsets, {len(apriori_support_df):,} amenities.")
+
+# ==============================================================================
+# PRECOMPUTE TEXT MINING STRUCTURES FOR SUB-SECOND DYNAMIC AGGREGATION
+# Reuses EXACT regular expressions, keyword rules, and stopword lists from reference/review2_updated.ipynb
+# ==============================================================================
+t_tm_start = time.time()
+
+PAIN_PATTERNS = {
+    "Cleanliness / hygiene":       r"\bdirty\b|\bunclean\b|\bfilth\w*|\bnot (very |so |that |at all |too |properly )?(clean|hygien\w*)\b|\bunhygien\w*|\bstink\w*|\bsmell\w*|\bcockroach\w*|\bbed ?bugs?\b|\bstain\w*|\bmou?ld\b|\bdust\w*|\bno cleanliness\b|\bpoor (cleanliness|hygiene)\b",
+    "Rude / unhelpful staff":      r"\brude\w*|\bimpolite\b|\bunprofessional\b|\bmisbehav\w*|\barrogan\w*|\bunhelpful\b|\bnot (very )?(helpful|cooperative|friendly|polite|responsive|supportive)\b|\bpoor (staff|behaviou?r|attitude)\b|\bbad (staff|behaviou?r|attitude)\b|\battitude\b",
+    "Slow / poor service":         r"\bslow\w*|\bdelay\w*|\bwaited\b|\bwaiting\b|\btook (a )?(long|too long|forever|hours?)\b|\bpoor service\b|\bbad service\b|\bworst service\b|\bno service\b|\bno response\b|\bnot responding\b",
+    "Broken / poorly maintained":  r"\bnot working\b|\bbroken\b|\bdamaged\b|\bpoor(ly)? maint\w*|\bnot maintained\b|\bleak\w*|\bworn\b|\bfaulty\b|\b(does|did|do)( not|n['’]?t) work\b|\bnot properly working\b|\bout of order\b",
+    "AC / cooling problems":       r"\b(ac|a/c|aircon\w*|air[- ]?condition\w*)\b[^.]{0,40}\b(not|no|never|poor|bad|issue|problem|broken|noisy|leak\w*|worst)\b|\b(not|no|poor|bad)\b[^.]{0,20}\b(ac|a/c|cooling)\b",
+    "Wi-Fi / internet problems":   r"\b(wi-?fi|wifi|internet|network)\b[^.]{0,40}\b(not|no|poor|bad|slow|weak|issue|problem|never|unavailable)\b|\b(no|poor|bad|slow|weak|not)\b[^.]{0,20}\b(wi-?fi|wifi|internet)\b",
+    "Noise":                       r"\bnois\w+|\bloud\b|\bdisturb\w*",
+    "Bathroom / hot-water issues":  r"\bno hot water\b|\bhot water\b[^.]{0,30}\b(not|no|never|issue|problem)\b|\b(bathrooms?|toilets?|washrooms?)\b[^.]{0,40}\b(dirty|smell\w*|small|broken|not|no|leak\w*|bad|poor|worst|unclean)\b",
+    "Small / cramped rooms":       r"\bsmall\b|\btiny\b|\bcramped\b|\bcongested\b|\bnarrow\b|\bnot spacious\b|\bsuffocat\w*",
+    "Food / breakfast quality":    r"\b(food|breakfast|dinner|lunch|meals?|buffet|tea|coffee)\b[^.]{0,40}\b(bad|poor|worst|not|cold|tasteless|stale|average|terrible|horrible|awful|disappoint\w*|limited)\b|\b(bad|poor|worst|tasteless|stale|terrible|horrible|awful)\b[^.]{0,20}\b(food|breakfast|dinner|lunch|meals?)\b",
+    "Price / value for money":     r"\boverpriced\b|\bexpensive\b|\bcostly\b|\bover ?charg\w*|\bwaste of money\b|\bnot worth\b|\bhigh (price|rate|tariff|charges?)\b|\bextra (charge|money|cost)\w*|\brip ?off\b|\bhidden (charge|cost)\w*|\bcharged\b",
+    "Booking / refund / check-in":  r"\brefund\w*|\bcancel\w*|\bdeposit\b|\breservation\b|\bcheck ?-?in\b[^.]{0,40}\b(late|delay\w*|problem|issue|refus\w*|denied|not|wait\w*)\b",
+    "Parking problems":            r"\bparking\b[^.]{0,40}\b(not|no|problem|issue|difficult|limited|hard|bad)\b|\b(no|not|poor|limited)\b[^.]{0,20}\bparking\b",
+    "Bed / bedding discomfort":    r"\b(beds?|mattress\w*|pillows?\w*|bed ?sheets?|blankets?|linen)\b[^.]{0,40}\b(dirty|hard|uncomfortable|stain\w*|smell\w*|bad|poor|old|torn|not|worst|bugs?)\b"
+}
+
+THEME_PATTERNS = {
+    "Room":             r"\brooms?\b",
+    "Staff":            r"\bstaffs?\b|\bemployees?\b|\breception\w*|\bmanager\b|\bcaretaker\b|\bhousekeeping\b|\bwaiters?\b",
+    "Service":          r"\bservices?\b",
+    "Cleanliness":      r"\bclean\w*|\bdirty\b|\bdirt\b|\bhygien\w*|\btidy\b|\bspotless\b|\bfilth\w*|\bunclean\b|\bsmell\w*|\bstink\w*|\bneat\b",
+    "Food":             r"\bfood\b|\bdinner\b|\blunch\b|\bmeals?\b|\bbuffet\b|\bmenu\b|\brestaurant\b",
+    "Breakfast":        r"\bbreakfast\b",
+    "Location":         r"\blocation\b|\blocated\b|\bnearby\b|\bnear\b|\bclose to\b|\bcentral\b",
+    "Wi-Fi":            r"\bwi-?fi\b|\bwifi\b|\binternet\b",
+    "Parking":          r"\bparking\b",
+    "Bathroom":         r"\bbathrooms?\b|\btoilets?\b|\bwashrooms?\b|\bshower\b|\bgeyser\b|\bhot water\b",
+    "Bed / bedding":    r"\bbeds?\b|\bmattress\w*|\bpillows?\b|\bbed ?sheets?\b|\bblankets?\b|\blinen\b",
+    "Price / value":    r"\bprice\w*|\bcosts?\b|\bexpensive\b|\bcheap\b|\bvalue\b|\bmoney\b|\bworth\b|\boverpriced\b|\baffordable\b|\bbudget\b|\bpocket\b",
+    "Facilities":       r"\bfacilit\w+|\bamenit\w+",
+    "Air conditioning": r"\bac\b|\ba/c\b|\baircon\w*|\bair[- ]?condition\w*|\bcooling\b",
+    "Noise":            r"\bnois\w+|\bloud\b",
+    "View":             r"\bviews?\b"
+}
+
+AMENITY_PATTERNS = {
+    "Breakfast":        r"\bbreakfast\b",
+    "Air conditioning": r"\bac\b|\ba/c\b|\baircon\w*|\bair[- ]?condition\w*|\bcooling\b",
+    "Restaurant":       r"\brestaurant\b",
+    "Room service":     r"\broom service\b",
+    "Parking":          r"\bparking\b",
+    "Wi-Fi":            r"\bwi-?fi\b|\bwifi\b|\binternet\b",
+    "Accessibility":    r"\bwheelchair\b|\baccessib\w*|\belevator\b|\blift\b",
+    "Pool":             r"\bpool\b|\bswimming\b",
+    "Kid-friendly":     r"\bkids?\b|\bchild\w*",
+    "Bar":              r"\bbar\b|\bpub\b",
+    "Spa":              r"\bspa\b|\bmassage\b",
+    "Pet-friendly":     r"\bpets?\b|\bdogs?\b",
+    "Laundry":          r"\blaundry\b",
+    "Fitness / gym":    r"\bgym\b|\bfitness\b",
+    "Airport shuttle":  r"\bshuttle\b|\bairport (pick|transfer|drop)\w*|\bpick ?up\b"
+}
+
+NEGATIONS  = {"not", "no", "nor", "never", "neither"}
+STOP       = set(stopwords.words("english")) - NEGATIONS
+KEEP_SHORT = NEGATIONS | {"ac", "tv", "ok"}
+FILLER     = {"make", "also", "book", "get", "got", "go", "would", "could", "even", "really", "one", "u", "us", "much", "lot", "like", "well", "overall", "take", "come", "say", "see", "give", "back"}
+GENERIC    = {"hotel", "stay", "place", "one", "get", "got", "go", "went", "also", "would", "could", "even", "really", "u", "us", "much", "lot", "like", "take", "make", "come", "say", "see", "give", "back", "day", "night"}
+
+tokenizer  = RegexpTokenizer(r"[a-z]+")
+lemmatizer = WordNetLemmatizer()
+
+def expand_contractions(t):
+    t = re.sub(r"\b(dont|doesnt|didnt|isnt|arent|wasnt|werent|hasnt|havent|hadnt|wouldnt|couldnt|shouldnt|cant|wont)\b", " not", t)
+    t = re.sub(r"\bwon['’]?t\b", "will not", t)
+    t = re.sub(r"\bcan['’]?t\b", "can not", t)
+    t = re.sub(r"n['’]?t\b", " not", t)
+    return t
+
+def lemma(tok):
+    return lemmatizer.lemmatize(lemmatizer.lemmatize(tok, "v"), "n")
+
+def to_tokens(text):
+    t = text.lower()
+    t = expand_contractions(t)
+    t = re.sub(r"[^a-z\s]", " ", t)
+    toks = tokenizer.tokenize(t)
+    toks = [w for w in toks if w not in STOP]
+    toks = [lemma(w) for w in toks]
+    toks = [w for w in toks if w not in STOP]
+    toks = [w for w in toks if len(w) >= 3 or w in KEEP_SHORT]
+    return toks
+
+# Precompute boolean arrays
+rev_text_lc = rev_sentiment_df["text_light"].fillna("").str.lower()
+pain_matrix = {k: rev_text_lc.str.contains(pat, regex=True).fillna(False).values for k, pat in PAIN_PATTERNS.items()}
+theme_matrix = {k: rev_text_lc.str.contains(pat, regex=True).fillna(False).values for k, pat in THEME_PATTERNS.items()}
+
+# Fast amenity aspect precomputation
+any_amen_pat = re.compile("|".join(f"({p})" for p in AMENITY_PATTERNS.values()), flags=re.IGNORECASE)
+sia = SentimentIntensityAnalyzer()
+sent_rows = []
+for idx, txt in rev_sentiment_df["text_light"].fillna("").items():
+    if any_amen_pat.search(txt):
+        for s in re.split(r"(?<=[.!?])\s+", txt):
+            s_str = s.strip()
+            if s_str and any_amen_pat.search(s_str):
+                sent_rows.append((idx, s_str.lower(), sia.polarity_scores(s_str)["compound"]))
+sent_df = pd.DataFrame(sent_rows, columns=["rev", "sent_lc", "compound"])
+
+amenity_matrix = {}
+for name, mention_pat in AMENITY_PATTERNS.items():
+    m = sent_df["sent_lc"].str.contains(mention_pat, regex=True)
+    per_rev = sent_df[m].groupby("rev")["compound"].mean()
+    labels = np.zeros(len(rev_sentiment_df), dtype=np.int8)
+    for r_idx, comp in per_rev.items():
+        if comp >= 0.05: labels[r_idx] = 1
+        elif comp <= -0.05: labels[r_idx] = 3
+        else: labels[r_idx] = 2
+    amenity_matrix[name] = labels
+
+# Token lists
+tokens_list = [to_tokens(t) for t in rev_sentiment_df["text_light"].fillna("")]
+bigrams_list = [[f"{toks[k]} {toks[k+1]}" for k in range(len(toks)-1)] for toks in tokens_list]
+
+print(f"Precomputed Text Mining Engine in {time.time()-t_tm_start:.2f}s: {len(pain_matrix)} pain points, {len(theme_matrix)} themes, {len(amenity_matrix)} amenities.")
 """
 
 # ---------------------------------------------------------
@@ -537,6 +754,8 @@ print("Test Set Ready: 911 Hotels (167 Not Successful, 744 Successful).")
 # ---------------------------------------------------------
 cell4_code = """# ==============================================================================
 # CELL 4: INTERACTIVE DASHBOARD UI, VISUALIZATIONS & EVENT HANDLERS
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 # Assembles filter panel, KPI row, and 4 dedicated tabs with zero-overlap layout
 # ==============================================================================
 
@@ -546,6 +765,7 @@ out_tab1 = widgets.Output()
 out_tab2 = widgets.Output()
 out_tab3 = widgets.Output()
 out_tab4 = widgets.Output()
+out_tab5 = widgets.Output()
 
 # --- FILTER WIDGETS ---
 unique_locations = sorted([loc for loc in clean_hotels_df["location"].unique() if loc != "Unknown"])
@@ -568,7 +788,7 @@ w_category = widgets.SelectMultiple(
 )
 
 min_price = float(clean_hotels_df["price"].min())
-max_price = float(np.percentile(clean_hotels_df["price"], 99)) # Cap at 99th percentile for clean slider interaction
+max_price = float(clean_hotels_df["price"].max()) # Full span to include 100.0% of corpus by default
 w_price = widgets.FloatRangeSlider(
     value=[min_price, max_price],
     min=min_price,
@@ -615,9 +835,9 @@ w_apriori_search = widgets.Text(value="", placeholder="Filter by amenity (e.g., 
 w_apriori_recompute = widgets.Checkbox(value=False, description="Recompute on Filtered Hotels (mlxtend)", layout=widgets.Layout(width="320px"))
 
 apriori_controls_box = widgets.VBox([
-    widgets.HTML("<div style='font-size:14px; font-weight:600; color:#334155; margin:4px 0 8px 0;'>⚙️ Association Rules Filtering & Dynamic Mining Controls</div>"),
-    widgets.HBox([w_apriori_supp, w_apriori_conf, w_apriori_lift], layout=widgets.Layout(gap="15px", margin="0 0 8px 0")),
-    widgets.HBox([w_apriori_search, w_apriori_recompute], layout=widgets.Layout(gap="20px", align_items="center"))
+    widgets.HTML("<div style='font-size:14px; font-weight:600; color:#334155; margin:4px 0 8px 0;'>Association Rules Filtering & Controls</div>"),
+    widgets.HBox([w_apriori_supp, w_apriori_conf, w_apriori_lift], layout=widgets.Layout(grid_gap="15px", margin="0 0 8px 0")),
+    widgets.HBox([w_apriori_search, w_apriori_recompute], layout=widgets.Layout(grid_gap="20px", align_items="center"))
 ], layout=widgets.Layout(border="1px solid #e2e8f0", padding="14px 18px", border_radius="10px", background_color="#f8fafc", margin="0 0 16px 0"))
 
 # Tab 4 Container integrates controls directly inside Tab 4
@@ -625,6 +845,34 @@ tab4_container = widgets.VBox([apriori_controls_box, out_tab4])
 
 # Plotly display helper: disables distracting floating modebar to keep titles pristine
 PLOTLY_CONFIG = {"displayModeBar": False, "responsive": True}
+
+# --- REVIEW EXPLORER WIDGETS (TAB 3 TASK 4) ---
+w_tm_search = widgets.Text(
+    value="",
+    placeholder="Search review excerpt or hotel...",
+    description="Search Text:",
+    layout=widgets.Layout(width="280px")
+)
+tm_page_state = {"page": 0}
+btn_tm_prev = widgets.Button(description="◀ Prev", layout=widgets.Layout(width="80px", height="32px"))
+btn_tm_next = widgets.Button(description="Next ▶", layout=widgets.Layout(width="80px", height="32px"))
+lbl_tm_page = widgets.HTML(layout=widgets.Layout(margin="5px 12px 0 12px"))
+out_tm_reviews = widgets.Output()
+
+# --- FINAL DATASET WIDGETS (TAB 5 TASK 2) ---
+w_tab5_search = widgets.Text(
+    value="",
+    placeholder="Search hotel by name...",
+    description="Search Hotel:",
+    layout=widgets.Layout(width="280px")
+)
+tab5_page_state = {"page": 0}
+btn_tab5_prev = widgets.Button(description="◀ Previous", layout=widgets.Layout(width="95px", height="34px"))
+btn_tab5_next = widgets.Button(description="Next ▶", layout=widgets.Layout(width="95px", height="34px"))
+lbl_tab5_page = widgets.HTML(layout=widgets.Layout(margin="6px 14px 0 14px"))
+btn_download_filt = widgets.Button(description="Download Filtered Data (CSV)", icon="download", layout=widgets.Layout(height="34px"))
+btn_download_full = widgets.Button(description="Download Full Final Dataset (CSV)", icon="download", layout=widgets.Layout(height="34px"))
+out_download = widgets.Output()
 
 # --- HELPER: APPLY GLOBAL FILTERS ---
 def get_filtered_hotels():
@@ -657,13 +905,13 @@ def get_filtered_hotels():
 
 # --- RENDER KPI CARDS ---
 def render_kpis(f_df):
-    out_kpi.clear_output(wait=False)
+    out_kpi.clear_output(wait=True)
     with out_kpi:
         n = len(f_df)
         if n == 0:
             display(HTML(\"\"\"
             <div class="empty-state-box">
-                <h3>⚠️ No Hotels Match Filter Criteria</h3>
+                <h3>No Hotels Match Filter Criteria</h3>
                 <p>Please widen your price, rating, category, or location filter selection.</p>
             </div>
             \"\"\"))
@@ -708,7 +956,7 @@ def render_kpis(f_df):
 
 # --- RENDER TAB 1: EDA ---
 def render_tab1(f_df):
-    out_tab1.clear_output(wait=False)
+    out_tab1.clear_output(wait=True)
     with out_tab1:
         if len(f_df) == 0:
             display(HTML("<div class='empty-state-box'>No data available for current filter selection.</div>"))
@@ -744,7 +992,7 @@ def render_tab1(f_df):
         ), row=1, col=2)
         fig_r1.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_r1.update_layout(height=350, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_r1.show(config=PLOTLY_CONFIG)
+        display(fig_r1)
         
         # Row 2: Customer Rating Distribution & Category Success
         fig_r2 = make_subplots(
@@ -772,7 +1020,7 @@ def render_tab1(f_df):
         ), row=1, col=2)
         fig_r2.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_r2.update_layout(height=350, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_r2.show(config=PLOTLY_CONFIG)
+        display(fig_r2)
         
         # Row 3: Hotels per Location (Top 15) & Price vs Review Count
         fig_r3 = make_subplots(
@@ -801,7 +1049,7 @@ def render_tab1(f_df):
         fig_r3.update_yaxes(title_text="Price (₹)", row=1, col=2)
         fig_r3.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_r3.update_layout(height=400, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_r3.show(config=PLOTLY_CONFIG)
+        display(fig_r3)
         
         # Row 4: Amenity Availability & Success Difference
         fig_r4 = make_subplots(
@@ -831,7 +1079,7 @@ def render_tab1(f_df):
         ), row=1, col=2)
         fig_r4.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_r4.update_layout(height=420, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_r4.show(config=PLOTLY_CONFIG)
+        display(fig_r4)
         
         # Row 5: Amenity Count by Success & Correlation Matrix
         fig_r5 = make_subplots(
@@ -855,11 +1103,11 @@ def render_tab1(f_df):
         ), row=1, col=2)
         fig_r5.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_r5.update_layout(height=360, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_r5.show(config=PLOTLY_CONFIG)
+        display(fig_r5)
 
 # --- RENDER TAB 2: MODEL RESULTS ---
 def render_tab2(f_df):
-    out_tab2.clear_output(wait=False)
+    out_tab2.clear_output(wait=True)
     with out_tab2:
         # Apply filters to test set
         test_indices = X_test.index.intersection(f_df.index)
@@ -867,7 +1115,7 @@ def render_tab2(f_df):
         
         display(HTML(f\"\"\"
         <div class="model-champion-card">
-            <div style="font-size:16px; font-weight:700; margin-bottom:4px;">🏆 Selected Champion Model: Tuned Random Forest Classifier</div>
+            <div style="font-size:16px; font-weight:700; margin-bottom:4px;">Selected Champion Model: Tuned Random Forest Classifier</div>
             <div style="font-size:13px;">
                 <b>Hyperparameters:</b> 300 Trees | max_depth=10 | min_samples_split=5 | class_weight='balanced' | 21 Predictors.<br>
                 <b>Full Test Set Benchmark:</b> Accuracy <b>81.34%</b> | Macro Precision <b>0.6777</b> | Macro Recall <b>0.6443</b> | Macro-F1 <b>0.6571</b> | Weighted-F1 <b>0.8037</b> | ROC-AUC <b>0.7072</b>.
@@ -886,7 +1134,7 @@ def render_tab2(f_df):
         if n_test_sub < 50:
             display(HTML(f\"\"\"
             <div class="warning-badge">
-                ⚠️ <b>Sample Size Warning:</b> The current filter selection contains only <b>{n_test_sub}</b> test hotels (< 50 threshold).
+                <b>Sample Size Notice:</b> The current filter selection contains only <b>{n_test_sub}</b> test hotels (< 50 threshold).
                 Performance metrics computed on small subsets exhibit high variance and may not generalize.
             </div>
             \"\"\"))
@@ -897,7 +1145,7 @@ def render_tab2(f_df):
         if single_class:
             display(HTML(f\"\"\"
             <div class="warning-badge">
-                ⚠️ <b>Single Class Warning:</b> Filtered test set contains only class <b>{y_test_sub.iloc[0]}</b>.
+                <b>Single Class Notice:</b> Filtered test set contains only class <b>{y_test_sub.iloc[0]}</b>.
                 Precision, recall, macro metrics, and ROC-AUC cannot be computed.
             </div>
             \"\"\"))
@@ -957,7 +1205,7 @@ def render_tab2(f_df):
             title=dict(text="Model Performance Comparison on Current Test Subset", x=0.01, xanchor="left", font=dict(size=14, color="#1e293b")),
             barmode="group", height=320, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white"
         )
-        fig_cmp.show(config=PLOTLY_CONFIG)
+        display(fig_cmp)
         
         if not single_class:
             # Side-by-side Confusion Matrices
@@ -975,7 +1223,7 @@ def render_tab2(f_df):
                 ), row=1, col=idx)
             fig_cm.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
             fig_cm.update_layout(height=280, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-            fig_cm.show(config=PLOTLY_CONFIG)
+            display(fig_cm)
             
             # ROC Curves & Top 15 Feature Importances
             fig_roc_imp = make_subplots(
@@ -998,35 +1246,96 @@ def render_tab2(f_df):
             ), row=1, col=2)
             fig_roc_imp.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
             fig_roc_imp.update_layout(height=400, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-            fig_roc_imp.show(config=PLOTLY_CONFIG)
+            display(fig_roc_imp)
 
-# --- RENDER TAB 3: TEXT MINING ---
+# --- RENDER TAB 3: TEXT MINING [DYNAMIC RECALCULATION] ---
+def render_tm_reviews_table(sub_revs):
+    out_tm_reviews.clear_output(wait=True)
+    with out_tm_reviews:
+        query = w_tm_search.value.strip().lower()
+        disp_revs = sub_revs
+        if query:
+            m_text = disp_revs["text_light"].fillna("").str.lower().str.contains(query, regex=False)
+            m_hotel = disp_revs["hotel_name"].fillna("").str.lower().str.contains(query, regex=False)
+            disp_revs = disp_revs[m_text | m_hotel]
+            
+        n_match = len(disp_revs)
+        page_size = 15
+        total_pages = max(1, (n_match + page_size - 1) // page_size)
+        curr_page = max(0, min(tm_page_state["page"], total_pages - 1))
+        tm_page_state["page"] = curr_page
+        
+        lbl_tm_page.value = f"<span style='font-size:12.5px; color:#475569;'>Page <b>{curr_page+1}</b> of <b>{total_pages}</b> ({n_match:,} reviews)</span>"
+        btn_tm_prev.disabled = (curr_page == 0)
+        btn_tm_next.disabled = (curr_page >= total_pages - 1)
+        
+        if n_match == 0:
+            display(HTML("<div style='padding:15px; color:#64748b; font-size:13px; text-align:center;'>No reviews match search term.</div>"))
+            return
+            
+        start_idx = curr_page * page_size
+        end_idx = min(start_idx + page_size, n_match)
+        page_df = disp_revs.iloc[start_idx:end_idx]
+        
+        thtml = "<table class='dataset-table' style='font-size:12px; margin-top:10px;'>"
+        thtml += "<thead><tr><th style='width:22%;'>Hotel Name</th><th style='width:12%;'>Location</th><th style='width:12%;'>Category</th><th style='width:8%; text-align:center;'>Rating</th><th style='width:12%; text-align:center;'>VADER Sentiment</th><th>Review Text Excerpt</th></tr></thead><tbody>"
+        
+        for _, r in page_df.iterrows():
+            sent = r["vader_sentiment"]
+            b_class = "badge-vader-pos" if sent == "Positive" else ("badge-vader-neg" if sent == "Negative" else "badge-vader-neu")
+            thtml += f"<tr><td style='font-weight:600;'>{r['hotel_name']}</td><td>{r['analysis_location']}</td><td>{r['hotel_category_clean']}</td><td style='text-align:center;'>★ {r['review_rating_5']:.1f}</td><td style='text-align:center;'><span class='{b_class}'>{sent}</span></td><td style='color:#334155; line-height:1.4;'>{r['text_light']}</td></tr>"
+            
+        thtml += "</tbody></table>"
+        display(HTML(thtml))
+
 def render_tab3(f_df):
-    out_tab3.clear_output(wait=False)
+    out_tab3.clear_output(wait=True)
     with out_tab3:
-        # Filter review level dataset based on real hotels matching filters
-        real_ids = set(f_df[f_df["data_type"] == "Real"]["hotel_id"])
-        sub_revs = rev_sentiment_df[rev_sentiment_df["hotel_id"].isin(real_ids)]
+        # 1. Determine review subset
+        is_unfiltered = (len(f_df) == len(clean_hotels_df))
+        if is_unfiltered:
+            sub_revs = rev_sentiment_df
+            sub_idx = np.arange(len(rev_sentiment_df))
+            real_ids = set(clean_hotels_df[clean_hotels_df["data_type"] == "Real"]["hotel_id"])
+        else:
+            real_ids = set(f_df[f_df["data_type"] == "Real"]["hotel_id"])
+            sub_revs = rev_sentiment_df[rev_sentiment_df["hotel_id"].isin(real_ids)]
+            sub_idx = sub_revs.index.values
+            
+        n_rev = len(sub_revs)
+        n_real = len(real_ids)
         
         display(HTML(f\"\"\"
         <div class="tab-note-banner">
-            <b>Filter Applicability:</b> Text mining covers <b>Real Hotels only</b> ({len(real_ids):,} matched hotels, {len(sub_revs):,} reviews).<br>
-            Charts marked <b>[Dynamic]</b> respond to Location, Category, Rating, and Price. Charts marked <b>[Static Precomputed]</b> represent the corpus-wide findings.
+            <b>Filter Applicability: [Dynamic]</b> Text mining covers <b>Real Hotels only</b> ({n_real:,} matched hotels, {n_rev:,} reviews).<br>
+            All charts, metrics, confusion matrices, pain points, themes, aspect sentiments, word frequencies, word clouds, and key takeaways dynamically recompute from matching reviews.
         </div>
         \"\"\"))
         
-        if len(sub_revs) == 0:
-            display(HTML("<div class='empty-state-box'>No real hotel reviews match the current filter selection.</div>"))
+        if n_rev == 0:
+            display(HTML(\"\"\"
+            <div class="empty-state-box">
+                <h3 style="color:#0f172a; margin-bottom:6px;">No Real Hotel Reviews Match Filter Selection</h3>
+                <p style="color:#64748b; font-size:13px; margin:0;">Please adjust your location, category, rating, or price filters to include real properties with customer reviews.</p>
+            </div>
+            \"\"\"))
             return
             
-        # Row 1: Dynamic VADER Sentiment Distribution & Rating Agreement
+        if n_rev < 100:
+            display(HTML(f\"\"\"
+            <div class="warning-badge">
+                <b>Sample Size Notice:</b> Only <b>{n_rev}</b> reviews match current filters (< 100 threshold).
+                Metrics and sentiment percentages may exhibit higher variance on small sample sizes.
+            </div>
+            \"\"\"))
+            
+        # Row 1: Dynamic VADER Sentiment Donut & Star Rating vs VADER
         fig_tm1 = make_subplots(
             rows=1, cols=2,
             horizontal_spacing=0.18,
-            subplot_titles=("VADER Sentiment Distribution", "Star Rating vs. VADER Sentiment"),
+            subplot_titles=("VADER Sentiment Distribution [Dynamic]", "Star Rating vs. VADER Sentiment [Dynamic]"),
             specs=[[{"type": "domain"}, {"type": "xy"}]]
         )
-        
         v_counts = sub_revs["vader_sentiment"].value_counts().reindex(["Positive", "Neutral", "Negative"]).fillna(0)
         fig_tm1.add_trace(go.Pie(
             labels=v_counts.index, values=v_counts.values, hole=0.55,
@@ -1036,118 +1345,219 @@ def render_tab3(f_df):
         ct = pd.crosstab(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"]).reindex(
             index=["Negative", "Neutral", "Positive"], columns=["Negative", "Neutral", "Positive"]
         ).fillna(0)
-        
         for col_name, c_color in [("Positive", "#10b981"), ("Neutral", "#94a3b8"), ("Negative", "#ef4444")]:
             fig_tm1.add_trace(go.Bar(
                 x=ct.index, y=ct[col_name], name=f"VADER {col_name}", marker_color=c_color
             ), row=1, col=2)
-            
         fig_tm1.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_tm1.update_layout(height=350, barmode="stack", margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_tm1.show(config=PLOTLY_CONFIG)
+        display(fig_tm1)
         
-        # Row 2: Customer Pain Points & Positive Themes [Static Precomputed]
-        pain_df = pd.read_csv(os.path.join(TEXT_MINING_DIR, "pain_points.csv"))
-        theme_df = pd.read_csv(os.path.join(TEXT_MINING_DIR, "theme_sentiment.csv"))
+        # Row 2: Customer Pain Points & Experience Themes [Dynamic]
+        neg_sub_mask = (sub_revs["vader_sentiment"] == "Negative").values
+        neg_sub_idx = sub_idx[neg_sub_mask]
+        n_neg = len(neg_sub_idx)
+        
+        pain_res = []
+        for k, bool_arr in pain_matrix.items():
+            cnt = int(bool_arr[neg_sub_idx].sum()) if n_neg > 0 else 0
+            pct = round(cnt / n_neg * 100, 1) if n_neg > 0 else 0.0
+            pain_res.append({"Pain Point": k, "Negative Mentions": cnt, "% of negative": pct})
+        pain_df = pd.DataFrame(pain_res).sort_values("Negative Mentions", ascending=True).reset_index(drop=True)
+        
+        vader_arr = sub_revs["vader_sentiment"].values
+        theme_res = []
+        for k, bool_arr in theme_matrix.items():
+            sub_bool = bool_arr[sub_idx]
+            tot = int(sub_bool.sum())
+            pos = int(((sub_bool) & (vader_arr == "Positive")).sum())
+            neg = int(((sub_bool) & (vader_arr == "Negative")).sum())
+            neu = int(((sub_bool) & (vader_arr == "Neutral")).sum())
+            theme_res.append({
+                "Theme": k, "Total Mentions": tot, "Positive Mentions": pos, "Negative Mentions": neg,
+                "% Positive": round(pos / tot * 100, 1) if tot > 0 else 0.0,
+                "% Negative": round(neg / tot * 100, 1) if tot > 0 else 0.0
+            })
+        if len(theme_res) == 0:
+            theme_df = pd.DataFrame(columns=["Theme", "Total Mentions", "Positive Mentions", "Negative Mentions", "% Positive", "% Negative"])
+        else:
+            theme_df = pd.DataFrame(theme_res).sort_values("Total Mentions", ascending=False).reset_index(drop=True)
         
         fig_tm2 = make_subplots(
             rows=1, cols=2,
             horizontal_spacing=0.18,
-            subplot_titles=("Top Customer Pain Points", "Experience Themes (% Positive)")
+            subplot_titles=("Top Customer Pain Points [Dynamic]", "Experience Themes (% Positive) [Dynamic]")
         )
-        
+        top_pain_display = pain_df.tail(8)
         fig_tm2.add_trace(go.Bar(
-            y=pain_df["Pain Point"][::-1], x=pain_df["Negative Mentions"][::-1], orientation="h",
-            marker_color="#ef4444", text=pain_df["Negative Mentions"][::-1], textposition="inside", showlegend=False
+            y=top_pain_display["Pain Point"], x=top_pain_display["Negative Mentions"], orientation="h",
+            marker_color="#ef4444", text=[f"{m:,} ({p:.1f}%)" for m, p in zip(top_pain_display["Negative Mentions"], top_pain_display["% of negative"])],
+            textposition="inside", showlegend=False
         ), row=1, col=1)
         
-        pos_themes = theme_df[theme_df["Total Mentions"] >= 500].sort_values("% Positive", ascending=True)
-        fig_tm2.add_trace(go.Bar(
-            y=pos_themes["Theme"], x=pos_themes["% Positive"], orientation="h",
-            marker_color="#10b981", text=[f"{v:.1f}%" for v in pos_themes["% Positive"]], textposition="inside", showlegend=False
-        ), row=1, col=2)
+        if is_unfiltered:
+            pos_themes = theme_df[theme_df["Total Mentions"] >= 500].sort_values("% Positive", ascending=True)
+        else:
+            pos_themes = theme_df[theme_df["Total Mentions"] >= 1].sort_values("% Positive", ascending=True)
+            if len(pos_themes) > 10:
+                pos_themes = pos_themes.tail(10)
+                
+        if len(pos_themes) > 0:
+            fig_tm2.add_trace(go.Bar(
+                y=pos_themes["Theme"], x=pos_themes["% Positive"], orientation="h",
+                marker_color="#10b981", text=[f"{v:.1f}%" for v in pos_themes["% Positive"]], textposition="inside", showlegend=False
+            ), row=1, col=2)
+        else:
+            fig_tm2.add_annotation(text="No theme mentions in selection", xref="x2", yref="y2", showarrow=False, font=dict(size=12, color="#64748b"), row=1, col=2)
         fig_tm2.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_tm2.update_layout(height=380, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_tm2.show(config=PLOTLY_CONFIG)
+        display(fig_tm2)
         
-        # Row 3: Word Frequency & Bigrams [Static Precomputed]
-        words_df = pd.read_csv(os.path.join(TEXT_MINING_DIR, "word_frequency_top100.csv")).head(15).sort_values("frequency", ascending=True)
-        bi_df = pd.read_csv(os.path.join(TEXT_MINING_DIR, "bigrams_top50.csv")).head(10).sort_values("frequency", ascending=True)
+        # Row 3: Word Frequency & Bigrams [Dynamic]
+        all_toks = [w for i in sub_idx for w in tokens_list[i]]
+        w_freq = Counter(all_toks)
+        top_words = [(w, c) for w, c in w_freq.most_common(40) if w not in FILLER][:15]
+        top_words_df = pd.DataFrame(top_words, columns=["word", "frequency"]).sort_values("frequency", ascending=True).reset_index(drop=True)
+        
+        all_bis = [b for i in sub_idx for b in bigrams_list[i]]
+        bi_freq = Counter(all_bis)
+        top_bis = bi_freq.most_common(10)
+        top_bis_df = pd.DataFrame(top_bis, columns=["bigram", "frequency"]).sort_values("frequency", ascending=True).reset_index(drop=True)
         
         fig_tm3 = make_subplots(
             rows=1, cols=2,
             horizontal_spacing=0.18,
-            subplot_titles=("Top 15 Frequent Words", "Top 10 Bigrams in Reviews")
+            subplot_titles=("Top 15 Frequent Words [Dynamic]", "Top 10 Bigrams in Reviews [Dynamic]")
         )
         fig_tm3.add_trace(go.Bar(
-            y=words_df["word"], x=words_df["frequency"], orientation="h",
-            marker_color="#3b82f6", text=words_df["frequency"], textposition="inside", showlegend=False
+            y=top_words_df["word"], x=top_words_df["frequency"], orientation="h",
+            marker_color="#3b82f6", text=top_words_df["frequency"], textposition="inside", showlegend=False
         ), row=1, col=1)
-        
         fig_tm3.add_trace(go.Bar(
-            y=bi_df["bigram"], x=bi_df["frequency"], orientation="h",
-            marker_color="#8b5cf6", text=bi_df["frequency"], textposition="inside", showlegend=False
+            y=top_bis_df["bigram"], x=top_bis_df["frequency"], orientation="h",
+            marker_color="#8b5cf6", text=top_bis_df["frequency"], textposition="inside", showlegend=False
         ), row=1, col=2)
         fig_tm3.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_tm3.update_layout(height=380, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_tm3.show(config=PLOTLY_CONFIG)
+        display(fig_tm3)
         
-        # Row 4: Amenity-Related Sentiment & Evaluation Metrics
-        amen_sent_df = pd.read_csv(os.path.join(TEXT_MINING_DIR, "amenity_mention_sentiment.csv")).sort_values("Positive %", ascending=True)
-        cm_tm = pd.read_csv(os.path.join(TEXT_MINING_DIR, "confusion_matrix.csv"), index_col=0)
+        # Row 4: Amenity Aspect Sentiment & Confusion Matrix [Dynamic]
+        amen_res = []
+        for k, lab_arr in amenity_matrix.items():
+            sub_lab = lab_arr[sub_idx]
+            tot = int((sub_lab > 0).sum())
+            if tot >= (10 if is_unfiltered else 1):
+                pos = int((sub_lab == 1).sum())
+                neu = int((sub_lab == 2).sum())
+                neg = int((sub_lab == 3).sum())
+                amen_res.append({
+                    "Amenity": k, "Mentions": tot,
+                    "Positive %": round(pos / tot * 100, 1),
+                    "Neutral %": round(neu / tot * 100, 1),
+                    "Negative %": round(neg / tot * 100, 1)
+                })
+        if len(amen_res) == 0:
+            amen_sent_df = pd.DataFrame(columns=["Amenity", "Mentions", "Positive %", "Neutral %", "Negative %"])
+        else:
+            amen_sent_df = pd.DataFrame(amen_res).sort_values("Positive %", ascending=True).reset_index(drop=True)
+        
+        cm_tm = confusion_matrix(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"], labels=["Negative", "Neutral", "Positive"])
         
         fig_tm4 = make_subplots(
             rows=1, cols=2,
             horizontal_spacing=0.18,
-            subplot_titles=("Amenity Mention Sentiment (% Positive)", "VADER vs. Rating Confusion Matrix"),
+            subplot_titles=("Amenity Aspect Sentiment (% Positive) [Dynamic]", "VADER vs. Rating Confusion Matrix [Dynamic]"),
             specs=[[{"type": "xy"}, {"type": "heatmap"}]]
         )
-        fig_tm4.add_trace(go.Bar(
-            y=amen_sent_df["Amenity"], x=amen_sent_df["Positive %"], orientation="h",
-            marker_color="#06b6d4", text=[f"{v:.1f}%" for v in amen_sent_df["Positive %"]], textposition="inside", showlegend=False
-        ), row=1, col=1)
-        
+        if len(amen_sent_df) > 0:
+            fig_tm4.add_trace(go.Bar(
+                y=amen_sent_df["Amenity"], x=amen_sent_df["Positive %"], orientation="h",
+                marker_color="#06b6d4", text=[f"{v:.1f}%" for v in amen_sent_df["Positive %"]], textposition="inside", showlegend=False
+            ), row=1, col=1)
+        else:
+            fig_tm4.add_annotation(text="No amenity mentions in selection", xref="x1", yref="y1", showarrow=False, font=dict(size=12, color="#64748b"), row=1, col=1)
         fig_tm4.add_trace(go.Heatmap(
-            z=cm_tm.values, x=cm_tm.columns, y=cm_tm.index,
-            colorscale="Blues", text=cm_tm.values, texttemplate="%{text}", showscale=False
+            z=cm_tm, x=["Pred Neg", "Pred Neu", "Pred Pos"], y=["True Neg", "True Neu", "True Pos"],
+            colorscale="Blues", text=cm_tm, texttemplate="%{text}", showscale=False
         ), row=1, col=2)
         fig_tm4.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_tm4.update_layout(height=360, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_tm4.show(config=PLOTLY_CONFIG)
+        display(fig_tm4)
         
-        # Row 5: Sentiment Evaluation Metrics Bar
-        eval_metrics_df = pd.read_csv(os.path.join(TEXT_MINING_DIR, "sentiment_evaluation_metrics.csv"))
+        # Row 5: Dynamic Sentiment Evaluation Metrics Bar
+        acc = accuracy_score(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"])
+        try:
+            prec_m = precision_score(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"], average="macro", zero_division=0)
+            rec_m = recall_score(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"], average="macro", zero_division=0)
+            mf1 = f1_score(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"], average="macro", zero_division=0)
+            wf1 = f1_score(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"], average="weighted", zero_division=0)
+            kappa = cohen_kappa_score(sub_revs["rating_sentiment"], sub_revs["vader_sentiment"])
+            if np.isnan(kappa): kappa = 0.0
+        except Exception:
+            prec_m, rec_m, mf1, wf1, kappa = 0.0, 0.0, 0.0, 0.0, 0.0
+            
+        eval_items = [
+            ("Accuracy", acc), ("Weighted F1", wf1), ("Cohen's Kappa", kappa),
+            ("Macro Precision", prec_m), ("Macro Recall", rec_m), ("Macro F1", mf1)
+        ]
+        eval_m_df = pd.DataFrame(eval_items, columns=["Metric", "Value"])
+        
         fig_eval = go.Figure(go.Bar(
-            y=eval_metrics_df["Metric"][::-1], x=eval_metrics_df["Value"][::-1], orientation="h",
-            marker_color="#10b981", text=[f"{v:.4f}" for v in eval_metrics_df["Value"][::-1]], textposition="inside"
+            y=eval_m_df["Metric"][::-1], x=eval_m_df["Value"][::-1], orientation="h",
+            marker_color="#10b981", text=[f"{v:.4f}" for v in eval_m_df["Value"][::-1]], textposition="inside"
         ))
         fig_eval.update_layout(
-            title=dict(text="Sentiment Evaluation Metrics vs Star Rating Reference", x=0.01, xanchor="left", font=dict(size=14, color="#1e293b")),
+            title=dict(text="Sentiment Evaluation Metrics vs Star Rating Reference [Dynamic]", x=0.01, xanchor="left", font=dict(size=14, color="#1e293b")),
             height=280, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white"
         )
-        fig_eval.show(config=PLOTLY_CONFIG)
+        display(fig_eval)
         
-        # Row 6: Word Cloud Image Display
-        wc_path = os.path.join(TEXT_MINING_DIR, "word_cloud_clean.png")
-        if os.path.exists(wc_path):
-            display(HTML("<div style='font-size:14px; font-weight:600; margin: 15px 0 8px 0;'>Corpus Clean Word Cloud [Static Precomputed]</div>"))
-            display(Image(filename=wc_path, width=750))
+        # Row 6: Dynamic Word Cloud
+        cloud_freq = {w: f for w, f in w_freq.items() if w not in GENERIC and w not in NEGATIONS and w not in FILLER}
+        if cloud_freq:
+            display(HTML("<div style='font-size:14px; font-weight:600; margin: 18px 0 8px 0; color:#0f172a;'>Dynamic Review Word Cloud [Dynamic]</div>"))
+            wc = WordCloud(width=800, height=380, background_color="white", colormap="viridis", max_words=80, collocations=False, random_state=42).generate_from_frequencies(cloud_freq)
+            img_buf = io.BytesIO()
+            wc.to_image().save(img_buf, format="PNG")
+            b64_str = base64.b64encode(img_buf.getvalue()).decode("utf-8")
+            display(HTML(f"<img src='data:image/png;base64,{b64_str}' style='max-width:100%; width:750px; height:auto; border-radius:8px; border:1px solid #cbd5e1;' />"))
             
-        # Summary Takeaways
-        display(HTML(\"\"\"
-        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-top:20px;">
-            <h4 style="margin:0 0 8px 0; color:#1e293b;">Key Text Mining Takeaways:</h4>
-            <ul style="margin:0; padding-left:20px; font-size:13px; color:#475569; line-height:1.6;">
-                <li><b>Overall Sentiment:</b> 76.3% of reviews are VADER positive, 18.6% negative, 5.1% neutral. VADER achieves <b>87.37%</b> agreement with customer star ratings (92.73% on clear binary signals).</li>
-                <li><b>Primary Pain Points:</b> <i>Cleanliness / hygiene</i> is the #1 complaint driver (30.7% of negative reviews), followed by <i>Rude / unhelpful staff</i> (20.4%) and <i>Poor maintenance</i> (15.3%).</li>
-                <li><b>Primary Delight Drivers:</b> <i>Location</i> (84.9% positive), <i>Food</i> (82.9% positive), and <i>Breakfast</i> (79.3% positive) drive the highest customer satisfaction.</li>
+        # Row 7: Dynamic Key Text Mining Takeaways (100% computed from sub_revs)
+        pos_p = (sub_revs["vader_sentiment"] == "Positive").mean() * 100
+        neg_p = (sub_revs["vader_sentiment"] == "Negative").mean() * 100
+        neu_p = (sub_revs["vader_sentiment"] == "Neutral").mean() * 100
+        
+        top_pain_sorted = pain_df.sort_values("Negative Mentions", ascending=False).reset_index(drop=True)
+        p1_str = f"<i>{top_pain_sorted.iloc[0]['Pain Point']}</i> ({top_pain_sorted.iloc[0]['% of negative']:.1f}% of negative reviews)" if len(top_pain_sorted) > 0 and n_neg > 0 else "N/A"
+        p2_str = f"<i>{top_pain_sorted.iloc[1]['Pain Point']}</i> ({top_pain_sorted.iloc[1]['% of negative']:.1f}%)" if len(top_pain_sorted) > 1 and n_neg > 0 else "N/A"
+        p3_str = f"<i>{top_pain_sorted.iloc[2]['Pain Point']}</i> ({top_pain_sorted.iloc[2]['% of negative']:.1f}%)" if len(top_pain_sorted) > 2 and n_neg > 0 else "N/A"
+        
+        theme_sorted = theme_df[theme_df["Total Mentions"] >= (500 if is_unfiltered else 1)].sort_values("% Positive", ascending=False).reset_index(drop=True)
+        t1_str = f"<i>{theme_sorted.iloc[0]['Theme']}</i> ({theme_sorted.iloc[0]['% Positive']:.1f}% positive)" if len(theme_sorted) > 0 else "N/A"
+        t2_str = f"<i>{theme_sorted.iloc[1]['Theme']}</i> ({theme_sorted.iloc[1]['% Positive']:.1f}% positive)" if len(theme_sorted) > 1 else "N/A"
+        t3_str = f"<i>{theme_sorted.iloc[2]['Theme']}</i> ({theme_sorted.iloc[2]['% Positive']:.1f}% positive)" if len(theme_sorted) > 2 else "N/A"
+        
+        display(HTML(f\"\"\"
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-left:4px solid #0284c7; border-radius:8px; padding:16px 20px; margin-top:20px;">
+            <h4 style="margin:0 0 8px 0; color:#0f172a; font-size:14px;">Key Text Mining Takeaways [Dynamic Recomputed]:</h4>
+            <ul style="margin:0; padding-left:20px; font-size:13px; color:#334155; line-height:1.6;">
+                <li><b>Overall Sentiment:</b> <b>{pos_p:.1f}%</b> of reviews are VADER positive, <b>{neg_p:.1f}%</b> negative, <b>{neu_p:.1f}%</b> neutral. VADER achieves <b>{acc*100:.2f}%</b> agreement with customer star ratings (Macro-F1: <b>{mf1:.4f}</b>, Cohen's Kappa: <b>{kappa:.4f}</b>).</li>
+                <li><b>Primary Pain Points:</b> {p1_str} is the top complaint driver, followed by {p2_str} and {p3_str}.</li>
+                <li><b>Primary Delight Drivers:</b> {t1_str}, {t2_str}, and {t3_str} drive the highest customer satisfaction.</li>
             </ul>
         </div>
         \"\"\"))
+        
+        # Row 8: Task 4 Review Explorer Table [Dynamic]
+        display(HTML("<div style='font-size:14px; font-weight:600; margin:24px 0 8px 0; color:#0f172a;'>Filtered Reviews Explorer [Dynamic]</div>"))
+        controls_tm_row = widgets.HBox([w_tm_search, btn_tm_prev, btn_tm_next, lbl_tm_page], layout=widgets.Layout(align_items="center", grid_gap="10px"))
+        display(controls_tm_row)
+        display(out_tm_reviews)
+        render_tm_reviews_table(sub_revs)
 
 # --- RENDER TAB 4: ASSOCIATION RULES ---
 def render_tab4(f_df):
-    out_tab4.clear_output(wait=False)
+    out_tab4.clear_output(wait=True)
     with out_tab4:
         display(HTML(\"\"\"
         <div class="tab-note-banner">
@@ -1172,7 +1582,7 @@ def render_tab4(f_df):
             if n_tx < 50:
                 display(HTML(f\"\"\"
                 <div class="warning-badge">
-                    ⚠️ <b>Sample Size Warning:</b> Only <b>{n_tx}</b> hotels available in filtered transaction matrix (< 50 threshold).
+                    <b>Sample Size Notice:</b> Only <b>{n_tx}</b> hotels available in filtered transaction matrix (< 50 threshold).
                     Showing precomputed rules to avoid unrepresentative patterns.
                 </div>
                 \"\"\"))
@@ -1223,7 +1633,7 @@ def render_tab4(f_df):
             title=dict(text="Top 15 Standardized Amenities by Overall Support (%)", x=0.01, xanchor="left", font=dict(size=14, color="#1e293b")),
             height=360, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white"
         )
-        fig_supp.show(config=PLOTLY_CONFIG)
+        display(fig_supp)
         
         if len(active_rules) == 0:
             display(HTML("<div class='empty-state-box'>No association rules match current thresholds. Try reducing minimum support, confidence or lift.</div>"))
@@ -1255,7 +1665,7 @@ def render_tab4(f_df):
         fig_ar.update_yaxes(title_text="Confidence (%)", row=1, col=2)
         fig_ar.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
         fig_ar.update_layout(height=400, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
-        fig_ar.show(config=PLOTLY_CONFIG)
+        display(fig_ar)
         
         # Display Ranked Table
         display_tbl = active_rules[["Rule", "support", "confidence", "lift"]].copy()
@@ -1284,6 +1694,130 @@ def render_tab4(f_df):
         </div>
         \"\"\"))
 
+
+# --- RENDER TAB 5: FINAL DATASET TABLE & DUAL CSV DOWNLOAD (TASK 2) ---
+def render_tab5(f_df):
+    out_tab5.clear_output(wait=True)
+    with out_tab5:
+        display(HTML(f\"\"\"
+        <div class="tab-note-banner">
+            <b>Final Project Dataset:</b> Displaying properties matching current global filters.<br>
+            Explore the final project dataset below (excluding geographic coordinates) with interactive text search, paging, and dual CSV download capabilities.
+        </div>
+        \"\"\"))
+        
+        # Display dataset table
+        query = w_tab5_search.value.strip().lower()
+        disp_df = f_df
+        if query:
+            disp_df = disp_df[disp_df["hotel_name"].fillna("").str.lower().str.contains(query, regex=False)]
+            
+        n_match = len(disp_df)
+        page_size = 25
+        total_pages = max(1, (n_match + page_size - 1) // page_size)
+        curr_page = max(0, min(tab5_page_state["page"], total_pages - 1))
+        tab5_page_state["page"] = curr_page
+        
+        lbl_tab5_page.value = f"<span style='font-size:13px; color:#475569;'>Page <b>{curr_page+1}</b> of <b>{total_pages}</b> ({n_match:,} matching hotels)</span>"
+        btn_tab5_prev.disabled = (curr_page == 0)
+        btn_tab5_next.disabled = (curr_page >= total_pages - 1)
+        
+        # Controls Row
+        dl_row = widgets.HBox([
+            w_tab5_search,
+            btn_tab5_prev, btn_tab5_next, lbl_tab5_page,
+            widgets.HBox([btn_download_filt, btn_download_full], layout=widgets.Layout(grid_gap="10px", margin="0 0 0 auto"))
+        ], layout=widgets.Layout(align_items="center", grid_gap="10px", margin="0 0 14px 0"))
+        
+        display(dl_row)
+        display(out_download)
+        
+        if n_match == 0:
+            display(HTML(\"\"\"
+            <div class="empty-state-box">
+                <h3 style="color:#0f172a; margin-bottom:6px;">No Hotels Match Filter / Search Criteria</h3>
+                <p style="color:#64748b; font-size:13px; margin:0;">Please adjust your global filters or clear the hotel name search query.</p>
+            </div>
+            \"\"\"))
+            return
+            
+        start_idx = curr_page * page_size
+        end_idx = min(start_idx + page_size, n_match)
+        page_hotels = disp_df.iloc[start_idx:end_idx]
+        
+        # Readable Table (Explicitly EXCLUDES latitude and longitude)
+        tbl_html = "<table class='dataset-table'>"
+        tbl_html += "<thead><tr><th>Hotel Name</th><th>Location</th><th>Category</th><th>Data Type</th><th style='text-align:right;'>Price (₹)</th><th style='text-align:center;'>Rating</th><th style='text-align:right;'>Reviews</th><th style='text-align:center;'>Amenities</th><th style='text-align:center;'>Success Status</th></tr></thead><tbody>"
+        
+        for _, r in page_hotels.iterrows():
+            is_succ = int(r["success"]) == 1
+            badge = "<span class='status-badge-success'>1 (Successful)</span>" if is_succ else "<span class='status-badge-unsuccess'>0 (Not Successful)</span>"
+            tbl_html += f"<tr><td style='font-weight:600;'>{r['hotel_name']}</td><td>{r['location']}</td><td>{r['hotel_category']}</td><td>{r['data_type']}</td><td style='text-align:right;'>₹{r['price']:,.0f}</td><td style='text-align:center;'>★ {r['customer_rating']:.1f}</td><td style='text-align:right;'>{int(r['review_count']):,}</td><td style='text-align:center;'>{int(r['amenity_count'])}</td><td style='text-align:center;'>{badge}</td></tr>"
+            
+        tbl_html += "</tbody></table>"
+        display(HTML(tbl_html))
+
+# --- CSV DOWNLOAD HANDLERS (WORKS IN COLAB & LOCAL JUPYTER) ---
+def handle_download_filtered(b):
+    out_download.clear_output(wait=True)
+    with out_download:
+        f_df = get_filtered_hotels()
+        cols = ["hotel_name", "location", "hotel_category", "data_type", "price", "customer_rating", "review_count", "amenity_count", "success"]
+        export_df = f_df[cols].copy()
+        filename = "filtered_hotels.csv"
+        
+        if IN_COLAB:
+            from google.colab import files
+            export_df.to_csv(filename, index=False)
+            files.download(filename)
+            display(HTML(f"<div style='margin-top:6px; color:#059669; font-size:12.5px; font-weight:600;'>✓ Initiated Google Colab download for <b>{filename}</b> ({len(export_df):,} rows).</div>"))
+        else:
+            csv_str = export_df.to_csv(index=False)
+            b64 = base64.b64encode(csv_str.encode("utf-8")).decode("utf-8")
+            data_uri = f"data:text/csv;base64,{b64}"
+            display(HTML(f\"\"\"
+            <div style="margin-top:8px;">
+                <a id="auto_dl_filt" href="{data_uri}" download="{filename}" style="background:#0284c7; color:#ffffff; padding:6px 14px; border-radius:6px; font-size:12.5px; font-weight:600; text-decoration:none; display:inline-block;">
+                    ⬇ Download {filename} ({len(export_df):,} rows)
+                </a>
+                <script>
+                    var el = document.getElementById('auto_dl_filt');
+                    if (el) {{ el.click(); }}
+                </script>
+            </div>
+            \"\"\"))
+
+def handle_download_full(b):
+    out_download.clear_output(wait=True)
+    with out_download:
+        cols = ["hotel_name", "location", "hotel_category", "data_type", "price", "customer_rating", "review_count", "amenity_count", "success"]
+        export_df = clean_hotels_df[cols].copy()
+        filename = "full_final_dataset.csv"
+        
+        if IN_COLAB:
+            from google.colab import files
+            export_df.to_csv(filename, index=False)
+            files.download(filename)
+            display(HTML(f"<div style='margin-top:6px; color:#059669; font-size:12.5px; font-weight:600;'>✓ Initiated Google Colab download for <b>{filename}</b> ({len(export_df):,} rows).</div>"))
+        else:
+            csv_str = export_df.to_csv(index=False)
+            b64 = base64.b64encode(csv_str.encode("utf-8")).decode("utf-8")
+            data_uri = f"data:text/csv;base64,{b64}"
+            display(HTML(f\"\"\"
+            <div style="margin-top:8px;">
+                <a id="auto_dl_full" href="{data_uri}" download="{filename}" style="background:#0f172a; color:#ffffff; padding:6px 14px; border-radius:6px; font-size:12.5px; font-weight:600; text-decoration:none; display:inline-block;">
+                    ⬇ Download {filename} ({len(export_df):,} rows)
+                </a>
+                <script>
+                    var el = document.getElementById('auto_dl_full');
+                    if (el) {{ el.click(); }}
+                </script>
+            </div>
+            \"\"\"))
+
+btn_download_filt.on_click(handle_download_filtered)
+btn_download_full.on_click(handle_download_full)
+
 # --- MASTER UPDATE CALLBACK & EVENT DEBOUNCE ---
 is_updating = False
 
@@ -1300,6 +1834,7 @@ def update_dashboard(*args):
         render_tab2(f_df)
         render_tab3(f_df)
         render_tab4(f_df)
+        render_tab5(f_df)
     finally:
         is_updating = False
 
@@ -1312,11 +1847,16 @@ def reset_filters_action(b):
         w_price.value = [min_price, max_price]
         w_rating.value = [0.0, 5.0]
         w_datatype.value = "Both"
+        w_apriori_cohort.value = "All Mined Rules (Corpus-Wide)"
         w_apriori_supp.value = 0.05
         w_apriori_conf.value = 0.60
         w_apriori_lift.value = 2.0
         w_apriori_search.value = ""
         w_apriori_recompute.value = False
+        w_tab5_search.value = ""
+        tab5_page_state["page"] = 0
+        w_tm_search.value = ""
+        tm_page_state["page"] = 0
     finally:
         is_updating = False
     update_dashboard()
@@ -1324,18 +1864,19 @@ def reset_filters_action(b):
 btn_reset.on_click(reset_filters_action)
 
 # --- CONSTRUCT DASHBOARD TABS ---
-tabs = widgets.Tab(children=[out_tab1, out_tab2, out_tab3, tab4_container])
-tabs.set_title(0, "📊 1. EDA")
-tabs.set_title(1, "🤖 2. Models")
-tabs.set_title(2, "📝 3. Text Mining")
-tabs.set_title(3, "🔗 4. Association Rules")
+tabs = widgets.Tab(children=[out_tab1, out_tab2, out_tab3, tab4_container, out_tab5])
+tabs.set_title(0, "1. Overview & EDA")
+tabs.set_title(1, "2. Predictive Models")
+tabs.set_title(2, "3. Text Mining")
+tabs.set_title(3, "4. Association Rules")
+tabs.set_title(4, "5. Final Dataset")
 
 # Top Filter Panel Layout
-filter_row1 = widgets.HBox([w_location, w_category, w_datatype], layout=widgets.Layout(gap="20px", margin="0 0 10px 0"))
-filter_row2 = widgets.HBox([w_price, w_rating, btn_reset], layout=widgets.Layout(gap="20px", align_items="center"))
+filter_row1 = widgets.HBox([w_location, w_category, w_datatype], layout=widgets.Layout(grid_gap="20px", margin="0 0 10px 0"))
+filter_row2 = widgets.HBox([w_price, w_rating, btn_reset], layout=widgets.Layout(grid_gap="20px", align_items="center"))
 
 filter_box = widgets.VBox([
-    widgets.HTML("<div class='filter-title'>⚙️ Interactive Global Filters</div>"),
+    widgets.HTML("<div class='filter-title'>Interactive Global Filters</div>"),
     filter_row1,
     filter_row2,
     lbl_filter_summary
@@ -1363,11 +1904,19 @@ dashboard_view = widgets.VBox([
     tabs
 ], layout=widgets.Layout(max_width="1280px", margin="0 auto"))
 
-# Initial render
-update_dashboard()
+# Unbind any existing observers to guarantee zero duplicate callbacks on re-run
+for _w in [w_location, w_category, w_price, w_rating, w_datatype,
+           w_apriori_supp, w_apriori_conf, w_apriori_lift, w_apriori_search, w_apriori_recompute,
+           w_tab5_search, w_tm_search]:
+    try:
+        _w.unobserve_all()
+    except Exception:
+        pass
+
+# Display dashboard container so widgets have active DOM binding
 display(dashboard_view)
 
-# Wire observers AFTER initial display to prevent duplicate triggers during frontend widget initialization
+# Wire observers cleanly
 w_location.observe(update_dashboard, names="value")
 w_category.observe(update_dashboard, names="value")
 w_price.observe(update_dashboard, names="value")
@@ -1378,6 +1927,53 @@ w_apriori_conf.observe(update_dashboard, names="value")
 w_apriori_lift.observe(update_dashboard, names="value")
 w_apriori_search.observe(update_dashboard, names="value")
 w_apriori_recompute.observe(update_dashboard, names="value")
+
+# Perform initial render to populate Output widgets cleanly
+update_dashboard()
+
+# Observers for Tab 5 pagination and search
+def on_tab5_search_change(change):
+    tab5_page_state["page"] = 0
+    render_tab5(get_filtered_hotels())
+w_tab5_search.observe(on_tab5_search_change, names="value")
+
+def on_tab5_prev_click(b):
+    if tab5_page_state["page"] > 0:
+        tab5_page_state["page"] -= 1
+        render_tab5(get_filtered_hotels())
+btn_tab5_prev.on_click(on_tab5_prev_click)
+
+def on_tab5_next_click(b):
+    tab5_page_state["page"] += 1
+    render_tab5(get_filtered_hotels())
+btn_tab5_next.on_click(on_tab5_next_click)
+
+# Observers for Tab 3 Review Explorer
+def on_tm_search_change(change):
+    tm_page_state["page"] = 0
+    f_df = get_filtered_hotels()
+    real_ids = set(f_df[f_df["data_type"] == "Real"]["hotel_id"]) if len(f_df) < len(clean_hotels_df) else set(clean_hotels_df[clean_hotels_df["data_type"] == "Real"]["hotel_id"])
+    sub_revs = rev_sentiment_df if len(f_df) == len(clean_hotels_df) else rev_sentiment_df[rev_sentiment_df["hotel_id"].isin(real_ids)]
+    render_tm_reviews_table(sub_revs)
+w_tm_search.observe(on_tm_search_change, names="value")
+
+def on_tm_prev_click(b):
+    if tm_page_state["page"] > 0:
+        tm_page_state["page"] -= 1
+        f_df = get_filtered_hotels()
+        real_ids = set(f_df[f_df["data_type"] == "Real"]["hotel_id"]) if len(f_df) < len(clean_hotels_df) else set(clean_hotels_df[clean_hotels_df["data_type"] == "Real"]["hotel_id"])
+        sub_revs = rev_sentiment_df if len(f_df) == len(clean_hotels_df) else rev_sentiment_df[rev_sentiment_df["hotel_id"].isin(real_ids)]
+        render_tm_reviews_table(sub_revs)
+btn_tm_prev.on_click(on_tm_prev_click)
+
+def on_tm_next_click(b):
+    tm_page_state["page"] += 1
+    f_df = get_filtered_hotels()
+    real_ids = set(f_df[f_df["data_type"] == "Real"]["hotel_id"]) if len(f_df) < len(clean_hotels_df) else set(clean_hotels_df[clean_hotels_df["data_type"] == "Real"]["hotel_id"])
+    sub_revs = rev_sentiment_df if len(f_df) == len(clean_hotels_df) else rev_sentiment_df[rev_sentiment_df["hotel_id"].isin(real_ids)]
+    render_tm_reviews_table(sub_revs)
+btn_tm_next.on_click(on_tm_next_click)
+
 """
 
 # Add cells to notebook
