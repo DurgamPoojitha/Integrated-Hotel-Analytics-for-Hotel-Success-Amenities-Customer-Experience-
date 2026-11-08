@@ -40,12 +40,14 @@ This project investigates the determinants of hotel success across the Indian ho
 ```
 hotel-dashboard/
 ├── dashboard/
-│   ├── hotel_dashboard.ipynb          # Master interactive Jupyter notebook dashboard
+│   ├── hotel_dashboard_fixed.ipynb    # Current master interactive Jupyter notebook dashboard (6 tabs)
+│   ├── hotel_dashboard.ipynb          # Interactive Jupyter notebook dashboard
 │   ├── generate_dashboard_notebook.py  # Automated notebook compiler script
 │   ├── requirements.txt               # Complete Python package dependencies
 │   ├── run_stage_a.py                 # Teammate code executor & Stage A pipeline
+│   ├── verification_report_v3.md      # Quantitative evidence audit report for Tab 6 (19/19 checks passed)
 │   ├── verification_report_v2.md      # Exact data match verification audit report (100% exact baseline match)
-│   ├── test_dashboard_filters.py      # Automated test suite (8 suites: filters, text mining, tab 5)
+│   ├── test_dashboard_filters.py      # Automated test suite (9 suites: filters, text mining, tab 5, tab 6)
 │   ├── generate_screenshots.py        # Headless Chrome visual evidence snapshot generator
 │   ├── DOCUMENTATION.md               # Master technical and user documentation (this document)
 │   └── screenshots/                   # High-resolution visual evidence artifacts
@@ -59,7 +61,8 @@ hotel-dashboard/
 │       ├── tab3_text_mining.png       # Synced baseline text mining view
 │       ├── tab3_text_mining_after.png # Tab 3: Dynamic recomputation on Coimbatore 4-star reviews
 │       ├── tab4_association_rules.png # Tab 4: Apriori Association Rules with "Spa" filter active
-│       └── tab5_final_dataset.png     # Tab 5: Final Dataset table, search, paging, dual CSV download
+│       ├── tab5_final_dataset.png     # Tab 5: Final Dataset table, search, paging, dual CSV download
+│       └── tab6_insights_recommendations.png # Tab 6: Executive business insights & prioritized recommendations
 ├── data/
 │   ├── combined_real_synthetic_hotels.csv  # Cleaned base hotels corpus (4,551 usable)
 │   ├── text_mining_outputs/           # 36 Stage A text mining outputs (Poojitha)
@@ -215,13 +218,38 @@ Provides full transparency and interactive access to the final project dataset:
 
 ---
 
+#### G. Tab 6: Insights & Recommendations (Static Strategic Synthesis)
+Provides an executive summary synthesizing findings across all four analytical domains (EDA, Predictive Modeling, Review Text Mining, and Apriori Association Rules).
+* **Static Content Guarantee**:
+  * Bound to `out_tab6 = widgets.Output()` and rendered ONCE at notebook startup via `render_tab6()`.
+  * Completely independent of interactive global filters and filter resets to provide an immutable strategic baseline derived from the full project corpus.
+  * Explicit methodological banner: *"Static content: based on the full project corpus; not affected by the global filters. Findings are associations, not causes. Success is a rating-based proxy (rating >= 4.0). About 63% of hotels are synthetic; text mining covers real hotels only."*
+* **Section A: Business Insights (Two-Column Responsive Grid)**:
+  1. **Price and Amenity Count Alone Say Little About Guest Ratings** (Weak linear correlations: combined price $r = 0.086$, amenity count $r = -0.134$; real price $r = 0.182$, amenity $r = 0.112$). *Source: EDA tab*.
+  2. **Operational Failures Are the Biggest Sources of Dissatisfaction** (Cleanliness: 1,497 negative reviews / 30.7%, Staff demeanor: 992 / 20.4%; Bedding 55.7%, Bathrooms 52.0%, AC 50.8% negative). *Source: Text Mining tab*.
+  3. **Customer Perception of Value Depends on the Experience Delivered** (29.9% of 3,565 price/value reviews negative vs 18.6% baseline). *Source: Text Mining tab*.
+  4. **Hotel Performance Varies Across Categories and Markets** (1-star 69.7% to 5-star 92.0%; Goa 88.6% highest vs Hyderabad 72.0% lowest). *Source: EDA tab*.
+  5. **Amenity Strategy Requires Complementarity, Not Just Quantity** (Baseline essentials: Wi-Fi 95.38%, AC 91.19%; Triad bundle: Business center + Pool → Spa, Lift 6.190, Conf 74.02%). *Source: Association Rules tab*.
+  6. **Predictive Analytics Can Support Better Decisions** (Tuned RF Accuracy 81.34%, Macro-F1 0.6571; Top features: price, log_price, review_count, amenity_count). *Source: Predictive Models tab*.
+* **Section B: Business Recommendations (Prioritized Action Cards)**:
+  1. **Prioritize Operational Quality** (`[High Priority]`, Red badge) — Housekeeping checklists, preventive maintenance for bathrooms/AC/bedding. *Measure: Monthly cleanliness and maintenance complaint rates*.
+  2. **Strengthen Staff Service and Complaint Resolution** (`[High Priority]`, Red badge) — Front-desk communication training, empowered service recovery. *Measure: Staff negative sentiment and complaint frequency*.
+  3. **Align Room Pricing with Perceived Value** (`[High Priority]`, Red badge) — Transparent pricing, condition benchmarking. *Measure: Negative sentiment in price/value reviews*.
+  4. **Ensure Reliability of Essential Amenities** (`[High Priority]`, Red badge) — Maintain Wi-Fi, AC, parking (the 3 lowest net-sentiment amenities). *Measure: Amenity complaint logs and failure reports*.
+  5. **Invest in Amenities Strategically** (`[Medium Priority]`, Blue badge) — Bundle premium facilities (e.g. Spa) only with supporting infrastructure (Business center, Pool). *Measure: Amenity utilization and incremental revenue*.
+  6. **Adopt Data-Driven Performance Monitoring** (`[Medium Priority]`, Blue badge) — Continuous tracking via dashboard and ML exception flagging. *Measure: Rating trends, review volume, and negative sentiment over time*.
+* **Overall Strategy Box**:
+  * Emphasizes the foundational principle: *"Fix operational weaknesses first, deliver value consistent with pricing, maintain essential amenities, and invest in differentiated offerings only when supported by evidence."*
+
+---
+
 ### 6. Visual Evidence Catalog
 
 All visual evidence has been captured using headless Google Chrome at 1360×2200 resolution and saved to [`dashboard/screenshots/`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/):
 
 | Screenshot File | Section / Tab | Verification Evidence Provided |
 |:---|:---|:---|
-| [`dashboard_overview.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/dashboard_overview.png) / [`dashboard.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/dashboard.png) | **Master Dashboard Landing View** | Verifies full 4,551 hotel corpus (100.0%), full price span (₹392 – ₹61,327), 81.7% success rate, ₹4,077 avg price, 5-tab navigation bar, and Tab 1 charts. |
+| [`dashboard_overview.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/dashboard_overview.png) / [`dashboard.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/dashboard.png) | **Master Dashboard Landing View** | Verifies full 4,551 hotel corpus (100.0%), full price span (₹392 – ₹61,327), 81.7% success rate, ₹4,077 avg price, 6-tab navigation bar, and Tab 1 charts. |
 | [`filter_interaction_before.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/filter_interaction_before.png) | **Before Filtering (Baseline)** | Baseline state showing 100.0% corpus (4,551 hotels), 81.7% success rate, ₹4,077 avg price, 10.5 avg amenities, and full distribution charts. |
 | [`filter_interaction_after.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/filter_interaction_after.png) | **After Filtering (Demo Scenario)** | Verified active slice: Location="Coimbatore", Category="4-star hotel", Price=₹2,000–₹7,000 ($n=12$ hotels, 91.7% success rate, ₹4,890 avg price, 17.7 avg amenities, dynamically updated charts). *Note: Replaces the previous Goa 5-star scenario to align with presentation slides.* |
 | [`tab1_eda.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/tab1_eda.png) | **Tab 1: EDA** | Verifies full 4,551 hotel corpus, 5 KPI cards, and all 10 coordinated charts. |
@@ -230,6 +258,7 @@ All visual evidence has been captured using headless Google Chrome at 1360×2200
 | [`tab3_text_mining_after.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/tab3_text_mining_after.png) | **Tab 3: Text Mining (Dynamic Filtered)** | Verifies dynamic recomputation on the Coimbatore 4-star slice (6 real hotels, 98 reviews, 84.7% positive, 13.3% negative, shifted pain points, and dynamically updated word cloud and confusion matrix). |
 | [`tab4_association_rules.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/tab4_association_rules.png) | **Tab 4: Apriori** | Verifies Apriori slider controls with Amenity Search="Spa" active, top lift bundle (*Business center + Pool → Spa*, Lift: 6.190), scatter plot, and ranked table. |
 | [`tab5_final_dataset.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/tab5_final_dataset.png) | **Tab 5: Final Dataset** | Verifies final project dataset table (columns: name, location, category, data type, price, rating, reviews, amenities, success), search box, pagination (showing 1–25 of 4,551), and dual CSV download buttons. |
+| [`tab6_insights_recommendations.png`](file:///d:/Semesters/Semester%207/Business%20Analytics/Project/Review%202/hotel-dashboard/dashboard/screenshots/tab6_insights_recommendations.png) | **Tab 6: Insights & Recommendations** | Verifies static executive summary synthesis across EDA, predictive models, text mining, and association rules: 6 business insights cards, 6 prioritized recommendations cards, and overall strategy roadmap banner. |
 
 ---
 
@@ -243,3 +272,12 @@ All visual evidence has been captured using headless Google Chrome at 1360×2200
    * Machine learning feature importance reveals that room pricing (`price`, `log_price`) and customer review velocity (`review_count`) are the strongest empirical correlates of hotel success, followed by total amenity breadth (`amenity_count`) and essential convenience amenities like free parking.
 4. **Category Differentiation**:
    * Higher star ratings correlate strongly with higher success rates (5-star: 92.0%, 4-star: 89.0%, 3-star: 79.1%), indicating that brand standard enforcement and comprehensive service amenities reliably differentiate successful hospitality ventures.
+
+---
+
+### 8. Quantitative Audit & Verification Reports
+
+To ensure absolute academic rigor and 100% empirical consistency across all dashboard components:
+* **Verification Report v2** (`dashboard/verification_report_v2.md`): Validated the core baselines (4,551 hotels, 3,718 successful, 26,175 reviews, 154 strong Apriori rules, Review 1 model benchmarks).
+* **Verification Report v3** (`dashboard/verification_report_v3.md`): Audited all 19 quantitative claims in Tab 6 (*Insights & Recommendations*), certifying that every correlation coefficient, percentage, frequency count, and model metric matches the underlying ground-truth data with 100% accuracy.
+* **Automated Test Suite** (`dashboard/test_dashboard_filters.py`): 9 comprehensive test suites executing 45+ assertions covering baseline integrity, individual filters, combination filters, edge cases, reset mechanics, dynamic text mining recalculation, Tab 5 pagination/search/exports, and Tab 6 static architectural isolation.

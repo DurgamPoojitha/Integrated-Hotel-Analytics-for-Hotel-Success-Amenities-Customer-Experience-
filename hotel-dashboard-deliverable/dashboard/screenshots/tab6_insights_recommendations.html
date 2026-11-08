@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Tab 6: Insights & Recommendations</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1e293b;
+    background-color: #f8fafc;
+    margin: 0;
+    padding: 24px;
+}
+.dashboard-wrapper {
+    max-width: 1320px;
+    margin: 0 auto;
+}
+.header-banner {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 22px 28px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    border: 1px solid #1e293b;
+}
+.header-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    letter-spacing: -0.3px;
+    color: #ffffff;
+}
+.header-subtitle {
+    font-size: 13.5px;
+    font-weight: 400;
+    color: #94a3b8;
+    margin: 0;
+}
+.badge-pill {
+    display: inline-block;
+    background: #1e293b;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.8px;
+}
+.notice-bar {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #64748b;
+    color: #334155;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+.filter-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+}
+.filter-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.kpi-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 18px;
+    min-width: 155px;
+    flex: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    border-top: 3px solid #64748b;
+}
+.kpi-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+}
+.kpi-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+.tabs-nav {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 20px;
+    gap: 6px;
+}
+.tab-btn {
+    flex: 1 1 0px;
+    min-width: 180px;
+    height: 44px;
+    line-height: 44px;
+    padding: 0 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    text-decoration: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.tab-btn.active {
+    color: #1e293b;
+    background: #ffffff;
+    border-top: 3px solid #3b82f6;
+    border-bottom: 2px solid #ffffff;
+    margin-bottom: -2px;
+    font-weight: 700;
+}
+.tab-note-banner {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 3px solid #0284c7;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 12.5px;
+    color: #334155;
+}
+.model-champion-card {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #0284c7;
+    color: #0f172a;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+}
+.chart-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.apriori-controls-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+</style>
+</head>
+<body style="background:#f8fafc; margin:0; padding:20px;">
+    <div class="dashboard-wrapper" style="max-width:1280px; margin:0 auto;">
+        
+    <div class="header-banner">
+        <div class="badge-pill">Business Analytics (23CSE452) • Review 2</div>
+        <h1 class="header-title">Hotel Success Intelligence & Decision Support Dashboard</h1>
+        <p class="header-subtitle">Interactive Integration of Exploratory Analytics, Machine Learning Models, Text Mining, and Apriori Association Rules</p>
+    </div>
+    <div class="notice-bar">
+        <b>Methodological Notice:</b> "Success" is defined as <code>customer_rating &ge; 4.0</code> (rating-based proxy).
+        All relationships are empirical <b>associations</b> and do not imply causality.
+        The analysis incorporates both scraped real hotels and synthetic properties (63.4%); text mining applies to real hotels only.
+    </div>
+    
+        
+    <div class="filter-box">
+        <div class="filter-title">Interactive Global Filters</div>
+        <div style="display: flex; gap: 20px; margin-bottom: 14px; flex-wrap: wrap;">
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 220px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569;">Location:</span>
+                <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; background: #ffffff; height: 95px; overflow-y: hidden;">
+                    <div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; background: #0284c7; color: #fff;">All Locations</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Agra</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Bengaluru</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Chennai</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Coimbatore</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Delhi</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Goa</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Jaipur</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Kolkata</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">Mumbai</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 220px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569;">Category:</span>
+                <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; background: #ffffff; height: 95px; overflow-y: hidden;">
+                    <div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; background: #0284c7; color: #fff;">All Categories</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">5-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">4-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">3-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">2-star hotel</div><div style="padding: 2px 8px; border-radius: 3px; font-size: 12px; color: #334155;">1-star hotel</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px; width: 200px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569;">Data Type:</span>
+                <div style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; background: #ffffff; font-size: 13px; color: #1e293b; display: flex; justify-content: space-between; align-items: center;">
+                    <span>Both</span>
+                    <span style="color: #64748b; font-size: 10px;">▼</span>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px; width: 310px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569; width: 70px;">Price (₹):</span>
+                <div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; position: relative;">
+                    <div style="position: absolute; left: 0%; width: 100%; height: 100%; background: #0284c7; border-radius: 3px;"></div>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; color: #0f172a; min-width: 95px; text-align: right;">₹392 - ₹61,327</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; width: 280px;">
+                <span style="font-size: 12px; font-weight: 600; color: #475569; width: 55px;">Rating:</span>
+                <div style="flex: 1; height: 6px; background: #e2e8f0; border-radius: 3px; position: relative;">
+                    <div style="position: absolute; left: 0; width: 100%; height: 100%; background: #0284c7; border-radius: 3px;"></div>
+                </div>
+                <span style="font-size: 12px; font-weight: 600; color: #0f172a; min-width: 65px; text-align: right;">0.0 - 5.0</span>
+            </div>
+            <div style="margin-left: auto;">
+                <button style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; padding: 7px 16px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer;">Reset All Filters</button>
+            </div>
+        </div>
+        <div style="font-size: 12.5px; color: #475569; padding-top: 6px; border-top: 1px solid #f1f5f9;">
+            <b>Selected Hotels:</b> <b>4,551</b> / 4,551 (100.0%)
+        </div>
+    </div>
+    
+        
+    <div class="kpi-row">
+        <div class="kpi-card" style="border-top-color: #475569;">
+            <div class="kpi-label">Hotels Selected</div>
+            <div class="kpi-value">4,551</div>
+            <div class="kpi-sub">100.0% of total corpus</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #0284c7;">
+            <div class="kpi-label">Average Rating</div>
+            <div class="kpi-value">4.45 <span style="font-size:14px; font-weight:normal; color:#64748b;">/ 5.0</span></div>
+            <div class="kpi-sub">Range: 1.0 – 5.0</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #d97706;">
+            <div class="kpi-label">Average Price</div>
+            <div class="kpi-value">₹4,077</div>
+            <div class="kpi-sub">Median: ₹2,650</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #6366f1;">
+            <div class="kpi-label">Average Review Count</div>
+            <div class="kpi-value">2,257</div>
+            <div class="kpi-sub">Median: 748 reviews</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #0d9488;">
+            <div class="kpi-label">Success Rate (≥ 4.0)</div>
+            <div class="kpi-value">81.7%</div>
+            <div class="kpi-sub">3,718 successful hotels</div>
+        </div>
+        <div class="kpi-card" style="border-top-color: #64748b;">
+            <div class="kpi-label">Avg Amenities</div>
+            <div class="kpi-value">10.5</div>
+            <div class="kpi-sub">Across 15 monitored amenities</div>
+        </div>
+    </div>
+    
+        <div class="tabs-nav" style="display:flex; gap:6px; margin-bottom:18px;"><span class="tab-btn">1. Overview & EDA</span><span class="tab-btn">2. Predictive Models</span><span class="tab-btn">3. Text Mining</span><span class="tab-btn">4. Association Rules</span><span class="tab-btn">5. Final Dataset</span><span class="tab-btn active">6. Insights & Recommendations</span></div>
+        
+    <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:24px 28px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+        <h1 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.3px;">Business Insights and Recommendations</h1>
+        <div class="tab-note-banner" style="background: #f1f5f9; border-left: 4px solid #3b82f6; padding: 12px 16px; border-radius: 8px; font-size: 12.5px; color: #334155; margin-bottom: 22px; line-height: 1.55;">
+            <b>Notice:</b> Static content: based on the full project corpus; not affected by the global filters. Findings are associations, not causes. Success is a rating-based proxy (rating &ge; 4.0). About 63% of hotels are synthetic; text mining covers real hotels only.
+        </div>
+
+        <h2 style="font-size: 17px; font-weight: 700; color: #1e293b; margin: 24px 0 14px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">Section A: Business Insights</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;">
+            <!-- Insight 1 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">1. Price and Amenity Count Alone Say Little About Guest Ratings</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Across the combined data, room price has only a weak linear correlation with customer ratings (r = 0.086), and amenity count shows a weak negative correlation (r = &minus;0.134). Among real hotels alone, both are weak and positive (r = 0.182 and r = 0.112).</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Higher prices and more amenities do not automatically translate into better guest satisfaction.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: EDA tab</div>
+            </div>
+
+            <!-- Insight 2 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">2. Operational Failures Are the Biggest Sources of Dissatisfaction</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Cleanliness accounts for 1,497 negative reviews (30.7%), followed by rude or unhelpful staff (992; 20.4%).</li>
+                        <li style="margin-top: 6px;">Bedding (55.7% negative sentiment), bathrooms (52.0%) and air conditioning (50.8%) show particularly high dissatisfaction.</li>
+                    </ul>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Text Mining tab</div>
+            </div>
+
+            <!-- Insight 3 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">3. Customer Perception of Value Depends on the Experience Delivered</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>29.9% of 3,565 price/value-related reviews are negative, compared with an overall negative sentiment rate of 18.6%.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Guests are more likely to express dissatisfaction when the price does not match their experience.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Text Mining tab</div>
+            </div>
+
+            <!-- Insight 4 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">4. Hotel Performance Varies Across Categories and Markets</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Success rates range from 69.7% for 1-star hotels to 92.0% for 5-star hotels.</li>
+                        <li style="margin-top: 6px;">In the combined data, Goa records 88.6% success, while Hyderabad records 72.0%.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Performance should be benchmarked against hotel category and local market expectations.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: EDA tab</div>
+            </div>
+
+            <!-- Insight 5 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">5. Amenity Strategy Requires Complementarity, Not Just Quantity</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Wi-Fi is present in 95.38% of hotels in the Apriori dataset; air conditioning in 91.19%.</li>
+                        <li style="margin-top: 6px;">The combination Business Center + Pool -&gt; Spa has a lift of 6.19 and 74.02% confidence.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Reliable essential amenities are baseline expectations, while premium facilities may be more meaningful in complementary bundles.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Association Rules tab</div>
+            </div>
+
+            <!-- Insight 6 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">6. Predictive Analytics Can Support Better Decisions</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>The Random Forest model achieves 81.34% accuracy, with a 0.6571 Macro-F1 score.</li>
+                        <li style="margin-top: 6px;">Price, review count and amenity count are its leading predictive features.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Hotel-level prediction, supported by customer-feedback analysis, can help identify properties that need attention.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Predictive Models tab</div>
+            </div>
+        </div>
+
+        <h2 style="font-size: 17px; font-weight: 700; color: #1e293b; margin: 24px 0 14px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">Section B: Business Recommendations</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px;">
+            <!-- Recommendation 1 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">1. Prioritize Operational Quality</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Introduce digital housekeeping checklists and room inspections before guest check-in.</li>
+                        <li style="margin-top: 6px;">Schedule preventive maintenance for bathrooms, plumbing, air conditioning and bedding.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Monthly cleanliness and maintenance-related complaint rates.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 2</div>
+            </div>
+
+            <!-- Recommendation 2 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">2. Strengthen Staff Service and Complaint Resolution</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Train front-desk and service teams in communication, complaint handling and service recovery.</li>
+                        <li style="margin-top: 6px;">Empower staff to resolve routine guest issues promptly.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Staff-related negative sentiment and service complaint frequency.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 2</div>
+            </div>
+
+            <!-- Recommendation 3 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">3. Align Room Pricing with Perceived Value</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Communicate inclusions and total charges clearly to avoid price surprises.</li>
+                        <li style="margin-top: 6px;">Benchmark room prices against comparable local hotels and ensure room condition supports the price charged.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Negative sentiment in price/value reviews.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 3</div>
+            </div>
+
+            <!-- Recommendation 4 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">4. Ensure Reliability of Essential Amenities</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Regularly test Wi-Fi, air conditioning and parking facilities, which are among the least positively reviewed amenities.</li>
+                        <li style="margin-top: 6px;">Prioritize maintaining existing facilities before investing in additional amenities.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Amenity-related complaints and equipment failure reports.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insights 2 and 5</div>
+            </div>
+
+            <!-- Recommendation 5 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">5. Invest in Amenities Strategically</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; white-space: nowrap;">Medium Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Evaluate complementary amenities before investing in premium facilities such as spas.</li>
+                        <li style="margin-top: 6px;">Use association-rule evidence alongside local demand, investment costs and expected utilization.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Amenity utilization and incremental revenue.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 5</div>
+            </div>
+
+            <!-- Recommendation 6 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">6. Adopt Data-Driven Performance Monitoring</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; white-space: nowrap;">Medium Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Use the interactive dashboard to monitor ratings, review sentiment, pricing, hotel category and city-level performance.</li>
+                        <li style="margin-top: 6px;">Use the Random Forest model to flag properties for further investigation, not as a substitute for managerial judgement.</li>
+                        <li style="margin-top: 6px;">Encourage genuine post-stay feedback and track recurring customer concerns.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Rating trends, review volume and negative sentiment over time.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insights 4 and 6</div>
+            </div>
+        </div>
+
+        <!-- Overall Strategy Banner -->
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; border-radius: 12px; padding: 18px 22px; color: #166534; margin-top: 12px; line-height: 1.6; font-size: 13.5px; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+            <strong>Overall Strategy:</strong> Fix operational weaknesses first, deliver value consistent with pricing, maintain essential amenities, and invest in differentiated offerings only when supported by evidence.
+        </div>
+    </div>
+    
+    </div>
+</body>
+</html>

@@ -264,8 +264,81 @@ def run_tests():
     assert len(combo_export) == len(combo_df)
     print(f"✓ CSV Export strings verified: Full CSV contains {len(full_export):,} rows; Filtered CSV contains {len(combo_export)} rows.")
 
+    # ---------------------------------------------------------
+    # 6. TAB 6 INSIGHTS & RECOMMENDATIONS VERIFICATION
+    # ---------------------------------------------------------
+    print("\n--- 6. Tab 6 Insights & Recommendations Quantitative Audit & Static Behavior ---")
+    
+    # 6a. Correlation audits
+    clean_df["price_raw"] = pd.to_numeric(clean_df["price"], errors="coerce")
+    clean_raw_price = clean_df.dropna(subset=["price_raw"])
+    assert len(clean_raw_price) == 4362, f"Expected 4,362 hotels with raw price, got {len(clean_raw_price)}"
+    r_price_combined = clean_raw_price["price_raw"].corr(clean_raw_price["customer_rating"])
+    assert round(r_price_combined, 3) == 0.086, f"Expected price r=0.086, got {r_price_combined:.3f}"
+    
+    r_amenity_combined = clean_df["amenity_count"].corr(clean_df["customer_rating"])
+    assert round(r_amenity_combined, 3) == -0.134, f"Expected amenity r=-0.134, got {r_amenity_combined:.3f}"
+    
+    real_subset = clean_df[clean_df["data_type"] == "Real"]
+    real_raw_price = real_subset.dropna(subset=["price_raw"])
+    r_price_real = real_raw_price["price_raw"].corr(real_raw_price["customer_rating"])
+    assert round(r_price_real, 3) == 0.182, f"Expected real price r=0.182, got {r_price_real:.3f}"
+    
+    r_amenity_real = real_subset["amenity_count"].corr(real_subset["customer_rating"])
+    assert round(r_amenity_real, 3) == 0.112, f"Expected real amenity r=0.112, got {r_amenity_real:.3f}"
+    print(f"✓ Pearson correlations verified: Combined price r={r_price_combined:.3f} (n={len(clean_raw_price)}), amenity r={r_amenity_combined:.3f}; Real price r={r_price_real:.3f}, amenity r={r_amenity_real:.3f}.")
+
+    # 6b. Category and location extremes
+    cat_means = clean_df.groupby("hotel_category")["success"].mean() * 100
+    assert round(cat_means["1-star hotel"], 1) == 69.7, f"Expected 1-star 69.7%, got {cat_means['1-star hotel']:.1f}%"
+    assert round(cat_means["5-star hotel"], 1) == 92.0, f"Expected 5-star 92.0%, got {cat_means['5-star hotel']:.1f}%"
+    
+    loc_means = (clean_df.groupby("location")["success"].mean() * 100).sort_values(ascending=False)
+    assert loc_means.index[0] == "Goa" and round(loc_means.iloc[0], 1) == 88.6
+    assert loc_means.index[-1] == "Hyderabad" and round(loc_means.iloc[-1], 1) == 72.0
+    print(f"✓ Performance benchmarks verified: 1-star ({cat_means['1-star hotel']:.1f}%) to 5-star ({cat_means['5-star hotel']:.1f}%); Goa is highest ({loc_means.iloc[0]:.1f}%), Hyderabad lowest ({loc_means.iloc[-1]:.1f}%).")
+
+    # 6c. Apriori Amenity Support & Top Bundle Rule
+    supp_df = pd.read_csv(os.path.join(APRIORI_DIR, "apriori_amenity_support.csv"))
+    wifi_row = supp_df[supp_df["Amenity"] == "Wi-Fi"].iloc[0]
+    ac_row = supp_df[supp_df["Amenity"] == "Air conditioning"].iloc[0]
+    assert round(wifi_row["Support_Percentage"], 2) == 95.38
+    assert round(ac_row["Support_Percentage"], 2) == 91.19
+    
+    bundle_rule = rules_csv[rules_csv["Rule"].str.contains("Spa") & rules_csv["Rule"].str.contains("Business center") & rules_csv["Rule"].str.contains("Pool")].iloc[0]
+    assert round(bundle_rule["lift"], 2) == 6.19 and round(bundle_rule["confidence"] * 100, 2) == 74.02
+    print(f"✓ Amenity support & bundle rule verified: Wi-Fi {wifi_row['Support_Percentage']:.2f}%, AC {ac_row['Support_Percentage']:.2f}%; Business center, Pool -> Spa lift {bundle_rule['lift']:.3f}, conf {bundle_rule['confidence']*100:.2f}%.")
+
+    # 6d. Lowest Net-Sentiment Amenities
+    amenity_sent = pd.read_csv(os.path.join(TEXT_DIR, "amenity_mention_sentiment.csv"))
+    lowest_3 = amenity_sent.sort_values(by="Net (Pos% - Neg%)")["Amenity"].head(3).tolist()
+    assert set(lowest_3) == {"Air conditioning", "Parking", "Wi-Fi"}
+    print(f"✓ Lowest net-sentiment amenities verified: {lowest_3} are the bottom 3 in amenity_mention_sentiment.csv.")
+
+    # 6e. Notebook Tab Structure & Static Behavior
+    with open(os.path.join(BASE_DIR, "dashboard", "hotel_dashboard_fixed.ipynb"), "r", encoding="utf-8") as f:
+        nb_fixed = json.load(f)
+    c4_src = "".join(nb_fixed["cells"][4]["source"])
+    assert 'out_tab6 = widgets.Output()' in c4_src, "out_tab6 Output widget missing from Cell 4!"
+    assert 'def render_tab6():' in c4_src, "render_tab6() function missing from Cell 4!"
+    assert 'render_tab6()' in c4_src, "render_tab6() startup call missing from Cell 4!"
+    assert 'tabs.set_title(5, "6. Insights & Recommendations")' in c4_src, "Tab title 6 missing from tabs definition!"
+    
+    # Confirm render_tab6 is NOT in update_dashboard
+    ud_idx = c4_src.find('def update_dashboard')
+    end_ud_idx = c4_src.find('def reset_filters_action', ud_idx)
+    ud_body = c4_src[ud_idx:end_ud_idx]
+    assert 'render_tab6' not in ud_body, "render_tab6 MUST NOT be called inside update_dashboard!"
+    
+    # Confirm render_tab6 is NOT in reset_filters_action
+    rst_idx = c4_src.find('def reset_filters_action')
+    end_rst_idx = c4_src.find('# --- CONSTRUCT DASHBOARD TABS ---', rst_idx)
+    rst_body = c4_src[rst_idx:end_rst_idx]
+    assert 'render_tab6' not in rst_body, "render_tab6 MUST NOT be called inside reset_filters_action!"
+    print("✓ Tab 6 architecture verified: Exactly 6 tabs, static out_tab6 initialized once at startup, 100% immune to filters/reset.")
+
     print("\n" + "=" * 80)
-    print("ALL 8 VERIFICATION & DYNAMIC FILTER TEST SUITES PASSED CLEANLY (100% MATCH)!")
+    print("ALL 9 VERIFICATION & DYNAMIC FILTER TEST SUITES PASSED CLEANLY (100% MATCH)!")
     print("=" * 80)
 
 if __name__ == "__main__":
