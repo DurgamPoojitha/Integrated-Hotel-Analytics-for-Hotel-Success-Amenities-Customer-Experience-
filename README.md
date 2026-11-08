@@ -398,11 +398,21 @@ Mined at Min Support = 0.05, Min Confidence = 0.60, Min Lift = 2.0:
 
 ## 9. Academic Team & Attribution
 
-This project was developed for the **Business Analytics (`23CSE452`)** Capstone Review 2 at Amrita Vishwa Vidyapeetham by **Team 5**:
+This project was developed by **Team 5** as part of the **Business Analytics (`23CSE452`) Capstone Review 2** at Amrita Vishwa Vidyapeetham. The project involved collaborative efforts across dataset collection, data preprocessing, predictive modelling, text mining, association rule mining, amenity analysis, model evaluation and interactive dashboard development.
 
-* **Durgam Poojitha** (`CB.SC.U4CSE23320`) — Lead Contributor: Review 2 Method 1 (Text Mining, NLP, VADER Sentiment Modeling, Customer Pain Points & Thematic Extraction)
-* **Anupama Nair** — Contributor: Review 2 Method 2 (Market Basket Analysis & Apriori Association Rule Mining on Standardized Amenities)
-* **Sathya Roopan M** — Contributor: Review 1 Predictive Modeling Pipelines & Review 2 Master Interactive Dashboard Integration
+The individual contributions are outlined below:
+
+* **Durgam Poojitha** (`CB.SC.U4CSE23320`) — Dataset consolidation, synthetic data generation, predictive modelling, text mining, NLP preprocessing, VADER-based sentiment analysis, customer pain point identification, thematic extraction and Jira task tracking.
+
+* **Anupama Nair** (`CB.SC.U4CSE23207`) — Hotel data collection, data cleaning and preprocessing, dataset documentation, and Market Basket Analysis using the Apriori algorithm.
+
+* **Sathya Roopan M** (`CB.SC.U4CSE23256`) — Dashboard development, integration of analytical outputs, implementation of global filters, dashboard testing and dataset collection.
+
+* **S. Manish** (`CB.SC.U4CSE23125`) — Amenity analysis using Principal Component Analysis (PCA), feature engineering, visualization of amenity patterns and dataset collection.
+
+* **P. Tirupathi Reddy** (`CB.SC.U4CSE23568`) — Model evaluation, confusion matrix analysis, ROC curve analysis, feature importance assessment, business recommendations and dataset collection.
+
+The team collaboratively contributed to the overall development and integration of the analytical framework, ensuring that the individual methods and findings were brought together into a unified business analytics solution.
 
 ---
 *For technical questions, verification audits, or reproduction assistance, refer to [`hotel-dashboard-deliverable/dashboard/DOCUMENTATION.md`](hotel-dashboard-deliverable/dashboard/DOCUMENTATION.md) and [`hotel-dashboard-deliverable/dashboard/verification_report.md`](hotel-dashboard-deliverable/dashboard/verification_report.md).*
