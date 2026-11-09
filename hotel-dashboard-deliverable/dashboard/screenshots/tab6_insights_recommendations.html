@@ -118,12 +118,12 @@ body {
     gap: 6px;
 }
 .tab-btn {
-    flex: 1 1 0px;
-    min-width: 180px;
+    flex: 1 1 auto;
+    min-width: 110px;
     height: 44px;
     line-height: 44px;
-    padding: 0 16px;
-    font-size: 13.5px;
+    padding: 0 12px;
+    font-size: 13px;
     font-weight: 600;
     color: #475569;
     background: #f1f5f9;
@@ -136,6 +136,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
+    white-space: nowrap;
 }
 .tab-btn.active {
     color: #1e293b;
@@ -181,8 +182,8 @@ body {
 }
 </style>
 </head>
-<body style="background:#f8fafc; margin:0; padding:20px;">
-    <div class="dashboard-wrapper" style="max-width:1280px; margin:0 auto;">
+<body>
+    <div class="dashboard-wrapper">
         
     <div class="header-banner">
         <div class="badge-pill">Business Analytics (23CSE452) • Review 2</div>
@@ -277,7 +278,7 @@ body {
         </div>
     </div>
     
-        <div class="tabs-nav" style="display:flex; gap:6px; margin-bottom:18px;"><span class="tab-btn">1. Overview & EDA</span><span class="tab-btn">2. Predictive Models</span><span class="tab-btn">3. Text Mining</span><span class="tab-btn">4. Association Rules</span><span class="tab-btn">5. Final Dataset</span><span class="tab-btn active">6. Insights & Recommendations</span></div>
+        <div class="tabs-nav"><span class="tab-btn">1. Final Dataset</span><span class="tab-btn">2. Overview & EDA</span><span class="tab-btn">3. Predictive Models</span><span class="tab-btn">4. Text Mining</span><span class="tab-btn">5. Association Rules</span><span class="tab-btn active">6. Insights & Recommendations</span></div>
         
     <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:24px 28px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
         <h1 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.3px;">Business Insights and Recommendations</h1>
@@ -287,7 +288,6 @@ body {
 
         <h2 style="font-size: 17px; font-weight: 700; color: #1e293b; margin: 24px 0 14px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">Section A: Business Insights</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;">
-            <!-- Insight 1 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">1. Price and Amenity Count Alone Say Little About Guest Ratings</div>
@@ -300,8 +300,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: EDA tab</div>
             </div>
-
-            <!-- Insight 2 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">2. Operational Failures Are the Biggest Sources of Dissatisfaction</div>
@@ -312,8 +310,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Text Mining tab</div>
             </div>
-
-            <!-- Insight 3 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">3. Customer Perception of Value Depends on the Experience Delivered</div>
@@ -326,8 +322,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Text Mining tab</div>
             </div>
-
-            <!-- Insight 4 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">4. Hotel Performance Varies Across Categories and Markets</div>
@@ -341,8 +335,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: EDA tab</div>
             </div>
-
-            <!-- Insight 5 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">5. Amenity Strategy Requires Complementarity, Not Just Quantity</div>
@@ -356,8 +348,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Association Rules tab</div>
             </div>
-
-            <!-- Insight 6 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">6. Predictive Analytics Can Support Better Decisions</div>
@@ -375,7 +365,6 @@ body {
 
         <h2 style="font-size: 17px; font-weight: 700; color: #1e293b; margin: 24px 0 14px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">Section B: Business Recommendations</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px;">
-            <!-- Recommendation 1 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
@@ -392,8 +381,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 2</div>
             </div>
-
-            <!-- Recommendation 2 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
@@ -410,8 +397,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 2</div>
             </div>
-
-            <!-- Recommendation 3 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
@@ -428,8 +413,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 3</div>
             </div>
-
-            <!-- Recommendation 4 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
@@ -446,8 +429,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insights 2 and 5</div>
             </div>
-
-            <!-- Recommendation 5 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
@@ -464,8 +445,6 @@ body {
                 </div>
                 <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 5</div>
             </div>
-
-            <!-- Recommendation 6 -->
             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
                 <div>
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
@@ -485,7 +464,6 @@ body {
             </div>
         </div>
 
-        <!-- Overall Strategy Banner -->
         <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; border-radius: 12px; padding: 18px 22px; color: #166534; margin-top: 12px; line-height: 1.6; font-size: 13.5px; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
             <strong>Overall Strategy:</strong> Fix operational weaknesses first, deliver value consistent with pricing, maintain essential amenities, and invest in differentiated offerings only when supported by evidence.
         </div>

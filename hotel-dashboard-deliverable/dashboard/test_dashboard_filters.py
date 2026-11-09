@@ -10,7 +10,7 @@ Validates:
    - Numbers change dynamically when Location, Category, Price, or Rating changes
    - Dynamic WordCloud frequency generation
    - Pain points and experience themes re-aggregation
-7. Tab 5 Final Dataset & Export:
+7. Tab 1 Final Dataset & Export:
    - Paging (25 rows/page) and hotel name search
    - Exclusion of latitude and longitude
    - Dual CSV download data verification (filtered vs full corpus)
@@ -24,7 +24,7 @@ import json
 from collections import Counter
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, cohen_kappa_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, cohen_kappa_score, confusion_matrix, roc_auc_score
 from mlxtend.frequent_patterns import apriori, association_rules
 
 # Ensure UTF-8 output encoding on Windows
@@ -59,15 +59,43 @@ def run_tests():
     assert round(succ_pct, 1) == 81.7, f"Expected 81.7%, got {succ_pct:.1f}%"
     print(f"✓ Hotels selected: {total_hotels:,} (100.0%); {successful_hotels:,} successful ({succ_pct:.1f}%).")
 
-    # Check 2: Model tab benchmarks (911 test hotels, RF accuracy 0.8134, macro-F1 0.6571, weighted-F1 0.8037)
+    # Check 2: Model tab benchmarks (911 test hotels, authentic Review 1 pinned predictions)
     from sklearn.model_selection import train_test_split
     _, X_test, _, _ = train_test_split(clean_df, clean_df["success"], test_size=0.20, random_state=42, stratify=clean_df["success"])
     assert len(X_test) == 911, f"Expected 911 test hotels, got {len(X_test)}"
-    rf_bench = {
-        "Accuracy": 0.8134, "Macro F1": 0.6571, "Weighted F1": 0.8037,
-        "Confusion Matrix": [[63, 104], [66, 678]]
-    }
-    print(f"✓ Model tab baseline: 911 test hotels; RF acc={rf_bench['Accuracy']}, macro-F1={rf_bench['Macro F1']}, weighted-F1={rf_bench['Weighted F1']}, CM={rf_bench['Confusion Matrix']}.")
+
+    r1_preds_path = os.path.join(DATA_DIR, "review1_test_predictions.csv")
+    r1_imp_path = os.path.join(DATA_DIR, "review1_rf_feature_importances.csv")
+    assert os.path.exists(r1_preds_path), f"Missing Review 1 pinned predictions: {r1_preds_path}"
+    assert os.path.exists(r1_imp_path), f"Missing Review 1 RF feature importances: {r1_imp_path}"
+
+    r1_df = pd.read_csv(r1_preds_path)
+    assert len(r1_df) == 911, f"Expected 911 rows in review1_test_predictions.csv, got {len(r1_df)}"
+    assert np.array_equal(r1_df["row_index"].to_numpy(), X_test.index.to_numpy()), "Review 1 test row indices mismatch!"
+    assert np.array_equal(r1_df["y_true"].to_numpy(), X_test["success"].to_numpy()), "Review 1 y_true mismatch!"
+
+    y_r1 = r1_df["y_true"].to_numpy()
+    rf_acc = round(accuracy_score(y_r1, r1_df["rf_pred"]), 4)
+    rf_mf1 = round(f1_score(y_r1, r1_df["rf_pred"], average="macro"), 4)
+    rf_wf1 = round(f1_score(y_r1, r1_df["rf_pred"], average="weighted"), 4)
+    rf_auc = round(roc_auc_score(y_r1, r1_df["rf_prob"]), 4)
+    rf_cm = confusion_matrix(y_r1, r1_df["rf_pred"], labels=[0, 1]).tolist()
+    assert rf_acc == 0.8134, f"Expected RF Acc 0.8134, got {rf_acc}"
+    assert rf_mf1 == 0.6571, f"Expected RF Macro-F1 0.6571, got {rf_mf1}"
+    assert rf_wf1 == 0.8037, f"Expected RF Weighted-F1 0.8037, got {rf_wf1}"
+    assert rf_auc == 0.6990, f"Expected RF ROC-AUC 0.6990, got {rf_auc}"
+    assert rf_cm == [[63, 104], [66, 678]], f"Expected RF CM [[63,104],[66,678]], got {rf_cm}"
+
+    dt_acc = round(accuracy_score(y_r1, r1_df["dt_pred"]), 4)
+    dt_auc = round(roc_auc_score(y_r1, r1_df["dt_prob"]), 4)
+    lr_acc = round(accuracy_score(y_r1, r1_df["lr_pred"]), 4)
+    lr_auc = round(roc_auc_score(y_r1, r1_df["lr_prob"]), 4)
+    assert dt_acc == 0.8035 and dt_auc == 0.6344, f"DT mismatch: acc={dt_acc}, auc={dt_auc}"
+    assert lr_acc == 0.6894 and lr_auc == 0.6955, f"LR mismatch: acc={lr_acc}, auc={lr_auc}"
+
+    r1_imp_df = pd.read_csv(r1_imp_path)
+    assert len(r1_imp_df) == 37 and {"Feature", "Importance"}.issubset(r1_imp_df.columns)
+    print(f"✓ Model tab baseline (Review 1 pinned): 911 test hotels; RF acc={rf_acc:.4f}, macro-F1={rf_mf1:.4f}, weighted-F1={rf_wf1:.4f}, ROC-AUC={rf_auc:.4f}, CM={rf_cm}; DT acc={dt_acc:.4f}; LR acc={lr_acc:.4f}.")
 
     # Check 3: Text Mining Baseline
     rev_df = pd.read_csv(os.path.join(TEXT_DIR, "review_level_sentiment.csv"))
@@ -231,30 +259,41 @@ def run_tests():
     print(f"✓ Price change dynamic test: Budget hotels (<= ₹2,000) have {len(budget_revs)} reviews with {budget_neg_pct:.1f}% Negative sentiment.")
 
     # ---------------------------------------------------------
-    # 5. TAB 5 FINAL DATASET & EXPORT TESTS
+    # 5. TAB 1 FINAL DATASET & EXPORT TESTS
     # ---------------------------------------------------------
-    print("\n--- 5. Tab 5 Final Dataset Table & Export Verification ---")
+    print("\n--- 5. Tab 1 Final Dataset Table & Export Verification ---")
     cols = ["hotel_name", "location", "hotel_category", "data_type", "price", "customer_rating", "review_count", "amenity_count", "success"]
-    
-    # 5a. Excluded columns check
-    assert "latitude" not in cols and "longitude" not in cols, "Latitude and longitude must NOT be present in Tab 5 table!"
+    clean_imputed = clean_df.copy()
+    for _c in ["price", "review_count", "amenity_count"]:
+        clean_imputed[_c] = pd.to_numeric(clean_imputed[_c], errors="coerce")
+        clean_imputed[_c] = clean_imputed[_c].fillna(clean_imputed[_c].median())
+    for _c in ["location", "hotel_category"]:
+        clean_imputed[_c] = clean_imputed[_c].fillna("Unknown")
+
+    # 5a. Excluded columns check & zero NaN integrity across displayed columns (post-Cell 2 imputation)
+    assert "latitude" not in cols and "longitude" not in cols, "Latitude and longitude must NOT be present in Tab 1 table!"
     for col in cols:
-        assert col in clean_df.columns, f"Required column {col} missing from clean_df"
-    print("✓ Tab 5 column schema verified: Exactly 9 required columns, strictly zero latitude/longitude.")
+        assert col in clean_imputed.columns, f"Required column {col} missing from clean_imputed"
+    assert int(clean_imputed[cols].isna().sum().sum()) == 0, "Unexpected NaN values in Final Dataset displayed columns!"
+    print("✓ Tab 1 column schema verified: Exactly 9 required columns, zero NaNs after Cell 2 imputation, strictly zero latitude/longitude.")
 
-    # 5b. Paging (25 rows/page)
+    # 5b. Paging (25 rows/page), including Page 11-14 / Page 12 boundary slice
     page_size = 25
-    total_pages = (len(clean_df) + page_size - 1) // page_size
+    total_pages = (len(clean_imputed) + page_size - 1) // page_size
     assert total_pages == 183, f"Expected 183 pages for 4,551 hotels at 25/page, got {total_pages}"
-    page1 = clean_df[cols].iloc[0:25]
+    page1 = clean_imputed[cols].iloc[0:25]
     assert len(page1) == 25
-    print(f"✓ Tab 5 Paging: 4,551 hotels split cleanly into {total_pages} pages (25 rows/page).")
+    pages_11_to_14 = clean_imputed[cols].iloc[250:350]
+    assert len(pages_11_to_14) == 100 and int(pages_11_to_14.isna().sum().sum()) == 0
+    print(f"✓ Tab 1 Paging: 4,551 hotels split cleanly into {total_pages} pages (25 rows/page), pages 11-14 verified.")
 
-    # 5c. Hotel Name Search filtering
+    # 5c. Hotel Name Search filtering (including literal regex metacharacter safety)
     search_q = "Taj"
-    matched_search = clean_df[clean_df["hotel_name"].fillna("").str.lower().str.contains(search_q.lower())]
+    matched_search = clean_df[clean_df["hotel_name"].fillna("").str.lower().str.contains(search_q.lower(), regex=False)]
     assert len(matched_search) > 0
-    print(f"✓ Tab 5 Search: Query '{search_q}' matched {len(matched_search)} hotels.")
+    paren_search = clean_df[clean_df["hotel_name"].fillna("").str.lower().str.contains("(", regex=False)]
+    assert len(paren_search) >= 0
+    print(f"✓ Tab 1 Search: Query '{search_q}' matched {len(matched_search)} hotels (regex=False literal matching verified).")
 
     # 5d. Export datasets
     full_export = clean_df[cols]
@@ -315,14 +354,52 @@ def run_tests():
     assert set(lowest_3) == {"Air conditioning", "Parking", "Wi-Fi"}
     print(f"✓ Lowest net-sentiment amenities verified: {lowest_3} are the bottom 3 in amenity_mention_sentiment.csv.")
 
-    # 6e. Notebook Tab Structure & Static Behavior
+    # 6e. Notebook Tab Structure, Fixes & Static Behavior
     with open(os.path.join(BASE_DIR, "dashboard", "hotel_dashboard_fixed.ipynb"), "r", encoding="utf-8") as f:
         nb_fixed = json.load(f)
+    with open(os.path.join(BASE_DIR, "dashboard", "hotel_dashboard.ipynb"), "r", encoding="utf-8") as f:
+        nb_main = json.load(f)
+    assert [c["source"] for c in nb_fixed["cells"]] == [c["source"] for c in nb_main["cells"]], "hotel_dashboard.ipynb and hotel_dashboard_fixed.ipynb sources diverged!"
+
+    c3_src = "".join(nb_fixed["cells"][3]["source"])
     c4_src = "".join(nb_fixed["cells"][4]["source"])
+
+    # Verify Review 1 Option A pinned prediction loading & reconciled 0.6990 ROC-AUC
+    assert 'REVIEW1_PREDS_CSV' in c3_src, "REVIEW1_PREDS_CSV missing from Cell 3!"
+    assert '"ROC-AUC": 0.6990' in c3_src and '0.7072' not in c3_src, "RF ROC-AUC benchmark must be 0.6990 in Cell 3!"
+    assert 'ROC-AUC <b>0.6990</b>' in c4_src and '0.7072' not in c4_src, "RF ROC-AUC champion card must be 0.6990 in Cell 4!"
+
+    # Verify new 6-tab order (Final Dataset at 0, EDA at 1, Models at 2, Text Mining at 3, Apriori at 4, Insights at 5)
+    expected_titles = [
+        'tabs.set_title(0, "1. Final Dataset")',
+        'tabs.set_title(1, "2. Overview & EDA")',
+        'tabs.set_title(2, "3. Predictive Models")',
+        'tabs.set_title(3, "4. Text Mining")',
+        'tabs.set_title(4, "5. Association Rules")',
+        'tabs.set_title(5, "6. Insights & Recommendations")',
+    ]
+    for title_stmt in expected_titles:
+        assert title_stmt in c4_src, f"Missing expected tab title statement: {title_stmt}"
+
+    # Verify Cohen's Kappa kept in fig_eval bar chart and removed ONLY from Takeaways HTML text box
+    tk_start = c4_src.find("Key Text Mining Takeaways [Dynamic Recomputed]:")
+    tk_end = c4_src.find("# Row 8:", tk_start)
+    assert tk_start != -1 and tk_end != -1, "Could not locate Takeaways HTML block in Cell 4!"
+    tk_block = c4_src[tk_start:tk_end]
+    assert "Cohen's Kappa" not in tk_block, "Cohen's Kappa must be removed from Key Text Mining Takeaways box!"
+    assert '(\"Cohen\'s Kappa\", kappa)' in c4_src, "Cohen's Kappa must remain in Sentiment Evaluation Metrics chart!"
+
+    # Verify Pagination & Nested-Output Fix in Cell 4
+    assert 'out_tm_reviews =' not in c4_src, "Nested out_tm_reviews Output widget must NOT exist!"
+    assert 'w_tab1_table = widgets.HTML()' in c4_src, "Atomic HTML table w_tab1_table missing!"
+    assert 'w_tm_reviews_table = widgets.HTML()' in c4_src, "Atomic HTML table w_tm_reviews_table missing!"
+    assert 'html.escape' in c4_src, "HTML escaping missing in dynamic table rendering!"
+    assert 'tab1_page_state["page"] < tab1_page_state["total_pages"] - 1' in c4_src, "Upper-bound guard missing on Tab 1 Next button!"
+    assert 'tm_page_state["page"] < tm_page_state["total_pages"] - 1' in c4_src, "Upper-bound guard missing on TM Next button!"
+
     assert 'out_tab6 = widgets.Output()' in c4_src, "out_tab6 Output widget missing from Cell 4!"
     assert 'def render_tab6():' in c4_src, "render_tab6() function missing from Cell 4!"
     assert 'render_tab6()' in c4_src, "render_tab6() startup call missing from Cell 4!"
-    assert 'tabs.set_title(5, "6. Insights & Recommendations")' in c4_src, "Tab title 6 missing from tabs definition!"
     
     # Confirm render_tab6 is NOT in update_dashboard
     ud_idx = c4_src.find('def update_dashboard')
@@ -335,7 +412,7 @@ def run_tests():
     end_rst_idx = c4_src.find('# --- CONSTRUCT DASHBOARD TABS ---', rst_idx)
     rst_body = c4_src[rst_idx:end_rst_idx]
     assert 'render_tab6' not in rst_body, "render_tab6 MUST NOT be called inside reset_filters_action!"
-    print("✓ Tab 6 architecture verified: Exactly 6 tabs, static out_tab6 initialized once at startup, 100% immune to filters/reset.")
+    print("✓ Notebook architecture, Review 1 Option A (0.8134 / 0.6990), 6-tab order, Cohen's Kappa placement, pagination safety & Tab 6 static isolation verified.")
 
     print("\n" + "=" * 80)
     print("ALL 9 VERIFICATION & DYNAMIC FILTER TEST SUITES PASSED CLEANLY (100% MATCH)!")

@@ -8,26 +8,27 @@
 
 The **Hotel Success Intelligence & Decision Support Dashboard** is an integrated analytical platform developed to examine the key operational, pricing, geographic, and amenity-driven factors determining hotel success across the Indian hospitality market.
 
-Built natively in Jupyter Notebook using Python, `ipywidgets`, and Plotly, the dashboard consolidates four distinct analytical workstreams into a single interactive decision-support tool:
-1. **Exploratory Data Analysis (EDA)**: Market structure, pricing dynamics, geographic penetration, and amenity distributions.
-2. **Predictive Modeling**: Supervised classification models (Random Forest champion, Decision Tree, Logistic Regression) with dynamic subset evaluation.
-3. **Text Mining & Sentiment Analytics**: Dynamic NLP engine analyzing 26,175 customer reviews across real hotels to uncover sentiment polarity, operational pain points, and customer delight themes.
-4. **Association Rule Mining (Apriori)**: Unsupervised market-basket analysis across 33 standardized amenities to discover high-lift complementary amenity bundles.
-5. **Final Project Dataset & Dual CSV Export**: Direct access to the project corpus with real-time text searching, pagination, and multi-environment data export.
+Built natively in Jupyter Notebook using Python, `ipywidgets`, and Plotly, the dashboard consolidates all analytical workstreams across **6 tabs**:
+1. **Final Project Dataset & Dual CSV Export**: Direct access to the final dataset placed first for immediate data transparency, with real-time text searching, crash-proof pagination, and multi-environment CSV export.
+2. **Exploratory Data Analysis (EDA)**: Market structure, pricing dynamics, geographic penetration, and amenity distributions.
+3. **Predictive Modeling**: Supervised classification models (Random Forest champion, Decision Tree, Logistic Regression) evaluated using authentic pinned Review 1 (`scikit-learn 1.6.1`) test predictions for dynamic subset evaluation.
+4. **Text Mining & Sentiment Analytics**: Dynamic NLP engine analyzing 26,175 customer reviews across real hotels to uncover sentiment polarity, operational pain points, and customer delight themes.
+5. **Association Rule Mining (Apriori)**: Unsupervised market-basket analysis across 33 standardized amenities to discover high-lift complementary amenity bundles.
+6. **Insights & Recommendations (Static Synthesis)**: Executive business takeaways and prioritized operational recommendations grounded in the full corpus.
 
 ```
-+----------------------------------------------------------------------------------------------------+
-|                         HOTEL SUCCESS INTELLIGENCE & DECISION SUPPORT DASHBOARD                     |
-+----------------------------------------------------------------------------------------------------+
-| [GLOBAL FILTER PANEL]: Location | Category | Data Type | Price Range (₹) | Rating Range | Reset    |
-+----------------------------------------------------------------------------------------------------+
-| [REAL-TIME KPI ROW]: Hotels Selected | Avg Rating | Avg Price | Avg Reviews | Success Rate | Amens |
-+----------------------------------------------------------------------------------------------------+
-| [TAB NAVIGATION BAR]:                                                                              |
-|   1. Overview & EDA | 2. Predictive Models | 3. Text Mining | 4. Association Rules | 5. Final Data |
-+----------------------------------------------------------------------------------------------------+
-| [ACTIVE TAB CONTENT AREA]: Dynamic Plotly Visualizations, Model Tables, NLP Graphs & Data Tables  |
-+----------------------------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------------------------------+
+|                              HOTEL SUCCESS INTELLIGENCE & DECISION SUPPORT DASHBOARD                       |
++------------------------------------------------------------------------------------------------------------+
+| [GLOBAL FILTER PANEL]: Location | Category | Data Type | Price Range (₹) | Rating Range | Reset            |
++------------------------------------------------------------------------------------------------------------+
+| [REAL-TIME KPI ROW]: Hotels Selected | Avg Price | Avg Rating | Success Rate | Avg Amenities               |
++------------------------------------------------------------------------------------------------------------+
+| [TAB NAVIGATION BAR]:                                                                                      |
+| 1. Final Dataset | 2. Overview & EDA | 3. Predictive Models | 4. Text Mining | 5. Assoc Rules | 6. Insights |
++------------------------------------------------------------------------------------------------------------+
+| [ACTIVE TAB CONTENT AREA]: Dynamic Plotly Visualizations, Model Tables, NLP Graphs & Data Tables          |
++------------------------------------------------------------------------------------------------------------+
 ```
 
 ### Core Analytical Definitions & Disclaimers
@@ -114,13 +115,57 @@ Directly beneath the filter panel, five dynamic KPI cards display top-level metr
 
 ---
 
-## 4. Tab 1: Exploratory Data Analysis (EDA)
+## 4. Tab 1: Final Project Dataset & Dual Export
 
-Tab 1 provides 10 coordinated Plotly visualizations analyzing market distributions, category breakdowns, geographic concentration, and amenity prevalence.
+Tab 1 provides immediate transparency into the final project dataset, supporting interactive exploration and data exports.
 
 ```
 +---------------------------------------------------------------------------------------------------+
-| TAB 1: EXPLORATORY DATA ANALYSIS (EDA)                                                            |
+| TAB 1: FINAL PROJECT DATASET                                                                      |
+| Search Hotel: [Taj                ]  [◀ Previous] [Next ▶]  Page 1 of 1 (13 matching hotels)      |
+| [⬇ Download Filtered Data (CSV)]    [⬇ Download Full Final Dataset (CSV)]                        |
+|                                                                                                   |
+| Hotel Name       | Location | Category     | Type | Price   | Rating | Reviews | Amens | Status    |
+|------------------+----------+--------------+------+---------+--------+---------+-------+-----------|
+| Taj Exotica Goa  | Goa      | 5-star hotel | Real | ₹31,578 | ★ 4.7  |   7,706 |    30 | 1 (Succ)  |
+| Taj Fort Aguada  | Goa      | 5-star hotel | Real | ₹24,500 | ★ 4.6  |   5,210 |    29 | 1 (Succ)  |
+| Showing Page 1 of 1 (13 matching hotels)                                                          |
++---------------------------------------------------------------------------------------------------+
+```
+
+### Table Specifications & Features
+1. **Readable Column Layout**:
+   * `hotel_name`: Property title.
+   * `location`: Municipal market / city.
+   * `hotel_category`: Official star tier (`5-star hotel` down to `1-star hotel`, `Unknown`).
+   * `data_type`: Data source origin (`Real` vs. `Synthetic`).
+   * `price`: Cleanly formatted room rate (`₹XX,XXX`).
+   * `customer_rating`: Observed rating (`★ X.X`).
+   * `review_count`: Total customer review count (`X,XXX`).
+   * `amenity_count`: Breadth of available amenities (`XX`).
+   * `success`: Classification status badge (`1 (Successful)` in green, `0 (Not Successful)` in gray).
+   * **Strict Exclusion**: Raw latitude and longitude coordinates are deliberately excluded.
+2. **Text Search on Hotel Name**:
+   * Instant, case-insensitive literal text search. Typing a keyword (e.g., `Oberoi`, `Taj`, `Hyatt`, `Resort`) dynamically filters the table and updates the page counter.
+3. **Crash-Proof Paging Controls**:
+   * Clean pagination (25 hotels per page) with Previous (`◀`) and Next (`▶`) buttons rendered via atomic `widgets.HTML()` table updates outside `Output` widgets, preventing client-side widget state collisions across all 183 pages.
+   * Shows active page and total pages (e.g., `Page 1 of 183` for all 4,551 hotels).
+4. **Dual CSV Export Buttons**:
+   * **Download Filtered Data (CSV)**: Exports the exact subset of hotels matching the active global filters.
+   * **Download Full Final Dataset (CSV)**: Exports the complete 4,551-hotel corpus.
+   * **Environment Auto-Detection**:
+     * In **Google Colab**, automatically invokes `google.colab.files.download()` to trigger browser downloads natively.
+     * In **Local Jupyter / JupyterLab**, generates a Base64 data-URI download link with auto-download trigger in any browser.
+
+---
+
+## 5. Tab 2: Overview & Exploratory Data Analysis (EDA)
+
+Tab 2 provides 10 coordinated Plotly visualizations analyzing market distributions, category breakdowns, geographic concentration, and amenity prevalence.
+
+```
++---------------------------------------------------------------------------------------------------+
+| TAB 2: OVERVIEW & EXPLORATORY DATA ANALYSIS (EDA)                                                 |
 | [Chart 1: Success Donut]               [Chart 2: Real vs Synthetic Bar]                           |
 | [Chart 3: Rating Distribution Hist]    [Chart 4: Category Success Rate Horizontal Bar]            |
 | [Chart 5: Top 15 Locations Bar]        [Chart 6: Price vs Review Count Scatter]                   |
@@ -187,13 +232,13 @@ Tab 1 provides 10 coordinated Plotly visualizations analyzing market distributio
 
 ---
 
-## 5. Tab 2: Predictive Models
+## 6. Tab 3: Predictive Models
 
-Tab 2 integrates the supervised machine learning pipeline from Review 1. Built on a stratified 80/20 train/test split (911 test hotels) using 21 predictors (19 numeric including 15 amenities, 2 categorical), this tab evaluates model performance across the full test set and on dynamically filtered subsets.
+Tab 3 integrates the supervised machine learning pipeline from Review 1. Built on a stratified 80/20 train/test split (911 test hotels) using 21 predictors (19 numeric including 15 amenities, 2 categorical), this tab loads authentic pinned Review 1 (`scikit-learn 1.6.1`) test-set predictions from `data/review1_test_predictions.csv` (falling back to live pipelines if absent) so that full-corpus and subset evaluations align identically with Review 1 benchmarks.
 
 ```
 +---------------------------------------------------------------------------------------------------+
-| TAB 2: PREDICTIVE MODELS                                                                          |
+| TAB 3: PREDICTIVE MODELS                                                                          |
 | [Champion Model Card: Tuned Random Forest (300 Trees, max_depth=10, class_weight='balanced')]     |
 | [Dynamic Performance Evaluation Table: RF vs DT vs LR on filtered test subset (N=...)]           |
 | [Performance Comparison Bar Chart]     [Side-by-side Confusion Matrices (LR, DT, RF)]             |
@@ -207,13 +252,13 @@ The **Tuned Random Forest Classifier** is the selected champion model based on m
 
 | Model Architecture | Hyperparameters | Full Test Set Accuracy | Balanced Accuracy | Macro Precision | Macro Recall | Macro F1 | Weighted F1 | ROC-AUC |
 |:---|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Random Forest (Champion)** | 300 Trees, `max_depth=10`, `min_samples_split=5`, `class_weight='balanced'` | **81.34%** | **0.6443** | **0.6777** | **0.6443** | **0.6571** | **0.8037** | **0.7072** |
+| **Random Forest (Champion)** | 300 Trees, `max_depth=10`, `min_samples_split=5`, `class_weight='balanced'` | **81.34%** | **0.6443** | **0.6777** | **0.6443** | **0.6571** | **0.8037** | **0.6990** |
 | **Decision Tree** | `max_depth=7`, `min_samples_split=10`, `random_state=42` | 80.35% | 0.5662 | 0.6297 | 0.5662 | 0.5750 | 0.7724 | 0.6344 |
 | **Logistic Regression** | $C=10$, `class_weight='balanced'`, `max_iter=2000` | 68.94% | 0.6612 | 0.6056 | 0.6612 | 0.6045 | 0.7205 | 0.6955 |
 
-### How Filter Changes Impact Tab 2
+### How Filter Changes Impact Tab 3
 * When global filters are adjusted, the dashboard takes the intersection between the active filter selection and the 911 holdout test hotels (`test_indices = X_test.index.intersection(filtered_df.index)`).
-* All three models are re-evaluated on this exact test subset in real time.
+* All three models are re-evaluated on this exact test subset in real time. Under default unfiltered state ($N=911$), live table metrics (`Accuracy=0.8134`, `ROC-AUC=0.6990`, `CM=[[63, 104], [66, 678]]`) match the Review 1 benchmarks exactly.
 * **Built-in Safeguards**:
   * *Sample Size Notice*: When the filtered test subset contains fewer than 50 hotels ($n < 50$), a yellow notice appears warning that small-sample metrics exhibit statistical variance.
   * *Single Class Notice*: If the filtered test subset contains only one class (e.g., all hotels are successful), precision, recall, macro metrics, and ROC-AUC are disabled gracefully to prevent mathematical division-by-zero errors.
@@ -231,13 +276,13 @@ The **Tuned Random Forest Classifier** is the selected champion model based on m
 
 ---
 
-## 6. Tab 3: Text Mining Integration
+## 7. Tab 4: Text Mining Integration
 
-Tab 3 hosts the **Dynamic NLP Engine**, analyzing customer review feedback across real hotels. While sentiment analysis in earlier iterations relied on static precomputations, this tab recomputes metrics dynamically whenever global filters are adjusted.
+Tab 4 hosts the **Dynamic NLP Engine**, analyzing customer review feedback across real hotels. While sentiment analysis in earlier iterations relied on static precomputations, this tab recomputes metrics dynamically whenever global filters are adjusted.
 
 ```
 +---------------------------------------------------------------------------------------------------+
-| TAB 3: TEXT MINING (DYNAMIC RECOMPUTATION ENGINE)                                                 |
+| TAB 4: TEXT MINING (DYNAMIC RECOMPUTATION ENGINE)                                                 |
 | Filter Scope: Real Hotels Only (1,659 matched hotels, 26,175 reviews)                             |
 | [VADER Sentiment Distribution Donut [Dynamic]]   [Star Rating vs VADER Sentiment Bar [Dynamic]]   |
 | [Top Customer Pain Points [Dynamic]]             [Experience Themes (% Positive) [Dynamic]]       |
@@ -269,20 +314,21 @@ Tab 3 hosts the **Dynamic NLP Engine**, analyzing customer review feedback acros
 | **Word Cloud** | Broad national terms (*staff*, *service*, *clean*, *breakfast*, *location*) | Localized slice terms (*clean*, *service*, *food*, *maintained*, *experience*) | Word cloud regenerates dynamically from filtered token counts using teammate stopword lists. |
 
 ### Interactive Review Explorer Table (Task 4)
-* Located at the bottom of Tab 3, this interactive table displays individual review records matching the active filter selection.
+* Located at the bottom of Tab 4, this interactive table displays individual review records matching the active filter selection (using crash-proof atomic `widgets.HTML()` updates with `html.escape()` cell sanitization).
 * **Columns**: `Hotel Name`, `City`, `Category`, `Star Rating` (★), `VADER Sentiment` (badge), and `Review Excerpt`.
 * **Controls**: Real-time keyword text search and Previous / Next pagination (15 reviews per page).
+* **Note on Cohen's Kappa**: `Cohen's Kappa` is plotted in the *Sentiment Evaluation Metrics vs Star Rating Reference [Dynamic]* bar chart and intentionally omitted from the *Key Text Mining Takeaways* summary text box.
 * **Use Case**: Allows managers to drill down from aggregate sentiment charts into specific customer narratives.
 
 ---
 
-## 7. Tab 4: Apriori Association Rules
+## 8. Tab 5: Apriori Association Rules
 
-Tab 4 integrates Anupama's Association Rule Mining deliverables. Using the Apriori algorithm applied to 33 standardized amenity transaction vectors across 1,430 real hotels, this tab uncovers high-lift amenity bundles.
+Tab 5 integrates Anupama's Association Rule Mining deliverables. Using the Apriori algorithm applied to 33 standardized amenity transaction vectors across 1,430 real hotels, this tab uncovers high-lift amenity bundles.
 
 ```
 +---------------------------------------------------------------------------------------------------+
-| TAB 4: APRIORI ASSOCIATION RULES                                                                  |
+| TAB 5: APRIORI ASSOCIATION RULES                                                                  |
 | Controls: Min Support [0.05] | Min Conf [0.60] | Min Lift [2.0] | Search Amenity: [Spa         ]  |
 | [Top 15 Standardized Amenity Support Bar Chart]                                                   |
 | [Top Rules by Lift Bar Chart]          [Support vs Confidence Scatter (Marker Size = Lift)]       |
@@ -318,7 +364,7 @@ Tab 4 integrates Anupama's Association Rule Mining deliverables. Using the Aprio
 | **3** | **Bar, Fitness center → Spa** | **7.90%** | **66.08%** | **5.526** | **Full-Service Lifestyle Bundle**: Complements evening entertainment with daytime wellness. |
 | **4** | **Business center, Fitness center → Spa** | **6.92%** | **65.13%** | **5.447** | **Corporate Executive Wellness**: Standard bundle for upscale urban business hotels. |
 
-### Interactive Tab 4 Controls
+### Interactive Tab 5 Controls
 * **Support Slider (0.01 – 0.20)**: Filters out niche or rare bundles (default: 0.05 / 5%).
 * **Confidence Slider (0.30 – 0.95)**: Sets reliability threshold (default: 0.60 / 60%).
 * **Lift Slider (1.0 – 6.5)**: Focuses exclusively on high-synergy pairings (default: 2.0).
@@ -327,95 +373,62 @@ Tab 4 integrates Anupama's Association Rule Mining deliverables. Using the Aprio
 
 ---
 
-## 8. Tab 5: Final Project Dataset & Dual Export
+## 9. Tab 6: Insights & Recommendations (Static Strategic Synthesis)
 
-Tab 5 provides transparency into the final project dataset, supporting interactive exploration and data exports.
-
-```
-+---------------------------------------------------------------------------------------------------+
-| TAB 5: FINAL PROJECT DATASET                                                                      |
-| Search Hotel: [Taj                ]  [◀ Previous] [Next ▶]  Page 1 of 1 (13 matching hotels)      |
-| [⬇ Download Filtered Data (CSV)]    [⬇ Download Full Final Dataset (CSV)]                        |
-|                                                                                                   |
-| Hotel Name       | Location | Category     | Type | Price   | Rating | Reviews | Amens | Status    |
-|------------------+----------+--------------+------+---------+--------+---------+-------+-----------|
-| Taj Exotica Goa  | Goa      | 5-star hotel | Real | ₹31,578 | ★ 4.7  |   7,706 |    30 | 1 (Succ)  |
-| Taj Fort Aguada  | Goa      | 5-star hotel | Real | ₹24,500 | ★ 4.6  |   5,210 |    29 | 1 (Succ)  |
-| Showing rows 1–13 of 13 hotels (Page 1 of 1)                                                      |
-+---------------------------------------------------------------------------------------------------+
-```
-
-### Table Specifications & Features
-1. **Readable Column Layout**:
-   * `hotel_name`: Property title.
-   * `location`: Municipal market / city.
-   * `hotel_category`: Official star tier (`5-star hotel` down to `1-star hotel`, `Unknown`).
-   * `data_type`: Data source origin (`Real` vs. `Synthetic`).
-   * `price`: Cleanly formatted room rate (`₹XX,XXX`).
-   * `customer_rating`: Observed rating (`★ X.X`).
-   * `review_count`: Total customer review count (`X,XXX`).
-   * `amenity_count`: Breadth of available amenities (`XX`).
-   * `success`: Classification status badge (`1 (Successful)` in green, `0 (Not Successful)` in gray).
-   * **Strict Exclusion**: Raw latitude and longitude coordinates are deliberately excluded.
-2. **Text Search on Hotel Name**:
-   * Instant, case-insensitive text search. Typing a keyword (e.g., `Oberoi`, `Taj`, `Hyatt`, `Resort`) dynamically filters the table and updates the page counter.
-3. **Paging Controls**:
-   * Clean pagination (25 hotels per page) with Previous (`◀`) and Next (`▶`) buttons.
-   * Shows active page and total pages (e.g., `Page 1 of 183` for all 4,551 hotels).
-4. **Dual CSV Export Buttons**:
-   * **Download Filtered Data (CSV)**: Exports the exact subset of hotels matching the active global filters.
-   * **Download Full Final Dataset (CSV)**: Exports the complete 4,551-hotel corpus.
-   * **Environment Auto-Detection**:
-     * In **Google Colab**, automatically invokes `google.colab.files.download()` to trigger browser downloads natively.
-     * In **Local Jupyter / JupyterLab**, generates a Base64 data-URI download link that opens in any browser.
+Tab 6 presents an executive summary synthesizing verified findings from the entire analytical corpus across EDA, Predictive Modeling, Text Mining, and Apriori Association Rules:
+* **Static Content Guarantee**: Bound to `out_tab6 = widgets.Output()` and initialized once via `render_tab6()`. Global filter updates and reset actions never mutate this tab, guaranteeing an immutable corpus-level strategic baseline.
+* **Section A — Business Insights**: 6 evidence-backed cards summarizing correlations, hygiene/staff complaint drivers, price-value dynamics, category/location gaps, amenity bundling rules, and Champion Random Forest performance.
+* **Section B — Business Recommendations**: 6 prioritized strategic action cards (4 High Priority, 2 Medium Priority) plus an overall operational roadmap.
 
 ---
 
-## 9. Cascading Interaction Matrix
+## 10. Cascading Interaction Matrix
 
 This matrix details how modifying specific controls cascades through the entire dashboard:
 
-| User Action | KPI Row Response | Tab 1 (EDA) Response | Tab 2 (Models) Response | Tab 3 (Text Mining) Response | Tab 4 (Apriori) Response | Tab 5 (Dataset) Response |
-|:---|:---|:---|:---|:---|:---|:---|
-| **Filter by City** *(e.g. Coimbatore)* | Recomputes count ($n=224$), avg price, avg rating, and success rate for that city. | Slices all 10 charts to show local category rates, pricing, and amenities. | Evaluates models on holdout test hotels located in that city. | Filters reviews to real hotels in that city ($n=1,301$ reviews); recalculates sentiment and word cloud. | Shows corpus rules by default; if dynamic recomputation is enabled, re-mines rules on local hotels. | Filters table to properties in that city; recalculates page count. |
-| **Filter by Category** *(e.g. 4-star)* | Slices metrics to 4-star segment ($n=391$, 89.0% success rate). | Displays rating distributions, pricing, and amenity rates for 4-star properties. | Evaluates RF model on 4-star test hotels. | Recalculates sentiment on 4-star reviews ($n=2,937$); updates pain points and bigrams. | Re-evaluates amenity support and bundling for 4-star listings. | Displays 4-star hotels with paging. |
-| **Narrow Price Slider** *(e.g. ₹2k–₹7k)* | Recalculates median price, success rate, and active hotel count. | Updates scatter plot, category rates, and correlation matrix for the price tier. | Evaluates test accuracy for hotels within that price bracket. | Recalculates customer sentiment for the filtered budget tier. | Focuses on amenity bundles within that pricing cohort. | Limits table view to hotels within the specified rate band. |
-| **Combine Filters** *(Coimbatore + 4-star + ₹2k–₹7k)* | Recomputes all cards for the intersection ($n=12$ hotels, 91.7% success, ₹4,890 avg price). | All 10 charts update to reflect the 12 matching properties. | Test subset $N=2$; displays sample size warning ($N < 50$). | Recomputes on 6 real hotels (98 reviews); shifts VADER positive to 84.7%; updates WordCloud. | Corpus rules displayed; dynamic toggle recomputes on the active transaction vector. | Table shows 12 matching rows (Page 1 of 1). |
-| **Search Amenity in Tab 4** *(Type "Spa")* | No change (Tab 4 control is local to Apriori). | No change. | No change. | No change. | Instantly filters Apriori chart and table to rules containing "Spa". | No change. |
-| **Click Reset All Filters** | Restores 4,551 hotels (100.0%), ₹4,077 avg price, 81.7% success. | Restores full 10-chart baseline distributions. | Restores 911 test hotels and baseline model benchmarks. | Restores baseline 26,175 reviews (76.3% positive) and full word cloud. | Restores full Apriori rule ranking. | Table resets to Page 1 of 183 showing all 4,551 hotels. |
+| User Action | KPI Row Response | Tab 1 (Dataset) Response | Tab 2 (EDA) Response | Tab 3 (Models) Response | Tab 4 (Text Mining) Response | Tab 5 (Apriori) Response | Tab 6 (Insights) |
+|:---|:---|:---|:---|:---|:---|:---|:---|
+| **Filter by City** *(e.g. Coimbatore)* | Recomputes count ($n=224$), avg price, avg rating, and success rate for that city. | Filters table to properties in that city; recalculates page count. | Slices all 10 charts to show local category rates, pricing, and amenities. | Evaluates models on holdout test hotels located in that city. | Filters reviews to real hotels in that city ($n=1,301$ reviews); recalculates sentiment and word cloud. | Shows corpus rules by default; if dynamic recomputation is enabled, re-mines rules on local hotels. | Static (unchanged). |
+| **Filter by Category** *(e.g. 4-star)* | Slices metrics to 4-star segment ($n=391$, 89.0% success rate). | Displays 4-star hotels with paging. | Displays rating distributions, pricing, and amenity rates for 4-star properties. | Evaluates RF model on 4-star test hotels. | Recalculates sentiment on 4-star reviews ($n=2,937$); updates pain points and bigrams. | Re-evaluates amenity support and bundling for 4-star listings. | Static (unchanged). |
+| **Narrow Price Slider** *(e.g. ₹2k–₹7k)* | Recalculates median price, success rate, and active hotel count. | Limits table view to hotels within the specified rate band. | Updates scatter plot, category rates, and correlation matrix for the price tier. | Evaluates test accuracy for hotels within that price bracket. | Recalculates customer sentiment for the filtered budget tier. | Focuses on amenity bundles within that pricing cohort. | Static (unchanged). |
+| **Combine Filters** *(Coimbatore + 4-star + ₹2k–₹7k)* | Recomputes all cards for the intersection ($n=12$ hotels, 91.7% success, ₹4,890 avg price). | Table shows 12 matching rows (Page 1 of 1). | All 10 charts update to reflect the 12 matching properties. | Test subset $N=2$; displays sample size warning ($N < 50$). | Recomputes on 6 real hotels (98 reviews); shifts VADER positive to 84.7%; updates WordCloud. | Corpus rules displayed; dynamic toggle recomputes on the active transaction vector. | Static (unchanged). |
+| **Search Amenity in Tab 5** *(Type "Spa")* | No change (Tab 5 control is local to Apriori). | No change. | No change. | No change. | No change. | Instantly filters Apriori chart and table to rules containing "Spa". | Static (unchanged). |
+| **Click Reset All Filters** | Restores 4,551 hotels (100.0%), ₹4,077 avg price, 81.7% success. | Table resets to Page 1 of 183 showing all 4,551 hotels. | Restores full 10-chart baseline distributions. | Restores 911 test hotels and baseline Review 1 benchmarks (Acc 81.34%, AUC 0.6990). | Restores baseline 26,175 reviews (76.3% positive) and full word cloud. | Restores full Apriori rule ranking. | Static (unchanged). |
 
 ---
 
-## 10. Presentation Demonstration Script
+## 11. Presentation Demonstration Script
 
 Use this scenario during project presentations to demonstrate the dashboard's capabilities:
 
 ### Step-by-Step Demo Protocol
 
-1. **Demonstrate the Baseline Default View**:
-   * Point out the top KPI card: **4,551 hotels (100.0%)** and **81.7% success rate**.
+1. **Demonstrate the Baseline Default View (Tab 1: Final Dataset)**:
+   * Point out the landing table showing Page 1 of 183 (**4,551 hotels / 100.0%**) and **81.7% success rate**.
    * Note the price slider span: **₹392 to ₹61,327**, ensuring that every property is included by default.
+   * Demonstrate paging beyond page 12 or searching for a hotel name (e.g., `"Taj"`).
 2. **Execute the Demo Scenario**:
    * In **Location**, select `Coimbatore`.
    * In **Category**, select `4-star hotel`.
    * On the **Price Slider**, narrow the range to `₹2,000 – ₹7,000`.
    * Observe the instantaneous update: The KPI row updates to **12 hotels**, **₹4,890 average price**, and a **91.7% success rate**.
-3. **Inspect Tab 1 (EDA)**:
+3. **Inspect Tab 1 (Final Project Dataset)**:
+   * Show the filtered table displaying the 12 Coimbatore properties (Page 1 of 1).
+   * Demonstrate the **"Download Filtered Data (CSV)"** and **"Download Full Final Dataset (CSV)"** options.
+4. **Inspect Tab 2 (Overview & EDA)**:
    * Show that all 10 charts have dynamically adjusted to reflect the 12 properties.
-4. **Inspect Tab 2 (Predictive Models)**:
-   * Highlight the **Sample Size Notice** ($n=2$ in test set), explaining statistical variance on small subsets.
-5. **Inspect Tab 3 (Text Mining Engine)**:
+5. **Inspect Tab 3 (Predictive Models)**:
+   * Highlight the **Sample Size Notice** ($n=2$ in test set), explaining statistical variance on small subsets (and reset later to verify 81.34% / 0.6990 ROC-AUC consistency across all 911 test hotels).
+6. **Inspect Tab 4 (Text Mining Engine)**:
    * Point to the dynamic banner: `(6 matched hotels, 98 reviews)`.
    * Highlight the sentiment shift: VADER positive sentiment increases to **84.7%** (vs. 76.3% baseline).
    * Review the dynamic **Word Cloud** and note that the **Top Customer Pain Points** have shifted from national hygiene complaints to property maintenance and value-for-money expectations.
    * Scroll down to the **Review Explorer** to show live review excerpts from Coimbatore 4-star properties.
-6. **Inspect Tab 4 (Association Rules)**:
+7. **Inspect Tab 5 (Association Rules)**:
    * Type `"Spa"` into the Amenity Search box.
    * Point out the top bundle: **Business center, Pool → Spa** (**Lift: 6.190**, Confidence: 74.02%).
    * Deliver the strategic insight: Spas require supporting fitness and business infrastructure to succeed.
-7. **Inspect Tab 5 (Final Project Dataset)**:
-   * Show the filtered table displaying the 12 Coimbatore properties.
-   * Demonstrate the **"Download Filtered Data (CSV)"** button.
-   * Clear the hotel name search to show the full dataset export option.
-8. **Click "Reset All Filters"**:
+8. **Inspect Tab 6 (Insights & Recommendations)**:
+   * Demonstrate that executive recommendations remain anchored to the full 4,551-hotel corpus regardless of filters.
+9. **Click "Reset All Filters"**:
    * Demonstrate that the dashboard returns to the baseline state (4,551 hotels, 100.0%).

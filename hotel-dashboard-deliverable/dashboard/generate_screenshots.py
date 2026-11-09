@@ -1,12 +1,15 @@
 """
-Generate pixel-perfect, high-resolution screenshots for all 4 dashboard tabs
+Generate pixel-perfect, high-resolution screenshots for all 6 dashboard tabs
 and the before/after filter interaction pair using headless Google Chrome.
 With zero-overlap subplot layouts, generous horizontal spacing, and left-aligned titles.
 Outputs to dashboard/screenshots/:
-- tab1_eda.png
-- tab2_models.png
-- tab3_text_mining.png
-- tab4_association_rules.png
+- dashboard_overview.png / dashboard.png
+- tab1_final_dataset.png
+- tab2_eda.png
+- tab3_models.png
+- tab4_text_mining_before.png / tab4_text_mining.png / tab4_text_mining_after.png
+- tab5_association_rules.png
+- tab6_insights_recommendations.png
 - filter_interaction_before.png
 - filter_interaction_after.png
 """
@@ -14,6 +17,7 @@ Outputs to dashboard/screenshots/:
 import os
 import sys
 import io
+import html as html_lib
 
 # Ensure UTF-8 output encoding on Windows
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -55,6 +59,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 TEXT_DIR = os.path.join(DATA_DIR, "text_mining_outputs")
 APRIORI_DIR = os.path.join(DATA_DIR, "apriori")
+REVIEW1_PREDS_CSV = os.path.join(DATA_DIR, "review1_test_predictions.csv")
+REVIEW1_IMP_CSV = os.path.join(DATA_DIR, "review1_rf_feature_importances.csv")
 SCREENSHOTS_DIR = os.path.join(BASE_DIR, "dashboard", "screenshots")
 os.makedirs(SCREENSHOTS_DIR, exist_ok=True)
 
@@ -85,7 +91,7 @@ rev_sentiment_df = pd.read_csv(os.path.join(TEXT_DIR, "review_level_sentiment.cs
 apriori_rules_df = pd.read_csv(os.path.join(APRIORI_DIR, "apriori_strong_rules.csv"))
 apriori_support_df = pd.read_csv(os.path.join(APRIORI_DIR, "apriori_amenity_support.csv"))
 
-# Fit ML Models
+# Fit ML Models & Load Pinned Review 1 Predictions (Option A)
 numeric_features = ["price", "log_price", "review_count", "amenity_count"] + amenity_cols
 categorical_features = ["location", "hotel_category"]
 
@@ -107,16 +113,47 @@ model_lr.fit(X_train, y_train)
 model_dt.fit(X_train, y_train)
 model_rf.fit(X_train, y_train)
 
-REVIEW1_BENCHMARKS = {
-    "Random Forest": {"Accuracy": 0.8134, "Balanced Accuracy": 0.6443, "Macro Precision": 0.6777, "Macro Recall": 0.6443, "Macro F1": 0.6571, "Weighted F1": 0.8037, "ROC-AUC": 0.7072},
-    "Decision Tree": {"Accuracy": 0.8035, "Balanced Accuracy": 0.5662, "Macro Precision": 0.6297, "Macro Recall": 0.5662, "Macro F1": 0.5750, "Weighted F1": 0.7724, "ROC-AUC": 0.6344},
-    "Logistic Regression": {"Accuracy": 0.6894, "Balanced Accuracy": 0.6612, "Macro Precision": 0.6056, "Macro Recall": 0.6612, "Macro F1": 0.6045, "Weighted F1": 0.7205, "ROC-AUC": 0.6955}
+test_preds = {
+    "Logistic Regression": pd.Series(model_lr.predict(X_test), index=X_test.index),
+    "Decision Tree": pd.Series(model_dt.predict(X_test), index=X_test.index),
+    "Random Forest": pd.Series(model_rf.predict(X_test), index=X_test.index),
+}
+test_probs = {
+    "Logistic Regression": pd.Series(model_lr.predict_proba(X_test)[:, 1], index=X_test.index),
+    "Decision Tree": pd.Series(model_dt.predict_proba(X_test)[:, 1], index=X_test.index),
+    "Random Forest": pd.Series(model_rf.predict_proba(X_test)[:, 1], index=X_test.index),
 }
 
 rf_feature_names = model_rf.named_steps["preprocessor"].get_feature_names_out()
 rf_importances = model_rf.named_steps["classifier"].feature_importances_
 clean_feature_names = [f.replace("num__", "").replace("cat__", "").replace("hotel_category_", "").replace("location_", "") for f in rf_feature_names]
 rf_feat_df = pd.DataFrame({"Feature": clean_feature_names, "Importance": rf_importances}).sort_values("Importance", ascending=False).head(15).reset_index(drop=True)
+
+if os.path.exists(REVIEW1_PREDS_CSV):
+    _r1_preds = pd.read_csv(REVIEW1_PREDS_CSV)
+    if (
+        len(_r1_preds) == len(X_test)
+        and np.array_equal(_r1_preds["row_index"].to_numpy(), X_test.index.to_numpy())
+        and np.array_equal(_r1_preds["y_true"].to_numpy(), y_test.to_numpy())
+    ):
+        test_preds = {
+            "Logistic Regression": pd.Series(_r1_preds["lr_pred"].to_numpy(), index=X_test.index),
+            "Decision Tree": pd.Series(_r1_preds["dt_pred"].to_numpy(), index=X_test.index),
+            "Random Forest": pd.Series(_r1_preds["rf_pred"].to_numpy(), index=X_test.index),
+        }
+        test_probs = {
+            "Logistic Regression": pd.Series(_r1_preds["lr_prob"].to_numpy(), index=X_test.index),
+            "Decision Tree": pd.Series(_r1_preds["dt_prob"].to_numpy(), index=X_test.index),
+            "Random Forest": pd.Series(_r1_preds["rf_prob"].to_numpy(), index=X_test.index),
+        }
+        if os.path.exists(REVIEW1_IMP_CSV):
+            rf_feat_df = pd.read_csv(REVIEW1_IMP_CSV).sort_values("Importance", ascending=False).head(15).reset_index(drop=True)
+
+REVIEW1_BENCHMARKS = {
+    "Random Forest": {"Accuracy": 0.8134, "Balanced Accuracy": 0.6443, "Macro Precision": 0.6777, "Macro Recall": 0.6443, "Macro F1": 0.6571, "Weighted F1": 0.8037, "ROC-AUC": 0.6990},
+    "Decision Tree": {"Accuracy": 0.8035, "Balanced Accuracy": 0.5662, "Macro Precision": 0.6297, "Macro Recall": 0.5662, "Macro F1": 0.5750, "Weighted F1": 0.7724, "ROC-AUC": 0.6344},
+    "Logistic Regression": {"Accuracy": 0.6894, "Balanced Accuracy": 0.6612, "Macro Precision": 0.6056, "Macro Recall": 0.6612, "Macro F1": 0.6045, "Weighted F1": 0.7205, "ROC-AUC": 0.6955}
+}
 
 # Common HTML styles
 CSS_STYLES = """
@@ -234,12 +271,12 @@ body {
     gap: 6px;
 }
 .tab-btn {
-    flex: 1 1 0px;
-    min-width: 180px;
+    flex: 1 1 auto;
+    min-width: 110px;
     height: 44px;
     line-height: 44px;
-    padding: 0 16px;
-    font-size: 13.5px;
+    padding: 0 12px;
+    font-size: 13px;
     font-weight: 600;
     color: #475569;
     background: #f1f5f9;
@@ -252,6 +289,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
+    white-space: nowrap;
 }
 .tab-btn.active {
     color: #1e293b;
@@ -436,7 +474,14 @@ def render_kpis(sub_df):
     """
 
 def render_tabs_nav(active_idx=0):
-    tab_names = ["1. Overview & EDA", "2. Predictive Models", "3. Text Mining", "4. Association Rules", "5. Final Dataset"]
+    tab_names = [
+        "1. Final Dataset",
+        "2. Overview & EDA",
+        "3. Predictive Models",
+        "4. Text Mining",
+        "5. Association Rules",
+        "6. Insights & Recommendations",
+    ]
     items = []
     for i, name in enumerate(tab_names):
         cls = "tab-btn active" if i == active_idx else "tab-btn"
@@ -555,26 +600,26 @@ def get_tab2_html(sub_df):
     single_class = y_test_sub.nunique() < 2
 
     rows_eval = []
-    for name, m in [("Random Forest", model_rf), ("Decision Tree", model_dt), ("Logistic Regression", model_lr)]:
+    for name in ["Random Forest", "Decision Tree", "Logistic Regression"]:
         bench = REVIEW1_BENCHMARKS[name]
-        p_sub = m.predict(X_test.loc[test_indices])
+        p_sub = test_preds[name].loc[test_indices].to_numpy()
         acc = accuracy_score(y_test_sub, p_sub)
         bacc = balanced_accuracy_score(y_test_sub, p_sub) if not single_class else np.nan
         prec_m = precision_score(y_test_sub, p_sub, average="macro", zero_division=0) if not single_class else np.nan
         rec_m = recall_score(y_test_sub, p_sub, average="macro", zero_division=0) if not single_class else np.nan
         f1_m = f1_score(y_test_sub, p_sub, average="macro", zero_division=0)
         f1_w = f1_score(y_test_sub, p_sub, average="weighted", zero_division=0)
-        prob_sub = m.predict_proba(X_test.loc[test_indices])[:, 1]
+        prob_sub = test_probs[name].loc[test_indices].to_numpy()
         auc = roc_auc_score(y_test_sub, prob_sub) if not single_class else np.nan
         rows_eval.append({
             "Model": name,
             "Test N": n_test_sub,
             "Accuracy": f"{acc:.4f}",
-            "Macro Prec": f"{prec_m:.4f}",
-            "Macro Rec": f"{rec_m:.4f}",
-            "Macro F1": f"{f1_m:.4f}",
-            "Weighted F1": f"{f1_w:.4f}",
-            "ROC-AUC": f"{auc:.4f}",
+            "Macro Prec": f"{prec_m:.4f}" if not np.isnan(prec_m) else "N/A",
+            "Macro Rec": f"{rec_m:.4f}" if not np.isnan(rec_m) else "N/A",
+            "Macro F1": f"{f1_m:.4f}" if not np.isnan(f1_m) else "N/A",
+            "Weighted F1": f"{f1_w:.4f}" if not np.isnan(f1_w) else "N/A",
+            "ROC-AUC": f"{auc:.4f}" if not np.isnan(auc) else "N/A",
             "Base Acc (R1)": f"{bench['Accuracy']:.4f}",
             "Base F1 (R1)": f"{bench['Macro F1']:.4f}"
         })
@@ -583,7 +628,7 @@ def get_tab2_html(sub_df):
     # Comparison Bar Chart
     fig_cmp = go.Figure()
     for m_col, col_c in [("Accuracy", "#3b82f6"), ("Macro Prec", "#0284c7"), ("Macro Rec", "#f59e0b"), ("Macro F1", "#10b981")]:
-        fig_cmp.add_trace(go.Bar(x=eval_df["Model"], y=[float(v) for v in eval_df[m_col]], name=m_col, marker_color=col_c))
+        fig_cmp.add_trace(go.Bar(x=eval_df["Model"], y=[float(v) if v != "N/A" else 0 for v in eval_df[m_col]], name=m_col, marker_color=col_c))
     fig_cmp.update_layout(
         title=dict(text="Model Performance Comparison on Current Test Subset", x=0.01, xanchor="left", font=dict(size=14, color="#1e293b")),
         barmode="group", height=320, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white"
@@ -595,8 +640,8 @@ def get_tab2_html(sub_df):
         horizontal_spacing=0.08,
         subplot_titles=("Logistic Regression", "Decision Tree", "Random Forest (Selected)")
     )
-    for idx, (m_name, m_obj) in enumerate([("Logistic Regression", model_lr), ("Decision Tree", model_dt), ("Random Forest", model_rf)], 1):
-        p_s = m_obj.predict(X_test.loc[test_indices])
+    for idx, m_name in enumerate(["Logistic Regression", "Decision Tree", "Random Forest"], 1):
+        p_s = test_preds[m_name].loc[test_indices].to_numpy()
         cm = confusion_matrix(y_test_sub, p_s, labels=[0, 1])
         fig_cm.add_trace(go.Heatmap(z=cm, x=["Pred 0 (<4.0)", "Pred 1 (≥4.0)"], y=["True 0", "True 1"], colorscale="Blues", text=cm, texttemplate="%{text}", showscale=False), row=1, col=idx)
     fig_cm.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
@@ -608,8 +653,8 @@ def get_tab2_html(sub_df):
         horizontal_spacing=0.16,
         subplot_titles=("ROC Curves (AUC)", "Top 15 Feature Importances (RF)")
     )
-    for m_name, m_obj, c_color in [("Logistic Regression", model_lr, "#f59e0b"), ("Decision Tree", model_dt, "#06b6d4"), ("Random Forest", model_rf, "#10b981")]:
-        probs = m_obj.predict_proba(X_test.loc[test_indices])[:, 1]
+    for m_name, c_color in [("Logistic Regression", "#f59e0b"), ("Decision Tree", "#06b6d4"), ("Random Forest", "#10b981")]:
+        probs = test_probs[m_name].loc[test_indices].to_numpy()
         fpr, tpr, _ = roc_curve(y_test_sub, probs)
         auc_v = roc_auc_score(y_test_sub, probs)
         fig_roc_imp.add_trace(go.Scatter(x=fpr, y=tpr, mode="lines", name=f"{m_name} (AUC={auc_v:.3f})", line=dict(color=c_color, width=2)), row=1, col=1)
@@ -631,7 +676,7 @@ def get_tab2_html(sub_df):
         <div style="font-size:15px; font-weight:600; color:#0f172a; margin-bottom:4px;">Selected Model: Random Forest Classifier (Champion Benchmark)</div>
         <div style="font-size:13px; color:#334155;">
             <b>Hyperparameters:</b> 300 Trees | max_depth=10 | min_samples_split=5 | class_weight='balanced' | 21 Predictors.<br>
-            <b>Full Test Set Benchmark:</b> Accuracy <b>81.34%</b> | Macro Precision <b>0.6777</b> | Macro Recall <b>0.6443</b> | Macro-F1 <b>0.6571</b> | Weighted-F1 <b>0.8037</b> | ROC-AUC <b>0.7072</b>.
+            <b>Full Test Set Benchmark:</b> Accuracy <b>81.34%</b> | Macro Precision <b>0.6777</b> | Macro Recall <b>0.6443</b> | Macro-F1 <b>0.6571</b> | Weighted-F1 <b>0.8037</b> | ROC-AUC <b>0.6990</b>.
         </div>
     </div>
     <div class="tab-note-banner">
@@ -670,16 +715,20 @@ def get_tab3_html(sub_df, is_filtered=False):
 
     # Row 2: Customer Pain Points & Experience Themes [Dynamic]
     pain_patterns = {
-        "Cleanliness / hygiene": r"\bdirty\b|\bunclean\b|\bfilth\w*|\bnot (very |so |that |at all |too |properly )?(clean|hygien\w*)\b|\bunhygien\w*|\bstink\w*|\bsmell\w*|\bcockroach\w*|\bbed ?bugs?\b|\bstain\w*|\bmou?ld\b|\bdust\w*|\bno cleanliness\b|\bpoor (cleanliness|hygiene)\b",
-        "Rude / unhelpful staff": r"\brude\w*|\bimpolite\b|\bunprofessional\b|\bmisbehav\w*|\barrogan\w*|\bunhelpful\b|\bnot (very )?(helpful|cooperative|friendly|polite|responsive|supportive)\b|\bpoor (staff|behaviou?r|attitude)\b|\bbad (staff|behaviou?r|attitude)\b|\battitude\b",
-        "Slow / poor service": r"\bslow\w*|\bdelay\w*|\bwaited\b|\bwaiting\b|\btook (a )?(long|too long|forever|hours?)\b|\bpoor service\b|\bbad service\b|\bworst service\b|\bno service\b|\bno response\b|\bnot responding\b",
-        "Broken / poorly maintained": r"\bnot working\b|\bbroken\b|\bdamaged\b|\bpoor(ly)? maint\w*|\bnot maintained\b|\bleak\w*|\bworn\b|\bfaulty\b|\b(does|did|do)( not|n['’]?t) work\b|\bnot properly working\b|\bout of order\b",
-        "AC / cooling problems": r"\b(ac|a/c|aircon\w*|air[- ]?condition\w*)\b[^.]{0,40}\b(not|no|never|poor|bad|issue|problem|broken|noisy|leak\w*|worst)\b|\b(not|no|poor|bad)\b[^.]{0,20}\b(ac|a/c|cooling)\b",
-        "Wi-Fi / internet problems": r"\b(wi-?fi|wifi|internet|network)\b[^.]{0,40}\b(not|no|poor|bad|slow|weak|issue|problem|never|unavailable)\b|\b(no|poor|bad|slow|weak|not)\b[^.]{0,20}\b(wi-?fi|wifi|internet)\b",
-        "Noise": r"\bnois\w+|\bloud\b|\bdisturb\w*",
-        "Bathroom / hot-water issues": r"\bno hot water\b|\bhot water\b[^.]{0,30}\b(not|no|never|issue|problem)\b|\b(bathrooms?|toilets?|washrooms?)\b[^.]{0,40}\b(dirty|smell\w*|small|broken|not|no|leak\w*|bad|poor|worst|unclean)\b",
-        "Food / breakfast quality": r"\b(food|breakfast|dinner|lunch|meals?|buffet|tea|coffee)\b[^.]{0,40}\b(bad|poor|worst|not|cold|tasteless|stale|average|terrible|horrible|awful|disappoint\w*|limited)\b|\b(bad|poor|worst|tasteless|stale|terrible|horrible|awful)\b[^.]{0,20}\b(food|breakfast|dinner|lunch|meals?)\b",
-        "Price / value for money": r"\boverpriced\b|\bexpensive\b|\bcostly\b|\bover ?charg\w*|\bwaste of money\b|\bnot worth\b|\bhigh (price|rate|tariff|charges?)\b|\bextra (charge|money|cost)\w*|\brip ?off\b|\bhidden (charge|cost)\w*|\bcharged\b"
+        "Cleanliness / hygiene":       r"\bdirty\b|\bunclean\b|\bfilth\w*|\bnot (very |so |that |at all |too |properly )?(clean|hygien\w*)\b|\bunhygien\w*|\bstink\w*|\bsmell\w*|\bcockroach\w*|\bbed ?bugs?\b|\bstain\w*|\bmou?ld\b|\bdust\w*|\bno cleanliness\b|\bpoor (cleanliness|hygiene)\b",
+        "Rude / unhelpful staff":      r"\brude\w*|\bimpolite\b|\bunprofessional\b|\bmisbehav\w*|\barrogan\w*|\bunhelpful\b|\bnot (very )?(helpful|cooperative|friendly|polite|responsive|supportive)\b|\bpoor (staff|behaviou?r|attitude)\b|\bbad (staff|behaviou?r|attitude)\b|\battitude\b",
+        "Slow / poor service":         r"\bslow\w*|\bdelay\w*|\bwaited\b|\bwaiting\b|\btook (a )?(long|too long|forever|hours?)\b|\bpoor service\b|\bbad service\b|\bworst service\b|\bno service\b|\bno response\b|\bnot responding\b",
+        "Broken / poorly maintained":  r"\bnot working\b|\bbroken\b|\bdamaged\b|\bpoor(ly)? maint\w*|\bnot maintained\b|\bleak\w*|\bworn\b|\bfaulty\b|\b(does|did|do)( not|n['’]?t) work\b|\bnot properly working\b|\bout of order\b",
+        "AC / cooling problems":       r"\b(ac|a/c|aircon\w*|air[- ]?condition\w*)\b[^.]{0,40}\b(not|no|never|poor|bad|issue|problem|broken|noisy|leak\w*|worst)\b|\b(not|no|poor|bad)\b[^.]{0,20}\b(ac|a/c|cooling)\b",
+        "Wi-Fi / internet problems":   r"\b(wi-?fi|wifi|internet|network)\b[^.]{0,40}\b(not|no|poor|bad|slow|weak|issue|problem|never|unavailable)\b|\b(no|poor|bad|slow|weak|not)\b[^.]{0,20}\b(wi-?fi|wifi|internet)\b",
+        "Noise":                       r"\bnois\w+|\bloud\b|\bdisturb\w*",
+        "Bathroom / hot-water issues":  r"\bno hot water\b|\bhot water\b[^.]{0,30}\b(not|no|never|issue|problem)\b|\b(bathrooms?|toilets?|washrooms?)\b[^.]{0,40}\b(dirty|smell\w*|small|broken|not|no|leak\w*|bad|poor|worst|unclean)\b",
+        "Small / cramped rooms":       r"\bsmall\b|\btiny\b|\bcramped\b|\bcongested\b|\bnarrow\b|\bnot spacious\b|\bsuffocat\w*",
+        "Food / breakfast quality":    r"\b(food|breakfast|dinner|lunch|meals?|buffet|tea|coffee)\b[^.]{0,40}\b(bad|poor|worst|not|cold|tasteless|stale|average|terrible|horrible|awful|disappoint\w*|limited)\b|\b(bad|poor|worst|tasteless|stale|terrible|horrible|awful)\b[^.]{0,20}\b(food|breakfast|dinner|lunch|meals?)\b",
+        "Price / value for money":     r"\boverpriced\b|\bexpensive\b|\bcostly\b|\bover ?charg\w*|\bwaste of money\b|\bnot worth\b|\bhigh (price|rate|tariff|charges?)\b|\bextra (charge|money|cost)\w*|\brip ?off\b|\bhidden (charge|cost)\w*|\bcharged\b",
+        "Booking / refund / check-in":  r"\brefund\w*|\bcancel\w*|\bdeposit\b|\breservation\b|\bcheck ?-?in\b[^.]{0,40}\b(late|delay\w*|problem|issue|refus\w*|denied|not|wait\w*)\b",
+        "Parking problems":            r"\bparking\b[^.]{0,40}\b(not|no|problem|issue|difficult|limited|hard|bad)\b|\b(no|not|poor|limited)\b[^.]{0,20}\bparking\b",
+        "Bed / bedding discomfort":    r"\b(beds?|mattress\w*|pillows?\w*|bed ?sheets?|blankets?|linen)\b[^.]{0,40}\b(dirty|hard|uncomfortable|stain\w*|smell\w*|bad|poor|old|torn|not|worst|bugs?)\b"
     }
     
     neg_revs = sub_revs[sub_revs["vader_sentiment"] == "Negative"]
@@ -691,18 +740,26 @@ def get_tab3_html(sub_df, is_filtered=False):
         cnt = int(neg_texts.str.contains(ppat, regex=True).sum()) if n_neg > 0 else 0
         pct = round(cnt / n_neg * 100, 1) if n_neg > 0 else 0.0
         pain_items.append({"Pain Point": pname, "Negative Mentions": cnt, "% of negative reviews": pct})
-    pain_df = pd.DataFrame(pain_items).sort_values("Negative Mentions", ascending=True).tail(8)
+    pain_df = pd.DataFrame(pain_items).sort_values("Negative Mentions", ascending=True).reset_index(drop=True)
 
-    # Themes
+    # Themes (16 categories)
     theme_patterns = {
-        "Location": r"\blocation\b|\blocated\b|\bnearby\b|\bnear\b",
-        "Food": r"\bfood\b|\bdinner\b|\blunch\b|\bmeals?\b|\brestaurant\b",
-        "Breakfast": r"\bbreakfast\b",
-        "Service": r"\bservices?\b",
-        "Staff": r"\bstaffs?\b|\bemployees?\b|\breception\w*|\bmanager\b",
-        "Room": r"\brooms?\b",
-        "Cleanliness": r"\bclean\w*|\bdirty\b|\bhygien\w*",
-        "Facilities": r"\bfacilit\w+|\bamenit\w+"
+        "Room":             r"\brooms?\b",
+        "Staff":            r"\bstaffs?\b|\bemployees?\b|\breception\w*|\bmanager\b|\bcaretaker\b|\bhousekeeping\b|\bwaiters?\b",
+        "Service":          r"\bservices?\b",
+        "Cleanliness":      r"\bclean\w*|\bdirty\b|\bdirt\b|\bhygien\w*|\btidy\b|\bspotless\b|\bfilth\w*|\bunclean\b|\bsmell\w*|\bstink\w*|\bneat\b",
+        "Food":             r"\bfood\b|\bdinner\b|\blunch\b|\bmeals?\b|\bbuffet\b|\bmenu\b|\brestaurant\b",
+        "Breakfast":        r"\bbreakfast\b",
+        "Location":         r"\blocation\b|\blocated\b|\bnearby\b|\bnear\b|\bclose to\b|\bcentral\b",
+        "Wi-Fi":            r"\bwi-?fi\b|\bwifi\b|\binternet\b",
+        "Parking":          r"\bparking\b",
+        "Bathroom":         r"\bbathrooms?\b|\btoilets?\b|\bwashrooms?\b|\bshower\b|\bgeyser\b|\bhot water\b",
+        "Bed / bedding":    r"\bbeds?\b|\bmattress\w*|\bpillows?\b|\bbed ?sheets?\b|\bblankets?\b|\blinen\b",
+        "Price / value":    r"\bprice\w*|\bcosts?\b|\bexpensive\b|\bcheap\b|\bvalue\b|\bmoney\b|\bworth\b|\boverpriced\b|\baffordable\b|\bbudget\b|\bpocket\b",
+        "Facilities":       r"\bfacilit\w+|\bamenit\w+",
+        "Air conditioning": r"\bac\b|\ba/c\b|\baircon\w*|\bair[- ]?condition\w*|\bcooling\b",
+        "Noise":            r"\bnois\w+|\bloud\b",
+        "View":             r"\bviews?\b"
     }
     sub_texts = sub_revs["text_light"].fillna("").str.lower()
     sub_vader = sub_revs["vader_sentiment"].values
@@ -711,28 +768,65 @@ def get_tab3_html(sub_df, is_filtered=False):
         m_bool = sub_texts.str.contains(tpat, regex=True).values
         tot = int(m_bool.sum())
         pos = int(((m_bool) & (sub_vader == "Positive")).sum())
-        pct = round(pos / tot * 100, 1) if tot > 0 else 0.0
-        theme_items.append({"Theme": tname, "Total Mentions": tot, "% Positive": pct})
-    theme_df = pd.DataFrame(theme_items).sort_values("% Positive", ascending=True)
+        neu = int(((m_bool) & (sub_vader == "Neutral")).sum())
+        neg = int(((m_bool) & (sub_vader == "Negative")).sum())
+        theme_items.append({
+            "Theme": tname, "Total Mentions": tot,
+            "% Positive": round(pos / tot * 100, 1) if tot > 0 else 0.0,
+            "% Neutral": round(neu / tot * 100, 1) if tot > 0 else 0.0,
+            "% Negative": round(neg / tot * 100, 1) if tot > 0 else 0.0
+        })
+    theme_df = pd.DataFrame(theme_items).sort_values("% Positive", ascending=False).reset_index(drop=True)
 
     fig_tm2 = make_subplots(
         rows=1, cols=2,
-        horizontal_spacing=0.18,
-        subplot_titles=("Top Customer Pain Points [Dynamic]", "Experience Themes (% Positive) [Dynamic]")
+        horizontal_spacing=0.22,
+        subplot_titles=("Customer Pain Points in Negative Reviews [Dynamic]", "Review Sentiment by Theme Mentioned [Dynamic]")
     )
     fig_tm2.add_trace(go.Bar(
         y=pain_df["Pain Point"], x=pain_df["Negative Mentions"], orientation="h",
-        marker_color="#ef4444", text=[f"{m:,} ({p:.1f}%)" for m, p in zip(pain_df["Negative Mentions"], pain_df["% of negative reviews"])],
-        textposition="inside", showlegend=False
+        marker_color="#c0392b",
+        text=[f"{m:,} ({p:.1f}%)" if m > 0 else "0" for m, p in zip(pain_df["Negative Mentions"], pain_df["% of negative reviews"])],
+        textposition="auto",
+        hovertemplate="<b>%{y}</b><br>Negative Mentions: %{x:,} (%{text})<extra></extra>",
+        showlegend=False
     ), row=1, col=1)
     
-    fig_tm2.add_trace(go.Bar(
-        y=theme_df["Theme"], x=theme_df["% Positive"], orientation="h",
-        marker_color="#10b981", text=[f"{v:.1f}%" for v in theme_df["% Positive"]],
-        textposition="inside", showlegend=False
-    ), row=1, col=2)
+    if len(theme_df) > 0:
+        fig_tm2.add_trace(go.Bar(
+            y=theme_df["Theme"], x=theme_df["% Positive"], orientation="h",
+            marker_color="#2e7d32", name="Positive",
+            hovertemplate="<b>%{y}</b><br>Positive: %{x:.1f}%<extra></extra>",
+            showlegend=True
+        ), row=1, col=2)
+        fig_tm2.add_trace(go.Bar(
+            y=theme_df["Theme"], x=theme_df["% Neutral"], orientation="h",
+            marker_color="#85929e", name="Neutral",
+            hovertemplate="<b>%{y}</b><br>Neutral: %{x:.1f}%<extra></extra>",
+            showlegend=True
+        ), row=1, col=2)
+        fig_tm2.add_trace(go.Bar(
+            y=theme_df["Theme"], x=theme_df["% Negative"], orientation="h",
+            marker_color="#c0392b", name="Negative",
+            hovertemplate="<b>%{y}</b><br>Negative: %{x:.1f}%<extra></extra>",
+            showlegend=True
+        ), row=1, col=2)
     fig_tm2.for_each_annotation(lambda a: a.update(font=dict(size=12, color="#1e293b", family="Inter, sans-serif")))
-    fig_tm2.update_layout(height=380, margin=dict(l=25, r=25, t=45, b=25), template="plotly_white")
+    fig_tm2.update_xaxes(title_text="Negative review mentions", row=1, col=1)
+    fig_tm2.update_xaxes(title_text="Share of reviews mentioning the theme (%)", range=[0, 100], row=1, col=2)
+    fig_tm2.update_layout(
+        barmode="stack",
+        height=540,
+        margin=dict(l=25, r=25, t=45, b=55),
+        template="plotly_white",
+        legend=dict(
+            orientation="h",
+            y=-0.14,
+            x=0.75,
+            xanchor="center",
+            font=dict(size=11, family="Inter, sans-serif")
+        )
+    )
 
     # Row 3: Word Frequency & Bigrams [Dynamic]
     stop = set(stopwords.words("english")) - {"not", "no"}
@@ -807,9 +901,9 @@ def get_tab3_html(sub_df, is_filtered=False):
     rev_tbl = "<table class='dataset-table' style='width:100%; border-collapse:collapse; font-size:12px; margin-top:10px;'>"
     rev_tbl += "<thead><tr style='background:#f1f5f9; color:#334155; border-bottom:2px solid #cbd5e1;'><th style='padding:8px 10px; width:22%;'>Hotel Name</th><th style='padding:8px 10px; width:12%;'>Location</th><th style='padding:8px 10px; width:12%;'>Category</th><th style='padding:8px 10px; width:8%; text-align:center;'>Rating</th><th style='padding:8px 10px; width:12%; text-align:center;'>VADER Sentiment</th><th style='padding:8px 10px;'>Review Text Excerpt</th></tr></thead><tbody>"
     for _, r in rev_sample.iterrows():
-        sent = r["vader_sentiment"]
+        sent = str(r["vader_sentiment"])
         b_class = "badge-vader-pos" if sent == "Positive" else ("badge-vader-neg" if sent == "Negative" else "badge-vader-neu")
-        rev_tbl += f"<tr style='border-bottom:1px solid #f1f5f9;'><td style='padding:7px 10px; font-weight:600;'>{r['hotel_name']}</td><td style='padding:7px 10px;'>{r['analysis_location']}</td><td style='padding:7px 10px;'>{r['hotel_category_clean']}</td><td style='padding:7px 10px; text-align:center;'>★ {r['review_rating_5']:.1f}</td><td style='padding:7px 10px; text-align:center;'><span class='{b_class}'>{sent}</span></td><td style='padding:7px 10px; color:#334155;'>{r['text_light']}</td></tr>"
+        rev_tbl += f"<tr style='border-bottom:1px solid #f1f5f9;'><td style='padding:7px 10px; font-weight:600;'>{html_lib.escape(str(r['hotel_name']))}</td><td style='padding:7px 10px;'>{html_lib.escape(str(r['analysis_location']))}</td><td style='padding:7px 10px;'>{html_lib.escape(str(r['hotel_category_clean']))}</td><td style='padding:7px 10px; text-align:center;'>★ {r['review_rating_5']:.1f}</td><td style='padding:7px 10px; text-align:center;'><span class='{b_class}'>{html_lib.escape(sent)}</span></td><td style='padding:7px 10px; color:#334155;'>{html_lib.escape(str(r['text_light']))}</td></tr>"
     rev_tbl += "</tbody></table>"
 
     pos_p = (sub_revs["vader_sentiment"] == "Positive").mean() * 100
@@ -833,7 +927,7 @@ def get_tab3_html(sub_df, is_filtered=False):
     <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-top:20px;">
         <h4 style="margin:0 0 8px 0; color:#1e293b;">Key Text Mining Takeaways [Dynamic Recomputed]:</h4>
         <ul style="margin:0; padding-left:20px; font-size:13px; color:#475569; line-height:1.6;">
-            <li><b>Overall Sentiment:</b> <b>{pos_p:.1f}%</b> of reviews are VADER positive, <b>{neg_p:.1f}%</b> negative, <b>{neu_p:.1f}%</b> neutral. VADER achieves <b>{acc*100:.2f}%</b> agreement with customer star ratings (Macro-F1: <b>{mf1:.4f}</b>, Cohen's Kappa: <b>{kappa:.4f}</b>).</li>
+            <li><b>Overall Sentiment:</b> <b>{pos_p:.1f}%</b> of reviews are VADER positive, <b>{neg_p:.1f}%</b> negative, <b>{neu_p:.1f}%</b> neutral. VADER achieves <b>{acc*100:.2f}%</b> agreement with customer star ratings (Macro-F1: <b>{mf1:.4f}</b>).</li>
             <li><b>Primary Pain Points:</b> <i>Cleanliness / hygiene</i> and <i>Poor maintenance</i> drive complaints across negative reviews.</li>
             <li><b>Primary Delight Drivers:</b> <i>Location</i> and <i>Food / Breakfast</i> drive the highest customer satisfaction.</li>
         </ul>
@@ -907,7 +1001,7 @@ def get_tab4_html(search_term=''):
     table_html = "<table style='width:100%; border-collapse:collapse; font-size:13px; background:#fff;'>"
     table_html += "<tr style='background:#f1f5f9; border-bottom:2px solid #cbd5e1;'>" + "".join([f"<th style='padding:8px 12px; text-align:left;'>{c}</th>" for c in display_tbl.columns]) + "</tr>"
     for _, r in display_tbl.iterrows():
-        table_html += "<tr style='border-bottom:1px solid #e2e8f0;'>" + "".join([f"<td style='padding:8px 12px;'>{v}</td>" for v in r.values]) + "</tr>"
+        table_html += "<tr style='border-bottom:1px solid #e2e8f0;'>" + "".join([f"<td style='padding:8px 12px;'>{html_lib.escape(str(v))}</td>" for v in r.values]) + "</tr>"
     table_html += "</table>"
 
     html = f"""
@@ -943,11 +1037,7 @@ def get_tab4_html(search_term=''):
     return html
 
 # -------------------------------------------------------------
-# RENDER COMPLETE HTML WRAPPER & SNAPSHOTS
-# -------------------------------------------------------------
-
-# -------------------------------------------------------------
-# BUILD TAB 5 CONTENT (FINAL DATASET TABLE & EXPORT)
+# BUILD TAB 1 CONTENT (FINAL DATASET TABLE & EXPORT)
 # -------------------------------------------------------------
 def get_tab5_html(sub_df):
     cols = ["hotel_name", "location", "hotel_category", "data_type", "price", "customer_rating", "review_count", "amenity_count", "success"]
@@ -962,7 +1052,7 @@ def get_tab5_html(sub_df):
     for _, r in page_hotels.iterrows():
         is_succ = int(r["success"]) == 1
         badge = "<span style='display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;'>1 (Successful)</span>" if is_succ else "<span style='display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1;'>0 (Not Successful)</span>"
-        tbl_html += f"<tr style='border-bottom:1px solid #f1f5f9;'><td style='padding:8px 12px; font-weight:600; color:#0f172a;'>{r['hotel_name']}</td><td style='padding:8px 12px;'>{r['location']}</td><td style='padding:8px 12px;'>{r['hotel_category']}</td><td style='padding:8px 12px;'>{r['data_type']}</td><td style='padding:8px 12px; text-align:right; font-weight:500;'>₹{r['price']:,.0f}</td><td style='padding:8px 12px; text-align:center;'>★ {r['customer_rating']:.1f}</td><td style='padding:8px 12px; text-align:right;'>{int(r['review_count']):,}</td><td style='padding:8px 12px; text-align:center;'>{int(r['amenity_count'])}</td><td style='padding:8px 12px; text-align:center;'>{badge}</td></tr>"
+        tbl_html += f"<tr style='border-bottom:1px solid #f1f5f9;'><td style='padding:8px 12px; font-weight:600; color:#0f172a;'>{html_lib.escape(str(r['hotel_name']))}</td><td style='padding:8px 12px;'>{html_lib.escape(str(r['location']))}</td><td style='padding:8px 12px;'>{html_lib.escape(str(r['hotel_category']))}</td><td style='padding:8px 12px;'>{html_lib.escape(str(r['data_type']))}</td><td style='padding:8px 12px; text-align:right; font-weight:500;'>₹{r['price']:,.0f}</td><td style='padding:8px 12px; text-align:center;'>★ {r['customer_rating']:.1f}</td><td style='padding:8px 12px; text-align:right;'>{int(r['review_count']):,}</td><td style='padding:8px 12px; text-align:center;'>{int(r['amenity_count'])}</td><td style='padding:8px 12px; text-align:center;'>{badge}</td></tr>"
     tbl_html += "</tbody></table>"
 
     html = f"""
@@ -996,6 +1086,201 @@ def get_tab5_html(sub_df):
     </div>
     """
     return html
+
+# -------------------------------------------------------------
+# BUILD TAB 6 CONTENT (STATIC INSIGHTS & RECOMMENDATIONS)
+# -------------------------------------------------------------
+def get_tab6_html():
+    return """
+    <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:12px; padding:24px 28px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+        <h1 style="font-size: 22px; font-weight: 700; color: #0f172a; margin: 0 0 10px 0; letter-spacing: -0.3px;">Business Insights and Recommendations</h1>
+        <div class="tab-note-banner" style="background: #f1f5f9; border-left: 4px solid #3b82f6; padding: 12px 16px; border-radius: 8px; font-size: 12.5px; color: #334155; margin-bottom: 22px; line-height: 1.55;">
+            <b>Notice:</b> Static content: based on the full project corpus; not affected by the global filters. Findings are associations, not causes. Success is a rating-based proxy (rating &ge; 4.0). About 63% of hotels are synthetic; text mining covers real hotels only.
+        </div>
+
+        <h2 style="font-size: 17px; font-weight: 700; color: #1e293b; margin: 24px 0 14px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">Section A: Business Insights</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px;">
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">1. Price and Amenity Count Alone Say Little About Guest Ratings</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Across the combined data, room price has only a weak linear correlation with customer ratings (r = 0.086), and amenity count shows a weak negative correlation (r = &minus;0.134). Among real hotels alone, both are weak and positive (r = 0.182 and r = 0.112).</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Higher prices and more amenities do not automatically translate into better guest satisfaction.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: EDA tab</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">2. Operational Failures Are the Biggest Sources of Dissatisfaction</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Cleanliness accounts for 1,497 negative reviews (30.7%), followed by rude or unhelpful staff (992; 20.4%).</li>
+                        <li style="margin-top: 6px;">Bedding (55.7% negative sentiment), bathrooms (52.0%) and air conditioning (50.8%) show particularly high dissatisfaction.</li>
+                    </ul>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Text Mining tab</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">3. Customer Perception of Value Depends on the Experience Delivered</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>29.9% of 3,565 price/value-related reviews are negative, compared with an overall negative sentiment rate of 18.6%.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Guests are more likely to express dissatisfaction when the price does not match their experience.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Text Mining tab</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">4. Hotel Performance Varies Across Categories and Markets</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Success rates range from 69.7% for 1-star hotels to 92.0% for 5-star hotels.</li>
+                        <li style="margin-top: 6px;">In the combined data, Goa records 88.6% success, while Hyderabad records 72.0%.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Performance should be benchmarked against hotel category and local market expectations.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: EDA tab</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">5. Amenity Strategy Requires Complementarity, Not Just Quantity</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Wi-Fi is present in 95.38% of hotels in the Apriori dataset; air conditioning in 91.19%.</li>
+                        <li style="margin-top: 6px;">The combination Business Center + Pool -&gt; Spa has a lift of 6.19 and 74.02% confidence.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Reliable essential amenities are baseline expectations, while premium facilities may be more meaningful in complementary bundles.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Association Rules tab</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 14.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">6. Predictive Analytics Can Support Better Decisions</div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>The Random Forest model achieves 81.34% accuracy, with a 0.6571 Macro-F1 score.</li>
+                        <li style="margin-top: 6px;">Price, review count and amenity count are its leading predictive features.</li>
+                    </ul>
+                    <div style="background: #f8fafc; border-left: 3px solid #6366f1; padding: 8px 12px; margin: 10px 0 6px 0; border-radius: 4px; font-size: 12.5px; color: #1e293b; line-height: 1.5;">
+                        <strong>Insight:</strong> Hotel-level prediction, supported by customer-feedback analysis, can help identify properties that need attention.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 8px;">Source: Predictive Models tab</div>
+            </div>
+        </div>
+
+        <h2 style="font-size: 17px; font-weight: 700; color: #1e293b; margin: 24px 0 14px 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px;">Section B: Business Recommendations</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px;">
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">1. Prioritize Operational Quality</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Introduce digital housekeeping checklists and room inspections before guest check-in.</li>
+                        <li style="margin-top: 6px;">Schedule preventive maintenance for bathrooms, plumbing, air conditioning and bedding.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Monthly cleanliness and maintenance-related complaint rates.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 2</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">2. Strengthen Staff Service and Complaint Resolution</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Train front-desk and service teams in communication, complaint handling and service recovery.</li>
+                        <li style="margin-top: 6px;">Empower staff to resolve routine guest issues promptly.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Staff-related negative sentiment and service complaint frequency.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 2</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">3. Align Room Pricing with Perceived Value</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Communicate inclusions and total charges clearly to avoid price surprises.</li>
+                        <li style="margin-top: 6px;">Benchmark room prices against comparable local hotels and ensure room condition supports the price charged.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Negative sentiment in price/value reviews.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 3</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">4. Ensure Reliability of Essential Amenities</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; white-space: nowrap;">High Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Regularly test Wi-Fi, air conditioning and parking facilities, which are among the least positively reviewed amenities.</li>
+                        <li style="margin-top: 6px;">Prioritize maintaining existing facilities before investing in additional amenities.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Amenity-related complaints and equipment failure reports.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insights 2 and 5</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">5. Invest in Amenities Strategically</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; white-space: nowrap;">Medium Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Evaluate complementary amenities before investing in premium facilities such as spas.</li>
+                        <li style="margin-top: 6px;">Use association-rule evidence alongside local demand, investment costs and expected utilization.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Amenity utilization and incremental revenue.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insight 5</div>
+            </div>
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">6. Adopt Data-Driven Performance Monitoring</div>
+                        <span style="display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; white-space: nowrap;">Medium Priority</span>
+                    </div>
+                    <ul style="margin: 0 0 10px 18px; padding: 0; font-size: 13px; color: #334155; line-height: 1.55;">
+                        <li>Use the interactive dashboard to monitor ratings, review sentiment, pricing, hotel category and city-level performance.</li>
+                        <li style="margin-top: 6px;">Use the Random Forest model to flag properties for further investigation, not as a substitute for managerial judgement.</li>
+                        <li style="margin-top: 6px;">Encourage genuine post-stay feedback and track recurring customer concerns.</li>
+                    </ul>
+                    <div style="font-size: 13px; color: #0f172a; margin-top: 8px;">
+                        <b>Measure:</b> Rating trends, review volume and negative sentiment over time.
+                    </div>
+                </div>
+                <div style="font-size: 11.5px; color: #94a3b8; margin-top: 10px;">Based on Insights 4 and 6</div>
+            </div>
+        </div>
+
+        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1px solid #86efac; border-radius: 12px; padding: 18px 22px; color: #166534; margin-top: 12px; line-height: 1.6; font-size: 13.5px; box-shadow: 0 1px 4px rgba(0,0,0,0.03);">
+            <strong>Overall Strategy:</strong> Fix operational weaknesses first, deliver value consistent with pricing, maintain essential amenities, and invest in differentiated offerings only when supported by evidence.
+        </div>
+    </div>
+    """
 
 def build_full_page(title, filter_html, kpi_html, nav_html, tab_content_html):
     return f"""<!DOCTYPE html>
@@ -1040,6 +1325,21 @@ def main():
     print("DEMO SCENARIO: Coimbatore, 4-star hotel, Price ₹2,000 - ₹7,000")
     print("=" * 70)
 
+    # Remove stale old-order screenshot artifacts (preserve subfolders like Manual Screenshots / report_figures)
+    stale_names = [
+        "tab1_eda.html", "tab1_eda.png",
+        "tab2_models.html", "tab2_models.png",
+        "tab3_text_mining.html", "tab3_text_mining.png",
+        "tab3_text_mining_before.html", "tab3_text_mining_before.png",
+        "tab3_text_mining_after.html", "tab3_text_mining_after.png",
+        "tab4_association_rules.html", "tab4_association_rules.png",
+        "tab5_final_dataset.html", "tab5_final_dataset.png",
+    ]
+    for sname in stale_names:
+        spath = os.path.join(SCREENSHOTS_DIR, sname)
+        if os.path.isfile(spath):
+            os.remove(spath)
+
     # Filtered slice for Coimbatore, 4-star hotel, narrower price range
     coimb_4star_df = clean_hotels_df[
         (clean_hotels_df["location"] == "Coimbatore") &
@@ -1049,31 +1349,48 @@ def main():
     ]
     print(f"Demo Slice: {len(coimb_4star_df)} hotels in Coimbatore, 4-star, ₹2,000 - ₹7,000.")
 
-    # 1. Dashboard Overview / Landing View (Full Corpus: 4,551 hotels, full price span ₹392 - ₹61,327, Tab 1)
-    html_dash = build_full_page(
-        "Hotel Success Intelligence & Decision Support Dashboard (Default View)",
+    # 1. Tab 1 & Default Landing View: Final Dataset Table & Dual CSV Export (Index 0)
+    html1 = build_full_page(
+        "Tab 1: Final Project Dataset & Export Table (Default Landing View)",
         render_filters(loc="All Locations", cat="All Categories", dt="Both", price_text="₹392 - ₹61,327", rating_text="0.0 - 5.0", n_sel=len(clean_hotels_df), n_tot=len(clean_hotels_df)),
         render_kpis(clean_hotels_df),
         render_tabs_nav(0),
-        get_tab1_html(clean_hotels_df)
+        get_tab5_html(clean_hotels_df)
     )
+    p_html1 = os.path.join(SCREENSHOTS_DIR, "tab1_final_dataset.html")
+    p_png1 = os.path.join(SCREENSHOTS_DIR, "tab1_final_dataset.png")
+    with open(p_html1, "w", encoding="utf-8") as f: f.write(html1)
+    take_snapshot(p_html1, p_png1, height=1800)
+
+    # Dashboard Overview / Default Landing View matches Tab 1 (Final Dataset)
     p_html_dash = os.path.join(SCREENSHOTS_DIR, "dashboard_overview.html")
     p_png_dash = os.path.join(SCREENSHOTS_DIR, "dashboard_overview.png")
-    with open(p_html_dash, "w", encoding="utf-8") as f: f.write(html_dash)
-    take_snapshot(p_html_dash, p_png_dash, height=1850)
-    shutil.copyfile(p_png_dash, os.path.join(SCREENSHOTS_DIR, "dashboard.png"))
+    shutil.copyfile(p_html1, p_html_dash)
+    shutil.copyfile(p_png1, p_png_dash)
+    shutil.copyfile(p_png1, os.path.join(SCREENSHOTS_DIR, "dashboard.png"))
 
-    # 2. Before Filters (Baseline 100% corpus state: 4,551 hotels)
+    # 2. Tab 2: Overview & EDA Full (Unfiltered, Index 1) & Filter Interaction Before/After
+    html2_eda = build_full_page(
+        "Tab 2: Overview & EDA (Full Corpus)",
+        render_filters(loc="All Locations", cat="All Categories", dt="Both", price_text="₹392 - ₹61,327", rating_text="0.0 - 5.0", n_sel=len(clean_hotels_df), n_tot=len(clean_hotels_df)),
+        render_kpis(clean_hotels_df),
+        render_tabs_nav(1),
+        get_tab1_html(clean_hotels_df)
+    )
+    p_html2_eda = os.path.join(SCREENSHOTS_DIR, "tab2_eda.html")
+    p_png2_eda = os.path.join(SCREENSHOTS_DIR, "tab2_eda.png")
+    with open(p_html2_eda, "w", encoding="utf-8") as f: f.write(html2_eda)
+    take_snapshot(p_html2_eda, p_png2_eda, height=2200)
+
     p_png_bef = os.path.join(SCREENSHOTS_DIR, "filter_interaction_before.png")
-    take_snapshot(p_html_dash, p_png_bef, height=1450)
+    take_snapshot(p_html2_eda, p_png_bef, height=1450)
     shutil.copyfile(p_png_bef, os.path.join(SCREENSHOTS_DIR, "dashboard_before_filters.png"))
 
-    # 3. After Filters (Demo Scenario: Coimbatore, 4-star hotel, ₹2,000 - ₹7,000)
     html_aft = build_full_page(
         "Filter Interaction (After Filtering: Coimbatore, 4-Star Hotel)",
         render_filters(loc="Coimbatore", cat="4-star hotel", dt="Both", price_text="₹2,000 - ₹7,000", rating_text="0.0 - 5.0", n_sel=len(coimb_4star_df), n_tot=len(clean_hotels_df)),
         render_kpis(coimb_4star_df),
-        render_tabs_nav(0),
+        render_tabs_nav(1),
         get_tab1_html(coimb_4star_df)
     )
     p_html_aft = os.path.join(SCREENSHOTS_DIR, "filter_interaction_after.html")
@@ -1082,78 +1399,74 @@ def main():
     take_snapshot(p_html_aft, p_png_aft, height=1450)
     shutil.copyfile(p_png_aft, os.path.join(SCREENSHOTS_DIR, "dashboard_after_filters.png"))
 
-    # 4. Tab 1: EDA Full (Unfiltered)
-    p_png1 = os.path.join(SCREENSHOTS_DIR, "tab1_eda.png")
-    take_snapshot(p_html_dash, p_png1, height=2200)
-
-    # 5. Tab 2: Predictive Models (Unfiltered Test Set)
-    html2 = build_full_page(
-        "Tab 2: Predictive Models (Model Benchmarks & Test Evaluation)",
+    # 3. Tab 3: Predictive Models (Unfiltered Test Set, Index 2)
+    html3_mod = build_full_page(
+        "Tab 3: Predictive Models (Model Benchmarks & Test Evaluation)",
         render_filters(loc="All Locations", cat="All Categories", dt="Both", price_text="₹392 - ₹61,327", rating_text="0.0 - 5.0", n_sel=len(clean_hotels_df), n_tot=len(clean_hotels_df)),
         render_kpis(clean_hotels_df),
-        render_tabs_nav(1),
+        render_tabs_nav(2),
         get_tab2_html(clean_hotels_df)
     )
-    p_html2 = os.path.join(SCREENSHOTS_DIR, "tab2_models.html")
-    p_png2 = os.path.join(SCREENSHOTS_DIR, "tab2_models.png")
-    with open(p_html2, "w", encoding="utf-8") as f: f.write(html2)
-    take_snapshot(p_html2, p_png2, height=1900)
+    p_html3_mod = os.path.join(SCREENSHOTS_DIR, "tab3_models.html")
+    p_png3_mod = os.path.join(SCREENSHOTS_DIR, "tab3_models.png")
+    with open(p_html3_mod, "w", encoding="utf-8") as f: f.write(html3_mod)
+    take_snapshot(p_html3_mod, p_png3_mod, height=1900)
 
-    # 6. Tab 3: Text Mining (Before Filtering - Full 26,175 reviews)
-    html3_bef = build_full_page(
-        "Tab 3: Text Mining (Unfiltered Baseline Corpus)",
-        render_filters(loc="All Locations", cat="All Categories", dt="Both", price_text="₹392 - ₹61,327", rating_text="0.0 - 5.0", n_sel=len(clean_hotels_df), n_tot=len(clean_hotels_df)),
-        render_kpis(clean_hotels_df),
-        render_tabs_nav(2),
-        get_tab3_html(clean_hotels_df, is_filtered=False)
-    )
-    p_html3_bef = os.path.join(SCREENSHOTS_DIR, "tab3_text_mining_before.html")
-    p_png3_bef = os.path.join(SCREENSHOTS_DIR, "tab3_text_mining_before.png")
-    with open(p_html3_bef, "w", encoding="utf-8") as f: f.write(html3_bef)
-    take_snapshot(p_html3_bef, p_png3_bef, height=2400)
-    shutil.copyfile(p_png3_bef, os.path.join(SCREENSHOTS_DIR, "tab3_text_mining.png"))
-
-    # 7. Tab 3: Text Mining (After Filtering - Coimbatore 4-Star Hotel)
-    html3_aft = build_full_page(
-        "Tab 3: Text Mining (Dynamic Recomputed: Coimbatore 4-Star)",
-        render_filters(loc="Coimbatore", cat="4-star hotel", dt="Both", price_text="₹2,000 - ₹7,000", rating_text="0.0 - 5.0", n_sel=len(coimb_4star_df), n_tot=len(clean_hotels_df)),
-        render_kpis(coimb_4star_df),
-        render_tabs_nav(2),
-        get_tab3_html(coimb_4star_df, is_filtered=True)
-    )
-    p_html3_aft = os.path.join(SCREENSHOTS_DIR, "tab3_text_mining_after.html")
-    p_png3_aft = os.path.join(SCREENSHOTS_DIR, "tab3_text_mining_after.png")
-    with open(p_html3_aft, "w", encoding="utf-8") as f: f.write(html3_aft)
-    take_snapshot(p_html3_aft, p_png3_aft, height=2400)
-
-    # 8. Tab 4: Association Rules with "Spa" Search Filter
-    html4 = build_full_page(
-        "Tab 4: Association Rules (Filtered by Amenity: 'Spa')",
+    # 4. Tab 4: Text Mining (Before Filtering - Full 26,175 reviews, Index 3)
+    html4_bef = build_full_page(
+        "Tab 4: Text Mining (Unfiltered Baseline Corpus)",
         render_filters(loc="All Locations", cat="All Categories", dt="Both", price_text="₹392 - ₹61,327", rating_text="0.0 - 5.0", n_sel=len(clean_hotels_df), n_tot=len(clean_hotels_df)),
         render_kpis(clean_hotels_df),
         render_tabs_nav(3),
-        get_tab4_html(search_term="Spa")
+        get_tab3_html(clean_hotels_df, is_filtered=False)
     )
-    p_html4 = os.path.join(SCREENSHOTS_DIR, "tab4_association_rules.html")
-    p_png4 = os.path.join(SCREENSHOTS_DIR, "tab4_association_rules.png")
-    with open(p_html4, "w", encoding="utf-8") as f: f.write(html4)
-    take_snapshot(p_html4, p_png4, height=1900)
+    p_html4_bef = os.path.join(SCREENSHOTS_DIR, "tab4_text_mining_before.html")
+    p_png4_bef = os.path.join(SCREENSHOTS_DIR, "tab4_text_mining_before.png")
+    with open(p_html4_bef, "w", encoding="utf-8") as f: f.write(html4_bef)
+    take_snapshot(p_html4_bef, p_png4_bef, height=2400)
+    shutil.copyfile(p_png4_bef, os.path.join(SCREENSHOTS_DIR, "tab4_text_mining.png"))
 
-    # 9. Tab 5: Final Dataset Table & Dual CSV Export
-    html5 = build_full_page(
-        "Tab 5: Final Project Dataset & Export Table",
+    # Tab 4: Text Mining (After Filtering - Coimbatore 4-Star Hotel, Index 3)
+    html4_aft = build_full_page(
+        "Tab 4: Text Mining (Dynamic Recomputed: Coimbatore 4-Star)",
+        render_filters(loc="Coimbatore", cat="4-star hotel", dt="Both", price_text="₹2,000 - ₹7,000", rating_text="0.0 - 5.0", n_sel=len(coimb_4star_df), n_tot=len(clean_hotels_df)),
+        render_kpis(coimb_4star_df),
+        render_tabs_nav(3),
+        get_tab3_html(coimb_4star_df, is_filtered=True)
+    )
+    p_html4_aft = os.path.join(SCREENSHOTS_DIR, "tab4_text_mining_after.html")
+    p_png4_aft = os.path.join(SCREENSHOTS_DIR, "tab4_text_mining_after.png")
+    with open(p_html4_aft, "w", encoding="utf-8") as f: f.write(html4_aft)
+    take_snapshot(p_html4_aft, p_png4_aft, height=2400)
+
+    # 5. Tab 5: Association Rules with "Spa" Search Filter (Index 4)
+    html5_ar = build_full_page(
+        "Tab 5: Association Rules (Filtered by Amenity: 'Spa')",
         render_filters(loc="All Locations", cat="All Categories", dt="Both", price_text="₹392 - ₹61,327", rating_text="0.0 - 5.0", n_sel=len(clean_hotels_df), n_tot=len(clean_hotels_df)),
         render_kpis(clean_hotels_df),
         render_tabs_nav(4),
-        get_tab5_html(clean_hotels_df)
+        get_tab4_html(search_term="Spa")
     )
-    p_html5 = os.path.join(SCREENSHOTS_DIR, "tab5_final_dataset.html")
-    p_png5 = os.path.join(SCREENSHOTS_DIR, "tab5_final_dataset.png")
-    with open(p_html5, "w", encoding="utf-8") as f: f.write(html5)
-    take_snapshot(p_html5, p_png5, height=1800)
+    p_html5_ar = os.path.join(SCREENSHOTS_DIR, "tab5_association_rules.html")
+    p_png5_ar = os.path.join(SCREENSHOTS_DIR, "tab5_association_rules.png")
+    with open(p_html5_ar, "w", encoding="utf-8") as f: f.write(html5_ar)
+    take_snapshot(p_html5_ar, p_png5_ar, height=1900)
+
+    # 6. Tab 6: Insights & Recommendations (Static, Index 5)
+    html6_ins = build_full_page(
+        "Tab 6: Insights & Recommendations",
+        render_filters(loc="All Locations", cat="All Categories", dt="Both", price_text="₹392 - ₹61,327", rating_text="0.0 - 5.0", n_sel=len(clean_hotels_df), n_tot=len(clean_hotels_df)),
+        render_kpis(clean_hotels_df),
+        render_tabs_nav(5),
+        get_tab6_html()
+    )
+    p_html6_ins = os.path.join(SCREENSHOTS_DIR, "tab6_insights_recommendations.html")
+    p_png6_ins = os.path.join(SCREENSHOTS_DIR, "tab6_insights_recommendations.png")
+    with open(p_html6_ins, "w", encoding="utf-8") as f: f.write(html6_ins)
+    take_snapshot(p_html6_ins, p_png6_ins, height=1900)
 
     print("\n" + "=" * 70)
-    print("ALL 9 EVIDENCE SCREENSHOTS GENERATED SUCCESSFULLY!")
+    print("ALL 6 TAB & FILTER INTERACTION EVIDENCE SCREENSHOTS GENERATED SUCCESSFULLY!")
     print("=" * 70)
 
 if __name__ == "__main__":
