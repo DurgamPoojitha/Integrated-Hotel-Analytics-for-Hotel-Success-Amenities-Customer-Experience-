@@ -1,418 +1,1044 @@
 # Integrated Hotel Analytics for Hotel Success, Amenities & Customer Experience
 
-[![Python 3.10 | 3.11 | 3.12](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![Jupyter Notebook](https://img.shields.io/badge/Jupyter-Notebooks-orange.svg)](https://jupyter.org/)
-[![Plotly & ipywidgets](https://img.shields.io/badge/Dashboard-Plotly%20%26%20ipywidgets-6366f1.svg)](https://plotly.com/)
-[![Scikit-Learn](https://img.shields.io/badge/ML-Scikit--Learn-F7931E.svg)](https://scikit-learn.org/)
-[![NLTK VADER](https://img.shields.io/badge/NLP-NLTK%20VADER-388e3c.svg)](https://www.nltk.org/)
-[![Apriori mlxtend](https://img.shields.io/badge/Association%20Rules-mlxtend-8e24aa.svg)](https://rasbt.github.io/mlxtend/)
-[![Academic Project](https://img.shields.io/badge/Course-Business%20Analytics%20(23CSE452)-red.svg)]()
+![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue)
+![Course](https://img.shields.io/badge/Course-23CSE452-purple)
+![Machine Learning](https://img.shields.io/badge/ML-Scikit--Learn-orange)
+![NLP](https://img.shields.io/badge/NLP-VADER-green)
+![Association Mining](https://img.shields.io/badge/Association%20Mining-Apriori-teal)
+![Dashboard](https://img.shields.io/badge/Dashboard-Plotly%20%7C%20ipywidgets-blueviolet)
+![Team](https://img.shields.io/badge/Team-Team%205-success)
 
-> **Business Analytics (`23CSE452`) Capstone Project — Team 5**  
-> An end-to-end analytical intelligence system combining **Exploratory Data Analysis (EDA)**, **Conditional Tabular GAN (CTGAN) synthetic data generation**, **predictive machine learning benchmarks**, **VADER text mining on 26,175 customer reviews**, **Apriori association rule mining across 33 standardized amenities**, and an **interactive 4-tab decision-support dashboard**.
+**Business Analytics (23CSE452) – Final Project 2026**  
+**Amrita Vishwa Vidyapeetham | Team 5**
+
+An end-to-end Business Analytics project that combines Exploratory Data Analysis, synthetic data generation, predictive machine learning, customer review text mining, VADER sentiment analysis and Apriori Association Rule Mining to understand hotel success, amenities and customer experience across 12 Indian markets.
 
 ---
 
 ## Table of Contents
-1. [Executive Summary & Analytical Highlights](#1-executive-summary--analytical-highlights)
-2. [Project Architecture & Repository Directory Tree](#2-project-architecture--repository-directory-tree)
-3. [Analytical Workstreams & Notebook Mapping](#3-analytical-workstreams--notebook-mapping)
-4. [Runtime, OS & Version Requirements](#4-runtime-os--version-requirements)
-5. [Installation & Environment Setup](#5-installation--environment-setup)
-6. [Commands to Reproduce All Notebooks, Models & Application](#6-commands-to-reproduce-all-notebooks-models--application)
-7. [Dataset Documentation: Provenance, License & Access](#7-dataset-documentation-provenance-license--access)
-8. [Benchmarking Results & Key Metrics](#8-benchmarking-results--key-metrics)
-9. [Academic Team & Attribution](#9-academic-team--attribution)
+
+1. Project Overview
+2. Business Problem
+3. Project Objectives
+4. Project Architecture
+5. Repository Structure
+6. Dataset Collection and Description
+7. Unit 1 – Exploratory Data Analysis
+8. Unit 2 – Predictive Modelling
+9. Unit 3 – Text Mining and Sentiment Analysis
+10. Unit 3 – Apriori Association Rule Mining
+11. Comparative Analysis of Unit 3 Methods
+12. Integrated Business Insights
+13. Interactive Dashboard
+14. Results and Key Metrics
+15. Installation and Environment Setup
+16. Execution Guide
+17. Technologies Used
+18. Limitations
+19. Academic Team and Individual Contributions
+20. Project Management
+21. Final Submission Deliverables
+22. References
 
 ---
 
-## 1. Executive Summary & Analytical Highlights
+## 1. Project Overview
 
-This study investigates the primary determinants of hotel success across 12 major Indian metropolitan and leisure hospitality markets (Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Hyderabad, Pune, Jaipur, Goa, Kochi, Coimbatore, and Visakhapatnam). The project synthesizes quantitative property features, synthetic data augmentation, customer text sentiment, and market basket amenity interactions:
+The project investigates the factors associated with hotel success and customer satisfaction by analysing structured hotel information, customer reviews and amenity combinations.
 
-* **The Core Success Paradox**: Across 4,551 usable hotels, **81.7% (3,718 properties)** achieve the success proxy of observed customer rating $\ge 4.0$. However, linear pricing correlation with customer rating is negligible ($r = 0.086$), and total amenity count exhibits a slight negative correlation with rating ($r = -0.134$). Hotel success is driven not by raw price or amenity volume, but by service execution, customer review volume, and synergistic amenity combinations.
-* **Predictive Champion Architecture**: A tuned **Random Forest Classifier** (300 estimators, `max_depth=10`, `min_samples_split=5`, balanced class weighting across 21 predictors) achieved **81.34% Accuracy**, **0.6571 Macro-F1**, and an **ROC-AUC of 0.7072** on the stratified holdout test set ($N = 911$), outperforming Decision Trees (80.35%) and Logistic Regression (68.94%).
-* **The Operational Hygiene Collapse**: Natural language processing on 26,175 customer reviews reveals that while sentiment is predominantly positive (76.3% VADER positive), customer dissatisfaction is concentrated in fundamental operational failures: **cleanliness/hygiene defects account for 30.7% of all negative reviews (1,497 reviews)**, followed by **rude/unhelpful staff (20.4%, 992 reviews)**. Reviews explicitly discussing **Bedding (55.7% negative)**, **Bathrooms (52.0% negative)**, and **Air Conditioning (50.8% negative)** suffer severe negative sentiment compared to the 18.6% corpus baseline.
-* **The High-Lift Wellness Triad**: Association rule mining discovered **154 strong rules** ($\ge 5\%$ support, $\ge 60\%$ confidence, $\ge 2.0$ lift). Standalone spas are rare (11.96% market support); however, when paired with a **Pool and Business Center**, the likelihood of spa presence jumps by **6.19×** (`Business center, Pool → Spa`, Lift: 6.190, Confidence: 74.02%, Support: 6.57%).
+The framework integrates the following analytical methods:
+
+| Unit | Method | Purpose |
+|---|---|---|
+| Unit 1 | Data Preparation, EDA and Visualization | Understand hotel characteristics, distributions and relationships |
+| Unit 2 | Feature Engineering and Predictive Modelling | Identify important features and predict hotel success |
+| Unit 3 – Method 1 | Text Mining and Sentiment Analysis | Understand customer opinions, satisfaction and complaints |
+| Unit 3 – Method 2 | Apriori Association Rule Mining | Discover frequently occurring combinations of hotel amenities |
+
+CTGAN is additionally used for synthetic tabular data generation, and the analytical results are integrated into an interactive dashboard.
+
+### Analytical Highlights
+
+- 4,551 usable hotel records in the unified real and synthetic dataset.
+- 12 Indian markets included in the analysis.
+- 26,175 customer reviews analysed using NLP and VADER.
+- 33 standardized amenities considered for association rule mining.
+- 81.34% accuracy achieved by the tuned Random Forest model.
+- 76.3% positive customer sentiment.
+- 154 strong association rules discovered using Apriori.
+- Highest reported association lift of 6.190.
 
 ---
 
-## 2. Project Architecture & Repository Directory Tree
+## 2. Business Problem
 
-The repository preserves the project deliverables, organized into root notebooks, raw and unified datasets, text mining outputs, and the integrated dashboard deliverable package:
+The hospitality industry is highly competitive, and hotel success depends on several factors, including pricing, service quality, location, amenities and customer satisfaction.
+
+Although hotels collect large amounts of property information and customer feedback, these sources are not always analysed together.
+
+The project addresses the following business challenges:
+
+- Identifying hotel characteristics associated with higher customer ratings.
+- Understanding the factors influencing customer satisfaction.
+- Extracting recurring complaints from customer reviews.
+- Identifying relationships between hotel amenities.
+- Understanding how facility combinations differ across hotels.
+- Translating analytical findings into practical business recommendations.
+
+The proposed framework integrates structured and unstructured data analysis to provide a broader understanding of hotel performance.
+
+---
+
+## 3. Project Objectives
+
+1. Collect original hotel listing and customer review information across multiple Indian markets.
+2. Validate, clean and integrate the collected datasets.
+3. Perform exploratory data analysis and visualization.
+4. Apply feature engineering and dimensionality reduction.
+5. Develop and compare predictive classification models.
+6. Apply Text Mining and VADER sentiment analysis to customer reviews.
+7. Apply Apriori Association Rule Mining to discover amenity combinations.
+8. Compare both Unit 3 methods and derive integrated business insights.
+9. Develop an interactive dashboard integrating analytical outputs.
+10. Provide actionable recommendations for hotel management.
+
+---
+
+## 4. Project Architecture
 
 ```text
-.
-├── .gitignore                                                  # Git exclusion configuration for virtualenvs & cache
-├── README.md                                                   # Master comprehensive project documentation (this file)
-├── requirements.txt                                            # Root Python dependencies specification
-├── environment.yml                                             # Conda/Mamba virtual environment definition
-│
-├── BA_WebScapring.ipynb                                        # Stage 1: SerpApi Google Hotels scraper across 12 cities
-├── hotel_synthetic_data_ctgan_unique_hotel_names (1).ipynb     # Stage 2: CTGAN synthetic tabular data generator
-├── BA_total_Review1_Complete_CORRECTED (2).ipynb               # Stage 3: Review 1 EDA & tuned predictive ML benchmarks
-├── Text_Mining_Hotel_Reviews_Durgam_Poojitha (1) (1).ipynb     # Stage 4: Review 2 NLP text mining & VADER sentiment
-├── review2_updated.ipynb                                       # Stage 5: Review 2 integrated text mining & Apriori rules
-│
-├── data/                                                       # Root data directory
-│   ├── all_india_1685_unique_hotels.csv                        # Raw scraped hotel listings (1,685 unique properties)
-│   ├── all_india_hotel_cleaned.csv.zip                         # Raw customer reviews corpus (29,987 reviews, zipped)
-│   └── combined_real_synthetic_hotels.csv                      # Unified primary dataset (1,664 real + 2,887 synthetic)
-│
-├── text-mining-outputs/                                        # Stage 4 Text Mining standalone artifacts (36 files)
-│   ├── presentation_numbers.json                               # Central verified metrics and summary counts
-│   ├── review_level_sentiment.csv                              # 26,175 reviews with VADER sentiment classifications
-│   ├── hotel_level_text_sentiment.csv                          # Hotel-aggregated sentiment metrics (1,659 hotels)
-│   ├── pain_points.csv & pain_points.png                       # Ranked complaint drivers and visualization
-│   ├── theme_sentiment.csv & theme_sentiment.png               # 16 thematic categories sentiment distributions
-│   ├── sentiment_by_category.csv & sentiment_by_city.csv       # Sentiment breakdown across star ratings & cities
-│   ├── amenity_mention_sentiment.csv & amenity_sentiment.png   # Sentiment of sentences discussing specific amenities
-│   ├── amenity_listing_comparison.csv                          # Rating comparison of hotels listing vs not listing
-│   ├── word_frequency_top100.csv & top20_words.png             # Unigram frequencies and distribution chart
-│   ├── bigrams_top50.csv & trigrams_top50.csv                  # Multi-word n-gram collocation tables
-│   ├── top_bigrams_trigrams.png & top20_positive_words.png     # Visual n-gram and polarized lexical charts
-│   ├── top20_negative_words.png & word_cloud_clean.png         # Clean lemmatized customer review word cloud
-│   ├── classification_report.csv & confusion_matrix.png        # 3-class VADER vs. rating reference evaluation
-│   ├── binary_evaluation_metrics.csv                           # Forced binary & decisive signal evaluation metrics
-│   └── sentiment_evaluation_metrics.csv                        # Accuracy, Kappa, Spearman correlation, ROC-AUC
-│
-└── hotel-dashboard-deliverable/                                # Stage 6 Integrated Review 2 Master Deliverable Package
-    ├── README.txt                                              # Review 2 submission manifest and execution guide
-    │
-    ├── dashboard/                                              # Dashboard application source and documentation
-    │   ├── hotel_dashboard.ipynb                               # Master 5-cell interactive widget dashboard
-    │   ├── generate_dashboard_notebook.py                      # Automated compiler script to build dashboard notebook
-    │   ├── generate_screenshots.py                             # Headless Chrome snapshot capture utility
-    │   ├── test_dashboard_filters.py                           # Automated test suite for dynamic filtering
-    │   ├── DOCUMENTATION.md                                    # Technical architecture & methodology report
-    │   ├── USER_GUIDE.md                                       # Comprehensive user manual and filter guide
-    │   ├── verification_report.md                              # Stage A 100% data match verification audit report
-    │   ├── verification_report_v2.md                           # Extended audit log for full-range pricing filters
-    │   ├── requirements.txt                                    # Dashboard-specific lightweight dependencies
-    │   │
-    │   └── screenshots/                                        # High-resolution UI evidence captures (1360x2200)
-    │       ├── dashboard.png & dashboard_overview.png          # Full interactive dashboard view
-    │       ├── dashboard_before_filters.png                    # Baseline state (4,551 hotels, ₹4,077 avg price)
-    │       ├── dashboard_after_filters.png                     # Active filter state (Goa 5-star ₹5k-₹25k, N=34)
-    │       ├── filter_interaction_before.png & after.png       # Side-by-side filter reactivity evidence
-    │       ├── tab1_eda.png & tab1_eda.html                    # Tab 1: 10 coordinated EDA charts
-    │       ├── tab2_models.png & tab2_models.html              # Tab 2: Predictive model benchmarks & ROC curves
-    │       ├── tab3_text_mining.png & tab3_text_mining.html    # Tab 3: Text mining sentiment & pain points
-    │       ├── tab4_association_rules.png & .html              # Tab 4: Apriori amenity bundles & scatter plot
-    │       └── tab5_final_dataset.png                          # Tab 5: Dataset view and export controls
-    │
-    └── data/                                                   # Dashboard local data store (guarantees portability)
-        ├── combined_real_synthetic_hotels.csv                  # 4,551 clean hotel properties
-        ├── apriori/                                            # Apriori frequent itemsets and strong rules
-        │   ├── apriori_amenity_support.csv                     # 33 standardized amenities support ranking
-        │   ├── apriori_frequent_itemsets.csv                   # 799 itemsets mined at min support 0.05
-        │   ├── apriori_strong_rules.csv                        # 154 association rules (min lift 2.0, conf 0.60)
-        │   └── apriori_transaction_matrix.csv                  # 1,430 real hotel amenity transaction vectors
-        └── text_mining_outputs/                                # Local replica of the 36 text mining artifacts
+             ORIGINAL DATA COLLECTION
+                       |
+                       v
+              SerpApi – Google Hotels
+                       |
+              ---------------------
+              |                   |
+              v                   v
+        Hotel Listings       Customer Reviews
+              |                   |
+              v                   v
+        Data Cleaning       Text Preprocessing
+              |                   |
+              v                   v
+        CTGAN Generation    Text Mining & VADER
+              |                   |
+              v                   |
+       Unified Hotel Dataset      |
+              |                   |
+              v                   |
+          UNIT 1 – EDA             |
+              |                   |
+              v                   |
+       UNIT 2 – Predictive ML      |
+              |                   |
+              v                   v
+       Hotel Performance     Customer Insights
+              |                   |
+              v                   v
+        UNIT 3 – APRIORI    UNIT 3 – TEXT MINING
+              |                   |
+              ---------------------
+                       |
+                       v
+              COMPARATIVE ANALYSIS
+                       |
+                       v
+              BUSINESS INSIGHTS
+                       |
+                       v
+              INTERACTIVE DASHBOARD
 ```
 
 ---
 
-## 3. Analytical Workstreams & Notebook Mapping
+## 5. Repository Structure
 
+The GitHub repository is organized into separate directories for datasets, notebooks, dashboard implementation, analytical outputs and final submission documents.
+
+```text
+Integrated-Hotel-Analytics-for-Hotel-Success-Amenities-Customer-Experience-/
+│
+├── dashboard/
+│   └── Dashboard submission files and supporting resources
+│
+├── data/
+│   ├── all_india_1685_unique_hotels.csv
+│   ├── all_india_hotel_cleaned.csv.zip
+│   ├── combined_real_synthetic_hotels.csv
+│   └── Other supporting datasets
+│
+├── hotel-dashboard-deliverable/
+│   ├── README.txt
+│   │
+│   ├── dashboard/
+│   │   ├── hotel_dashboard.ipynb
+│   │   ├── generate_dashboard_notebook.py
+│   │   ├── generate_screenshots.py
+│   │   ├── test_dashboard_filters.py
+│   │   ├── DOCUMENTATION.md
+│   │   ├── USER_GUIDE.md
+│   │   ├── verification_report.md
+│   │   ├── verification_report_v2.md
+│   │   └── screenshots/
+│   │       ├── dashboard.png
+│   │       ├── dashboard_overview.png
+│   │       ├── dashboard_before_filters.png
+│   │       ├── dashboard_after_filters.png
+│   │       ├── tab1_eda.png
+│   │       ├── tab2_models.png
+│   │       ├── tab3_text_mining.png
+│   │       ├── tab4_association_rules.png
+│   │       └── tab5_final_dataset.png
+│   │
+│   └── data/
+│       ├── combined_real_synthetic_hotels.csv
+│       ├── apriori/
+│       │   ├── apriori_amenity_support.csv
+│       │   ├── apriori_frequent_itemsets.csv
+│       │   ├── apriori_strong_rules.csv
+│       │   └── apriori_transaction_matrix.csv
+│       │
+│       └── text_mining_outputs/
+│           └── Supporting text mining outputs
+│
+├── notebooks/
+│   ├── BA_WebScapring.ipynb
+│   ├── hotel_synthetic_data_ctgan_unique_hotel_names (1).ipynb
+│   ├── BA_total_Review1_Complete_CORRECTED (2).ipynb
+│   ├── Text_Mining_Hotel_Reviews_Durgam_Poojitha (1) (1).ipynb
+│   └── review2_updated.ipynb
+│
+├── text-mining-outputs/
+│   ├── presentation_numbers.json
+│   ├── review_level_sentiment.csv
+│   ├── hotel_level_text_sentiment.csv
+│   ├── pain_points.csv
+│   ├── theme_sentiment.csv
+│   ├── sentiment_by_category.csv
+│   ├── sentiment_by_city.csv
+│   ├── amenity_mention_sentiment.csv
+│   ├── amenity_listing_comparison.csv
+│   ├── word_frequency_top100.csv
+│   ├── bigrams_top50.csv
+│   ├── trigrams_top50.csv
+│   ├── classification_report.csv
+│   └── Supporting CSV files and analytical outputs
+│
+├── visualizations/
+│   └── text_mining/
+│       └── Text Mining charts and figures
+│
+├── .gitignore
+├── README.md
+├── Final_Project_Report.pdf
+├── Final_Project_Presentation.pptx
+├── environment.yml
+└── requirements.txt
 ```
-                                          ANALYTICAL WORKFLOW PIPELINE
-                                          
-   ┌────────────────────────┐         ┌────────────────────────┐
-   │  BA_WebScapring.ipynb  │         │  1,685 Scraped Hotels  │
-   │  (SerpApi Google API)  │ ──────> │  29,987 Review Records │
-   └────────────────────────┘         └───────────┬────────────┘
-                                                  │
-                 ┌────────────────────────────────┴────────────────────────────────┐
-                 │                                                                 │
-                 ▼                                                                 ▼
-   ┌───────────────────────────┐                                     ┌───────────────────────────┐
-   │ hotel_synthetic_data_     │                                     │ Text_Mining_Hotel_Reviews │
-   │ ctgan_unique_hotel_names  │                                     │ _Durgam_Poojitha (NLP)    │
-   │ (CTGAN tabular synthesis) │                                     │ (VADER, Themes, Pain Pts) │
-   └─────────────┬─────────────┘                                     └─────────────┬─────────────┘
-                 │                                                                 │
-                 ▼                                                                 ▼
-   ┌───────────────────────────┐                                     ┌───────────────────────────┐
-   │ combined_real_synthetic_  │                                     │ review2_updated.ipynb     │
-   │ hotels.csv (4,551 hotels) │                                     │ (Apriori Association      │
-   └─────────────┬─────────────┘                                     │  Rule Mining, 154 rules)  │
-                 │                                                   └─────────────┬─────────────┘
-                 ▼                                                                 │
-   ┌───────────────────────────┐                                                   │
-   │ BA_total_Review1_         │                                                   │
-   │ Complete_CORRECTED (ML)   │                                                   │
-   │ (LR, DT, Random Forest)   │                                                   │
-   └─────────────┬─────────────┘                                                   │
-                 │                                                                 │
-                 └────────────────────────────────┬────────────────────────────────┘
-                                                  │
-                                                  ▼
-                                 ┌─────────────────────────────────┐
-                                 │ hotel_dashboard.ipynb           │
-                                 │ (Master 4-Tab Interactive UI    │
-                                 │  Plotly + ipywidgets Dashboard) │
-                                 └─────────────────────────────────┘
-```
 
-### Stage 1: Data Acquisition via Web Scraping
-* **Notebook**: `BA_WebScapring.ipynb`
-* **Focus**: Automated collection of hotel properties, star categories, pricing, review velocity, coordinates, amenities, and user reviews using SerpApi (`google_hotels` engine) across 12 Indian metropolitan and tourist markets.
-* **Outputs**: Raw files `data/all_india_1685_unique_hotels.csv` and `data/all_india_hotel_cleaned.csv.zip`.
+**Repository organization:**
 
-### Stage 2: Synthetic Data Augmentation via CTGAN
-* **Notebook**: `hotel_synthetic_data_ctgan_unique_hotel_names (1).ipynb`
-* **Focus**: Addressed sample-size limitations and class representation by training a **Conditional Tabular GAN (CTGAN)** on the 1,685 real hotel records. Generated 2,887 statistically sound synthetic properties with unique names while preserving multivariate covariance.
-* **Outputs**: `data/combined_real_synthetic_hotels.csv` (4,572 raw records; 4,551 usable after dropping 21 missing ratings).
-
-### Stage 3: Exploratory Data Analysis & Predictive Modeling (Review 1)
-* **Notebook**: `BA_total_Review1_Complete_CORRECTED (2).ipynb`
-* **Focus**: Established the rating-based success proxy (`customer_rating >= 4.0`). Evaluated distributions, price dynamics, correlation matrices, and PCA dimensionality reduction. Built and benchmarked three tuned classifiers (Logistic Regression, Decision Tree, Random Forest) across 21 predictors using a stratified 80/20 train/test split.
-* **Outputs**: Established the **Tuned Random Forest as the Champion Model** (81.34% test accuracy, 0.6571 Macro-F1).
-
-### Stage 4: Customer Review Text Mining & Sentiment Analysis (Review 2 · Method 1)
-* **Notebook**: `Text_Mining_Hotel_Reviews_Durgam_Poojitha (1) (1).ipynb`
-* **Author**: Durgam Poojitha (CB.SC.U4CSE23320, Team 5)
-* **Focus**: Ingestion of 26,175 clean customer reviews across 1,659 hotels. Implemented full NLP pipeline (tokenization, lemmatization, stopword removal). Generated n-gram frequencies (unigrams, bigrams, trigrams) and clean word clouds. Applied **VADER sentiment classification**, quantifying operational pain points and thematic drivers. Validated sentiment against customer star rating ground truth.
-* **Outputs**: 36 export artifacts saved to `text-mining-outputs/` and `hotel-dashboard-deliverable/data/text_mining_outputs/`.
-
-### Stage 5: Association Rule Mining using Apriori (Review 2 · Method 2)
-* **Notebook**: `review2_updated.ipynb`
-* **Author**: Anupama & Team 5
-* **Focus**: Constructed hotel-level transaction vectors across 33 standardized amenities for 1,430 real hotels. Executed the Apriori algorithm with minimum support 0.05, minimum confidence 0.60, and minimum lift 2.0 to uncover complementary amenity bundles.
-* **Outputs**: 799 frequent itemsets and 154 strong rules saved to `hotel-dashboard-deliverable/data/apriori/`.
-
-### Stage 6: Integrated Master Dashboard Application
-* **Notebook**: `hotel-dashboard-deliverable/dashboard/hotel_dashboard.ipynb`
-* **Author**: Sathya Roopan (Dashboard Integrator)
-* **Focus**: Complete, production-grade 4-tab interactive dashboard unifying EDA, Predictive ML, Text Mining, and Apriori Association Rules. Powered by `ipywidgets` and `plotly.graph_objects`. Includes dynamic global filtering across Location, Star Category, Price Range, Rating Range, and Data Type, with real-time KPI card calculations and dynamic model re-evaluation on filtered test subsets.
+- `dashboard/` – Top-level dashboard submission directory.
+- `data/` – Original, cleaned and combined hotel datasets.
+- `hotel-dashboard-deliverable/` – Complete master dashboard package, supporting datasets, technical documentation and screenshots.
+- `notebooks/` – Implementation notebooks for data collection and all analytical methods.
+- `text-mining-outputs/` – Exported NLP results, sentiment metrics and supporting analytical outputs.
+- `visualizations/text_mining/` – Text Mining visualization files.
+- `Final_Project_Report.pdf` – Final academic project report.
+- `Final_Project_Presentation.pptx` – Final project presentation.
+- `requirements.txt` – Python dependencies.
+- `environment.yml` – Conda environment configuration.
 
 ---
 
-## 4. Runtime, OS & Version Requirements
+## 6. Dataset Collection and Description
 
-| Requirement Dimension | Specification |
-| :--- | :--- |
-| **Operating System** | macOS (Apple Silicon M1-M4 / Intel x86_64), Ubuntu Linux 20.04+, Windows 10/11 |
-| **Python Version** | **Python 3.10 to 3.12** (Recommended: Python 3.11.x or 3.12.x) |
-| **Execution Memory (RAM)** | Minimum 8 GB (16 GB recommended for CTGAN model fitting) |
-| **Storage Requirement** | ~500 MB disk space for code, models, datasets, and rendered outputs |
-| **Jupyter Environment** | JupyterLab 4.x, Jupyter Notebook 7.x, or VS Code with Python + Jupyter Extensions |
-| **Web Browser Engine** | Google Chrome, Mozilla Firefox, Safari, or Microsoft Edge (Chromium-based recommended) |
+### 6.1 Data Collection
+
+The primary hotel dataset was collected using SerpApi with the Google Hotels search engine.
+
+The collection covered 12 Indian markets:
+
+Delhi, Mumbai, Bengaluru, Chennai, Kolkata, Hyderabad, Pune, Jaipur, Goa, Kochi, Coimbatore and Visakhapatnam.
+
+The collected information includes hotel names, location, coordinates, star category, pricing, customer ratings, review counts, amenities and customer reviews.
+
+### 6.2 Dataset Summary
+
+| Dataset | Records |
+|---|---:|
+| Original hotel listings | 1,685 |
+| Usable real hotel records | 1,664 |
+| Original customer reviews | 29,987 |
+| Clean customer reviews | 26,175 |
+| Synthetic hotel records | 2,887 |
+| Unified usable hotel records | 4,551 |
+| Real hotel transactions for Apriori | 1,430 |
+
+### 6.3 Data Preprocessing
+
+The preprocessing stage included:
+
+- Missing-value analysis.
+- Duplicate-record checking.
+- Data type conversion.
+- Categorical standardization.
+- Price and rating validation.
+- Amenity standardization.
+- Review text cleaning.
+- Removal of unusable review records.
+
+### 6.4 Synthetic Data Generation
+
+CTGAN was used to generate 2,887 synthetic hotel records using the original hotel dataset as the training reference.
+
+The unified dataset contains 1,664 usable real records and 2,887 synthetic records.
+
+Synthetic records are distinguished from independently collected observations. They are used for analytical augmentation and are not treated as additional original data.
+
+Synthetic coordinates are excluded from predictive modelling because they are generated around fixed reference locations.
+
+### 6.5 Target Variable
+
+Hotel success is defined using a rating-based proxy:
+
+```python
+success = 1 if customer_rating >= 4.0 else 0
+```
+
+Customer rating is excluded from the predictor variables to avoid target leakage.
 
 ---
 
-## 5. Installation & Environment Setup
+## 7. Unit 1 – Exploratory Data Analysis
 
-### Option A: Standard Python Virtual Environment (`venv` + `pip`)
+### Objective
+
+To understand the structure, distributions and relationships in the hotel dataset before applying predictive models.
+
+### Analysis Performed
+
+- Dataset structure and statistical summaries.
+- Missing-value and duplicate analysis.
+- City-wise hotel distribution.
+- Hotel category distribution.
+- Price distribution.
+- Customer rating distribution.
+- Review-count analysis.
+- Amenity availability.
+- Correlation analysis.
+- PCA-based dimensionality exploration.
+
+### Important Findings
+
+Across 4,551 usable hotel records:
+
+- 3,718 hotels (81.7%) meet the rating-based success threshold.
+- Price has a weak positive linear correlation with customer rating (r = 0.086).
+- Amenity count has a slight negative correlation with customer rating (r = -0.134).
+
+These results indicate that higher prices and larger amenity counts do not automatically translate into higher customer ratings.
+
+### Visualizations
+
+The EDA implementation includes distribution plots, bar charts, histograms, boxplots, correlation heatmaps, city-wise comparisons and PCA visualizations.
+
+---
+
+## 8. Unit 2 – Predictive Modelling
+
+### Objective
+
+To identify hotel characteristics associated with the rating-based success classification.
+
+### Feature Engineering
+
+The model uses 21 predictors, including numerical and categorical variables.
+
+Important features include:
+
+- Price.
+- Log-transformed price.
+- Review count.
+- Amenity count.
+- Hotel category.
+- Location.
+- Individual amenity indicators.
+
+Price transformation:
+
+```python
+log_price = np.log1p(price)
+```
+
+Customer rating is excluded from the predictor set.
+
+### Train-Test Split
+
+A stratified 80:20 split was used.
+
+- Training records: 3,640.
+- Testing records: 911.
+
+### Models Implemented
+
+1. Logistic Regression.
+2. Decision Tree.
+3. Random Forest.
+
+### Model Comparison
+
+| Model | Accuracy | Balanced Accuracy | Macro-F1 | ROC-AUC |
+|---|---:|---:|---:|---:|
+| Logistic Regression | 68.94% | 0.6612 | 0.6045 | 0.6955 |
+| Decision Tree | 80.35% | 0.5662 | 0.5750 | 0.6344 |
+| Random Forest | 81.34% | 0.6443 | 0.6571 | 0.7072 |
+
+### Best Model: Random Forest
+
+The tuned Random Forest achieved the highest accuracy and Macro-F1 among the evaluated models.
+
+Configuration:
+
+- 300 estimators.
+- Maximum depth: 10.
+- Minimum samples split: 5.
+- Balanced class weighting.
+
+Evaluation:
+
+- Accuracy: 81.34%.
+- Balanced Accuracy: 0.6443.
+- Macro Precision: 0.6777.
+- Macro Recall: 0.6443.
+- Macro-F1: 0.6571.
+- Weighted-F1: 0.8037.
+- ROC-AUC: 0.7072.
+
+### Feature Importance
+
+| Feature | Importance |
+|---|---:|
+| Price | 0.198 |
+| Log Price | 0.171 |
+| Review Count | 0.145 |
+| Amenity Count | 0.102 |
+| Free Parking | 0.049 |
+| Accessible | 0.044 |
+| Bar | 0.042 |
+| Free Wi-Fi | 0.038 |
+
+These results show the contribution of different predictors to the Random Forest's decisions. Feature importance does not establish causation.
+
+---
+
+## 9. Unit 3 – Text Mining and Sentiment Analysis
+
+**Implementation:** `notebooks/Text_Mining_Hotel_Reviews_Durgam_Poojitha (1) (1).ipynb`
+
+### Objective
+
+To understand customer experiences, opinions and recurring complaints through unstructured hotel reviews.
+
+### Text Preprocessing
+
+The NLP pipeline includes:
+
+1. Review corpus loading.
+2. Missing and unusable review removal.
+3. Text normalization.
+4. Tokenization.
+5. Stop-word removal for frequency analysis.
+6. Lemmatization.
+7. Clean text generation.
+
+Separate cleaned representations are maintained for frequency and sentiment analysis to preserve sentiment-related information such as negation.
+
+### Word Frequency Analysis
+
+Frequently discussed terms include room, good, stay, hotel, staff, service, experience, clean and location.
+
+### N-Gram Analysis
+
+Bigrams and trigrams were used to identify recurring word combinations and customer expressions.
+
+Examples include:
+
+- Good service.
+- Room clean.
+- Well maintain.
+- Would definitely recommend.
+- Staff friendly helpful.
+- AC not work.
+
+### VADER Sentiment Analysis
+
+VADER calculates positive, negative, neutral and compound sentiment scores.
+
+Classification:
+
+```python
+if compound >= 0.05:
+    sentiment = "Positive"
+elif compound <= -0.05:
+    sentiment = "Negative"
+else:
+    sentiment = "Neutral"
+```
+
+### Sentiment Results
+
+| Sentiment | Percentage |
+|---|---:|
+| Positive | 76.3% |
+| Negative | 18.6% |
+| Neutral | 5.1% |
+
+Total reviews analysed: 26,175.
+
+### Customer Pain Points
+
+| Pain Point | Mentions |
+|---|---:|
+| Cleanliness / Hygiene | 1,497 |
+| Rude / Unhelpful Staff | 992 |
+| Broken / Poorly Maintained | 747 |
+| Bathroom / Hot-Water Issues | 599 |
+| Price / Value for Money | 576 |
+
+Cleanliness and hygiene emerged as the most frequently identified complaint category.
+
+A single review may contain multiple complaint categories.
+
+### Rating-Based Validation
+
+| Metric | Result |
+|---|---:|
+| Three-class Accuracy | 87.37% |
+| Weighted F1 | 0.8732 |
+| Cohen's Kappa | 0.6801 |
+| Spearman Correlation | 0.6157 |
+
+These results measure agreement between VADER classifications and rating-derived sentiment labels.
+
+---
+
+## 10. Unit 3 – Apriori Association Rule Mining
+
+**Implementation:** `notebooks/review2_updated.ipynb`
+
+### Objective
+
+To discover frequently occurring combinations of hotel amenities using Association Rule Mining.
+
+### Transaction Preparation
+
+The Apriori analysis uses:
+
+- 1,430 real hotel transactions.
+- 33 standardized amenities.
+- Binary amenity representation (1 = present, 0 = absent).
+
+### Apriori Algorithm
+
+The algorithm identifies frequent itemsets and generates association rules using support, confidence and lift.
+
+### Evaluation Metrics
+
+**Support**
+
+\[
+Support(A\rightarrow B)=P(A\cup B)
+\]
+
+**Confidence**
+
+\[
+Confidence(A\rightarrow B)=\frac{Support(A\cup B)}{Support(A)}
+\]
+
+**Lift**
+
+\[
+Lift(A\rightarrow B)=\frac{Confidence(A\rightarrow B)}{Support(B)}
+\]
+
+Lift interpretation:
+
+- Lift greater than 1: Positive association.
+- Lift equal to 1: Independence.
+- Lift less than 1: Negative association.
+
+### Parameters
+
+| Parameter | Value |
+|---|---:|
+| Minimum Support | 0.05 |
+| Minimum Confidence | 0.60 |
+| Minimum Lift | 2.0 |
+| Amenities | 33 |
+| Transactions | 1,430 |
+
+### Results
+
+- 799 frequent itemsets.
+- 154 strong association rules.
+
+### Strongest Associations
+
+| Antecedents | Consequent | Support | Confidence | Lift |
+|---|---|---:|---:|---:|
+| Business Center, Pool | Spa | 6.57% | 74.02% | 6.190 |
+| Fitness Center, Pool | Spa | 8.18% | 68.82% | 5.755 |
+| Bar, Fitness Center | Spa | 7.90% | 66.08% | 5.526 |
+| Business Center, Fitness Center | Spa | 6.92% | 65.13% | 5.447 |
+| Bar, Pool | Spa | 8.25% | 64.84% | 5.422 |
+
+These associations suggest that wellness facilities often occur alongside other business and leisure facilities.
+
+Association rules identify co-occurrence, not causation.
+
+---
+
+## 11. Comparative Analysis of Unit 3 Methods
+
+| Aspect | Text Mining | Apriori |
+|---|---|---|
+| Data | Customer review text | Hotel amenity transactions |
+| Technique | NLP and VADER | Frequent itemset mining |
+| Objective | Understand customer experience | Discover amenity combinations |
+| Outputs | Sentiment, themes and pain points | Frequent itemsets and rules |
+| Metrics | Accuracy, F1, Kappa and sentiment scores | Support, confidence and lift |
+| Business application | Service improvement | Facility planning |
+
+Text Mining identifies what customers experience and complain about.
+
+Apriori identifies which amenities frequently occur together.
+
+Combining both methods provides a more complete understanding of hotel performance. Hotels must not only offer suitable facilities but also maintain the quality of their services.
+
+---
+
+## 12. Integrated Business Insights
+
+### 12.1 Improve Cleanliness
+
+Cleanliness and hygiene account for 1,497 negative-review mentions.
+
+Hotels should strengthen housekeeping inspections and maintenance procedures.
+
+### 12.2 Improve Staff Behaviour
+
+Rude and unhelpful staff account for 992 negative-review mentions.
+
+Customer-service training and complaint-handling procedures should be prioritized.
+
+### 12.3 Use Data-Driven Pricing
+
+The weak correlation between price and customer rating indicates that higher pricing alone does not guarantee customer satisfaction.
+
+### 12.4 Plan Complementary Amenity Bundles
+
+Apriori identifies strong relationships among Spa, Pool, Fitness Center, Bar and Business Center.
+
+Hotels can use these patterns when evaluating facility combinations.
+
+### 12.5 Monitor Customer Feedback
+
+Regular sentiment analysis can help identify emerging service problems and recurring complaints.
+
+### 12.6 Integrate Predictive and Descriptive Insights
+
+Predictive models help identify features associated with hotel success, while Text Mining and Apriori provide additional customer and amenity-level insights.
+
+---
+
+## 13. Interactive Dashboard
+
+### Overview
+
+The dashboard integrates analytical results using Python, Plotly and ipywidgets.
+
+**Master implementation:**
+
+`hotel-dashboard-deliverable/dashboard/hotel_dashboard.ipynb`
+
+### Dashboard Components
+
+| Dashboard Section | Functionality |
+|---|---|
+| Tab 1 – EDA | Hotel distributions, ratings, pricing and amenity analysis |
+| Tab 2 – Predictive Models | Model comparison, confusion matrices, ROC curves and feature importance |
+| Tab 3 – Text Mining | Sentiment distribution, pain points and thematic analysis |
+| Tab 4 – Association Rules | Frequent itemsets, amenity relationships and association metrics |
+| Dataset View | Final dataset exploration and export functionality |
+
+### Interactive Features
+
+The dashboard supports dynamic filtering by:
+
+- Location.
+- Hotel category.
+- Price range.
+- Rating range.
+- Data type (Real or Synthetic).
+
+The dashboard recalculates relevant visualizations and KPIs based on selected filters.
+
+### Dashboard Evidence
+
+Screenshots and supporting HTML visualizations are maintained in:
+
+`hotel-dashboard-deliverable/dashboard/screenshots/`
+
+Technical documentation:
+
+- `hotel-dashboard-deliverable/dashboard/DOCUMENTATION.md`
+- `hotel-dashboard-deliverable/dashboard/USER_GUIDE.md`
+- `hotel-dashboard-deliverable/dashboard/verification_report.md`
+
+The dashboard is currently provided as a Jupyter-based interactive application.
+
+---
+
+## 14. Results and Key Metrics
+
+| Component | Result |
+|---|---|
+| Usable hotel records | 4,551 |
+| Indian markets | 12 |
+| Real hotel records | 1,664 |
+| Synthetic records | 2,887 |
+| Clean reviews | 26,175 |
+| Apriori transactions | 1,430 |
+| Standardized amenities | 33 |
+| Random Forest accuracy | 81.34% |
+| Random Forest Macro-F1 | 0.6571 |
+| Positive sentiment | 76.3% |
+| Negative sentiment | 18.6% |
+| VADER three-class accuracy | 87.37% |
+| Frequent itemsets | 799 |
+| Strong association rules | 154 |
+| Highest lift | 6.190 |
+
+The combined results demonstrate the value of integrating predictive modelling, customer feedback analysis and amenity relationship discovery.
+
+---
+
+## 15. Installation and Environment Setup
+
+### Requirements
+
+| Requirement | Specification |
+|---|---|
+| Operating System | macOS, Windows or Linux |
+| Python | 3.10–3.12 |
+| RAM | 8 GB minimum; 16 GB recommended |
+| Notebook Environment | JupyterLab / Jupyter Notebook |
+| Browser | Chrome, Firefox, Safari or Edge |
+
+### Clone Using SSH
 
 ```bash
-# 1. Clone repository (if not already local)
-git clone https://github.com/DurgamPoojitha/Integrated-Hotel-Analytics-for-Hotel-Success-Amenities-Customer-Experience-.git
+git clone git@github.com:DurgamPoojitha/Integrated-Hotel-Analytics-for-Hotel-Success-Amenities-Customer-Experience-.git
+
 cd Integrated-Hotel-Analytics-for-Hotel-Success-Amenities-Customer-Experience-
-
-# 2. Create virtual environment
-python3 -m venv .venv
-
-# 3. Activate virtual environment
-# On macOS / Linux:
-source .venv/bin/activate
-# On Windows (Command Prompt / PowerShell):
-# .venv\Scripts\activate
-
-# 4. Upgrade pip and install all required dependencies
-pip install --upgrade pip
-pip install -r requirements.txt
-
-# 5. Download required NLTK corpora (VADER lexicon, tokenizers, wordnet)
-python3 -c "import nltk; nltk.download('vader_lexicon'); nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet')"
 ```
 
-### Option B: Conda / Mamba Environment
+### Create Virtual Environment
 
 ```bash
-# 1. Create environment from environment.yml
-conda env create -f environment.yml
+python3 -m venv .venv
+```
 
-# 2. Activate environment
-conda activate hotel-analytics
+macOS/Linux:
 
-# 3. Download required NLTK corpora
+```bash
+source .venv/bin/activate
+```
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+### Install Dependencies
+
+```bash
+python -m pip install --upgrade pip
+
+pip install -r requirements.txt
+```
+
+### Download NLTK Resources
+
+```bash
 python -c "import nltk; nltk.download('vader_lexicon'); nltk.download('punkt'); nltk.download('stopwords'); nltk.download('wordnet')"
 ```
 
 ---
 
-## 6. Commands to Reproduce All Notebooks, Models & Application
+## 16. Execution Guide
 
-### 6.1 Launching the Interactive Master Dashboard
+### Step 1 – Open the Notebooks
 
-The primary deliverable is self-contained and pre-executed:
+From the repository root:
 
 ```bash
-# Navigate to the dashboard directory
-cd hotel-dashboard-deliverable/dashboard
+cd notebooks
+jupyter lab
+```
 
-# Launch JupyterLab or classic Jupyter Notebook
+### Step 2 – Execute the Analytical Notebooks
+
+Recommended execution order:
+
+| Order | Notebook | Purpose |
+|---|---|---|
+| 1 | BA_WebScapring.ipynb | Hotel data collection |
+| 2 | hotel_synthetic_data_ctgan_unique_hotel_names (1).ipynb | Synthetic data generation |
+| 3 | BA_total_Review1_Complete_CORRECTED (2).ipynb | EDA and predictive modelling |
+| 4 | Text_Mining_Hotel_Reviews_Durgam_Poojitha (1) (1).ipynb | Text Mining and sentiment analysis |
+| 5 | review2_updated.ipynb | Integrated Text Mining and Apriori |
+
+Ensure that the required input datasets are available before running each notebook.
+
+### Step 3 – Launch the Master Dashboard
+
+From the repository root:
+
+```bash
+cd hotel-dashboard-deliverable/dashboard
+```
+
+Run:
+
+```bash
 jupyter lab hotel_dashboard.ipynb
-# or: jupyter notebook hotel_dashboard.ipynb
 ```
-* **Immediate Interaction**: Scroll down to **Cell 4** to use the interactive dashboard with live widgets, responsive KPI cards, and dynamic filter controls.
-* **Full Re-execution**: Click **Kernel → Restart Kernel and Run All Cells**. All data ingestion, model fitting, and widget assembly complete in approximately 30–45 seconds.
 
-### 6.2 Running Automated Testing & Headless Verification
+Execute the notebook cells to render the interactive dashboard.
+
+### Step 4 – Dashboard Testing
 
 ```bash
-# From repository root or dashboard folder:
-cd hotel-dashboard-deliverable/dashboard
-
-# 1. Run the automated filter testing suite (tests all slicers, dynamic ML, and safety guards)
-python3 test_dashboard_filters.py
-
-# 2. Recompile the dashboard notebook programmatically from scratch
-python3 generate_dashboard_notebook.py
-
-# 3. Regenerate all 1360x2200 high-resolution evidence screenshots (requires Chrome/Chromium)
-python3 generate_screenshots.py
+python test_dashboard_filters.py
 ```
 
-### 6.3 Executing Individual Research Notebooks
-
-Each notebook can be run top-to-bottom in headless mode using `jupyter nbconvert`:
+Regenerate the notebook if necessary:
 
 ```bash
-# 1. Review 1: EDA & Predictive Machine Learning
-jupyter nbconvert --to notebook --execute "BA_total_Review1_Complete_CORRECTED (2).ipynb" --inplace
+python generate_dashboard_notebook.py
+```
 
-# 2. Review 2: Customer Review Text Mining & Sentiment Analysis (Poojitha)
-jupyter nbconvert --to notebook --execute "Text_Mining_Hotel_Reviews_Durgam_Poojitha (1) (1).ipynb" --inplace
+Generate screenshots:
 
-# 3. Review 2: Integrated Text Mining & Apriori Association Rules (Anupama)
-jupyter nbconvert --to notebook --execute "review2_updated.ipynb" --inplace
-
-# 4. CTGAN Synthetic Data Generation (optional; computation-intensive)
-jupyter nbconvert --to notebook --execute "hotel_synthetic_data_ctgan_unique_hotel_names (1).ipynb" --inplace
-
-# 5. Master Interactive Dashboard Execution
-jupyter nbconvert --to notebook --execute "hotel-dashboard-deliverable/dashboard/hotel_dashboard.ipynb" --inplace
+```bash
+python generate_screenshots.py
 ```
 
 ---
 
-## 7. Dataset Documentation: Provenance, License & Access
+## 17. Technologies Used
 
-### 7.1 Data Provenance & Construction
-1. **Real Scraped Hotel Listings (`data/all_india_1685_unique_hotels.csv`)**:
-   * Scraped in October 2026 using SerpApi's Google Hotels engine across 12 major Indian cities.
-   * Captured property names, coordinates (latitude/longitude), star ratings, room pricing in INR (₹), total review counts, and pipe-delimited amenity strings.
-   * After dropping 21 properties with missing customer ratings, **1,664 usable real hotels** remain.
-2. **Review-Level Text Corpus (`data/all_india_hotel_cleaned.csv.zip`)**:
-   * Contains 29,987 scraped reviews associated with the real hotels.
-   * After listwise exclusion of reviews lacking text or valid star ratings, the clean analytical corpus comprises **26,175 reviews across 1,659 hotels** (Mean: 32.4 words per review; 483,068 total tokens; 16,122 unique vocabulary items).
-3. **Synthetic Augmented Hotel Corpus (`hotel_synthetic_data_ctgan_unique_hotel_names (1).ipynb`)**:
-   * Generated using Conditional Tabular GAN (CTGAN) trained on the 1,685 real hotel records.
-   * Produces **2,887 synthetic hotel records** with statistically consistent distributions for price, star category, review counts, and 15 individual binary amenity flags.
-   * Coordinates in synthetic records sit on four fixed reference nodes; therefore, raw latitude and longitude are strictly excluded from predictive models to prevent spatial artifacts.
-4. **Unified Master Corpus (`data/combined_real_synthetic_hotels.csv`)**:
-   * Combines 1,664 real and 2,887 synthetic records for a total of **4,551 usable properties** with zero duplicate records.
-
-### 7.2 Target Variable & Data Dictionary
-* **Target Definition**: "Success" is defined as `customer_rating >= 4.0` (Binary Classification Proxy).
-* **Anti-Leakage Safeguard**: `customer_rating` is never used as an input feature in any predictive model.
-
-| Field Name | Type | Description |
-| :--- | :--- | :--- |
-| `hotel_id` | String | Unique alphanumeric identifier for each hotel property |
-| `hotel_name` | String | Property brand name |
-| `location` | Categorical | Geographic market hub (12 Indian cities: Delhi, Mumbai, Goa, etc.) |
-| `hotel_category` | Categorical | Star classification (`1-star hotel` to `5-star hotel`, or `Unknown`) |
-| `price` | Float | Room rate per night in Indian Rupees (₹) |
-| `log_price` | Float | Feature-engineered natural logarithm: $\ln(1 + \text{price})$ |
-| `customer_rating` | Float | Average observed guest star rating (1.0 to 5.0) |
-| `review_count` | Float | Total number of published customer reviews for the property |
-| `amenity_count` | Integer | Total count of amenities present across 15 monitored amenities |
-| `amenity_*` (15 features) | Binary (0/1) | Flags for Wi-Fi, AC, Parking, Pool, Spa, Bar, Room Service, etc. |
-| `success` | Binary (0/1) | Target label: 1 if `customer_rating >= 4.0`, else 0 |
-| `data_type` | Categorical | Partition label: `Real` (36.6%) or `Synthetic` (63.4%) |
-
-### 7.3 License, Usage Restrictions & Ethical Compliance
-* **Academic Fair Use**: All datasets and code artifacts are published solely for academic research, peer review, and educational benchmarking under Course 23CSE452.
-* **Third-Party Terms of Service**:
-  * Real hotel data were scraped via SerpApi Google Hotels API in adherence to rate limits and robots.txt protocols for public information.
-  * Commercial resale or automated redistributive crawling of these datasets is strictly prohibited under Google Maps / SerpApi Terms of Service.
-* **Privacy & PII Protection**:
-  * All customer reviews have been scrubbed of personal phone numbers, guest home addresses, and private payment details.
-  * Reviewer identities are anonymized and not linked to individual personal identities.
-* **Security & Secrets Exclusion**:
-  * All hardcoded SerpApi API keys have been **strictly redacted** (`REDACTED_SERPAPI_KEY`) from notebook cell outputs and repository files.
-  * To rerun live web scraping in `BA_WebScapring.ipynb`, users must supply their own authorized API key via the `getpass.getpass()` prompt or by setting the environment variable:
-    ```bash
-    export SERPAPI_API_KEY="your_personal_api_key_here"
-    ```
+| Technology | Application |
+|---|---|
+| Python | Main programming language |
+| Pandas | Data preprocessing |
+| NumPy | Numerical operations |
+| Matplotlib | Visualization |
+| Seaborn | Exploratory analysis |
+| Plotly | Interactive visualizations |
+| ipywidgets | Dashboard controls |
+| Scikit-learn | Predictive modelling |
+| CTGAN | Synthetic data generation |
+| NLTK | NLP preprocessing |
+| VADER | Sentiment analysis |
+| mlxtend | Apriori algorithm |
+| Jupyter Notebook | Analytical implementation |
+| SerpApi | Data collection |
+| Git and GitHub | Version control |
 
 ---
 
-## 8. Benchmarking Results & Key Metrics
+## 18. Limitations
 
-### 8.1 Machine Learning Benchmark (Holdout Test Set $N = 911$)
-Trained on 3,640 hotels across 21 predictors (19 numeric, 2 categorical) using stratified 80/20 train/test split:
+### Dataset Limitations
 
-| Model Architecture | Hyperparameters | Accuracy | Balanced Accuracy | Macro Precision | Macro Recall | Macro F1 | Weighted F1 | ROC-AUC |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Random Forest (Champion)** | 300 Trees, `max_depth=10`, `min_samples_split=5`, `class_weight='balanced'` | **81.34%** | **0.6443** | **0.6777** | **0.6443** | **0.6571** | **0.8037** | **0.7072** |
-| **Decision Tree** | `max_depth=7`, `min_samples_split=10`, `class_weight=None` | **80.35%** | **0.5662** | **0.6297** | **0.5662** | **0.5750** | **0.7724** | **0.6344** |
-| **Logistic Regression** | $C=10$, `class_weight='balanced'`, `max_iter=2000` | **68.94%** | **0.6612** | **0.6056** | **0.6612** | **0.6045** | **0.7205** | **0.6955** |
+- The dataset covers selected Indian markets rather than the entire hospitality industry.
+- Scraped information reflects the availability of listings and reviews during collection.
+- Synthetic records cannot replace independently collected real-world observations.
 
-* **Confusion Matrix (Random Forest Benchmark)**: `[[TN=63, FP=104], [FN=66, TP=678]]`
-* **Top Feature Importances (Random Forest)**:
-  1. `price` (0.198) & `log_price` (0.171)
-  2. `review_count` (0.145)
-  3. `amenity_count` (0.102)
-  4. Convenience amenities: `Free Parking` (0.049), `Accessible` (0.044), `Bar` (0.042), `Free Wi-Fi` (0.038)
+### Predictive Modelling Limitations
 
-### 8.2 Text Mining Sentiment & Pain Point Verification ($N = 26,175$)
-* **Sentiment Split**: VADER: **76.3% Positive** | **18.6% Negative** | **5.1% Neutral** (vs. Rating Reference: 73.8% Pos, 21.3% Neg, 4.9% Neu).
-* **Classification Evaluation (VADER vs. Rating Ground Truth)**:
-  * Overall 3-Class Accuracy: **87.37%** (0.8737) vs. 73.78% Majority Class Baseline
-  * Weighted F1: **0.8732** | Cohen’s Kappa: **0.6801** | Spearman Correlation: **0.6157** (Hotel-level compound vs rating: **0.64**)
-  * Decisive Reviews ($N = 23,746$, 95.37% coverage): **95.52% Accuracy**, Macro F1 **0.9313**, Negative Precision **0.9503**, ROC-AUC **0.9529**
-* **Top Operational Pain Points in Negative Reviews ($N = 4,869$)**:
-  1. **Cleanliness / hygiene**: **1,497 mentions (30.7% of all negative reviews)**
-  2. **Rude / unhelpful staff**: **992 mentions (20.4%)**
-  3. **Broken / poorly maintained**: **747 mentions (15.3%)**
-  4. **Bathroom / hot-water issues**: **599 mentions (12.3%)**
-  5. **Price / value for money**: **576 mentions (11.8%)**
+- Success is defined using a rating-based proxy.
+- Model performance depends on the available features and class distribution.
+- Feature importance does not establish causality.
+- Performance may vary across new markets and future datasets.
 
-### 8.3 Apriori Association Rules Top Synergies (33 Amenities, $N = 1,430$)
-Mined at Min Support = 0.05, Min Confidence = 0.60, Min Lift = 2.0:
+### Text Mining Limitations
 
-| Rank | Rule Antecedents $\rightarrow$ Consequent | Support | Confidence | Lift | Interpretation |
-| :---: | :--- | :---: | :---: | :---: | :--- |
-| **1** | `Business center, Pool → Spa` | **6.57%** | **74.02%** | **6.190** | Premium wellness synergy: Spas require business + leisure infrastructure |
-| **2** | `Fitness center, Pool → Spa` | **8.18%** | **68.82%** | **5.755** | Core fitness/leisure synergy |
-| **3** | `Bar, Fitness center → Spa` | **7.90%** | **66.08%** | **5.526** | Premium hospitality bundle |
-| **4** | `Business center, Fitness center → Spa` | **6.92%** | **65.13%** | **5.447** | Executive wellness bundle |
-| **5** | `Bar, Pool → Spa` | **8.25%** | **64.84%** | **5.422** | Resort leisure bundle |
+- VADER is lexicon-based.
+- Sarcasm and context-dependent expressions may be difficult to classify.
+- Rating-derived labels may not perfectly reflect review sentiment.
+
+### Apriori Limitations
+
+- Association rules identify co-occurrence rather than causation.
+- Results depend on selected thresholds.
+- Amenity presence does not establish amenity quality or customer usage.
+
+### Dashboard Limitations
+
+- The application requires a compatible local Python and Jupyter environment.
+- Dashboard results depend on the available datasets.
+- Live hotel information is not automatically refreshed.
 
 ---
 
-## 9. Academic Team & Attribution
+## 19. Academic Team and Individual Contributions
 
-This project was developed by **Team 5** as part of the **Business Analytics (`23CSE452`) Capstone Review 2** at Amrita Vishwa Vidyapeetham. The project involved collaborative efforts across dataset collection, data preprocessing, predictive modelling, text mining, association rule mining, amenity analysis, model evaluation and interactive dashboard development.
+This project was developed by Team 5 as part of the Business Analytics (23CSE452) Final Project 2026 at Amrita Vishwa Vidyapeetham.
 
-The individual contributions are outlined below:
+### Durgam Poojitha
 
-* **Durgam Poojitha** (`CB.SC.U4CSE23320`) — Dataset consolidation, synthetic data generation, predictive modelling, text mining, NLP preprocessing, VADER-based sentiment analysis, customer pain point identification, thematic extraction and Jira task tracking.
+**Register Number:** CB.SC.U4CSE23320
 
-* **Anupama Nair** (`CB.SC.U4CSE23207`) — Hotel data collection, data cleaning and preprocessing, dataset documentation, and Market Basket Analysis using the Apriori algorithm.
+**Contributions:**
 
-* **Sathya Roopan M** (`CB.SC.U4CSE23256`) — Dashboard development, integration of analytical outputs, implementation of global filters, dashboard testing and dataset collection.
+- Dataset consolidation and synthetic data generation.
+- Predictive modelling and feature engineering.
+- Text Mining and NLP preprocessing.
+- VADER-based sentiment modelling.
+- Customer pain-point identification.
+- Thematic extraction and sentiment evaluation.
+- Jira task tracking and analytical documentation.
 
-* **S. Manish** (`CB.SC.U4CSE23125`) — Amenity analysis using Principal Component Analysis (PCA), feature engineering, visualization of amenity patterns and dataset collection.
+### Anupama Nair
 
-* **P. Tirupathi Reddy** (`CB.SC.U4CSE23568`) — Model evaluation, confusion matrix analysis, ROC curve analysis, feature importance assessment, business recommendations and dataset collection.
+**Register Number:** CB.SC.U4CSE23207
 
-The team collaboratively contributed to the overall development and integration of the analytical framework, ensuring that the individual methods and findings were brought together into a unified business analytics solution.
+**Contributions:**
+
+- Hotel data collection.
+- Data cleaning and preprocessing.
+- Dataset documentation.
+- Market Basket Analysis.
+- Apriori Association Rule Mining.
+
+### Sathya Roopan M
+
+**Register Number:** CB.SC.U4CSE23256
+
+**Contributions:**
+
+- Interactive dashboard development.
+- Integration of analytical outputs.
+- Implementation of dashboard filters.
+- Dashboard testing.
+- Dataset collection.
+
+### S. Manish
+
+**Register Number:** CB.SC.U4CSE23125
+
+**Contributions:**
+
+- Amenity analysis using Principal Component Analysis.
+- Feature engineering.
+- Amenity pattern visualization.
+- Dataset collection.
+
+### P. Tirupathi Reddy
+
+**Register Number:** CB.SC.U4CSE23568
+
+**Contributions:**
+
+- Predictive model evaluation.
+- Confusion matrix analysis.
+- ROC curve analysis.
+- Feature importance assessment.
+- Business recommendations.
+- Dataset collection.
+
+The team collaboratively contributed to analytical integration, dashboard development, interpretation and final project documentation.
 
 ---
-*For technical questions, verification audits, or reproduction assistance, refer to [`hotel-dashboard-deliverable/dashboard/DOCUMENTATION.md`](hotel-dashboard-deliverable/dashboard/DOCUMENTATION.md) and [`hotel-dashboard-deliverable/dashboard/verification_report.md`](hotel-dashboard-deliverable/dashboard/verification_report.md).*
+
+## 20. Project Management
+
+Project activities were organized and tracked using a project management board.
+
+The board supported coordination and tracking of:
+
+- Dataset collection.
+- Data preprocessing.
+- Exploratory analysis.
+- Predictive modelling.
+- Text Mining.
+- Apriori Association Rule Mining.
+- Dashboard development.
+- Documentation and report preparation.
+- Final presentation and submission.
+
+**Project Board:** [Insert actual GitHub Projects / Jira board URL]
+
+Individual responsibilities and contributions are documented in Section 19.
+
+---
+
+## 21. Final Submission Deliverables
+
+The repository includes the deliverables required for the Business Analytics Final Project 2026.
+
+| Deliverable | Repository Location |
+|---|---|
+| Project overview and documentation | `README.md` |
+| Original and cleaned datasets | `data/` |
+| Analytical notebooks | `notebooks/` |
+| Dashboard submission files | `dashboard/` |
+| Master dashboard implementation | `hotel-dashboard-deliverable/` |
+| Text Mining outputs | `text-mining-outputs/` |
+| Visualization files | `visualizations/text_mining/` |
+| Final project report | `Final_Project_Report.pdf` |
+| Final project presentation | `Final_Project_Presentation.pptx` |
+| Python dependencies | `requirements.txt` |
+| Environment configuration | `environment.yml` |
+
+All final project deliverables are maintained in the team's public GitHub repository.
+
+---
+
+## 22. References
+
+1. SerpApi – Google Hotels API Documentation. https://serpapi.com/google-hotels-api
+2. Pedregosa et al. (2011). Scikit-learn: Machine Learning in Python. Journal of Machine Learning Research, 12, 2825–2830.
+3. Hutto, C. J., & Gilbert, E. (2014). VADER: A Parsimonious Rule-Based Model for Sentiment Analysis of Social Media Text. Proceedings of the International AAAI Conference on Web and Social Media.
+4. Agrawal, R., & Srikant, R. (1994). Fast Algorithms for Mining Association Rules. Proceedings of the 20th International Conference on Very Large Data Bases.
+5. Xu, L., Skoularidou, M., Cuesta-Infante, A., & Veeramachaneni, K. (2019). Modeling Tabular Data using Conditional GAN. Advances in Neural Information Processing Systems.
+6. Pandas Documentation. https://pandas.pydata.org/docs/
+7. Plotly Python Documentation. https://plotly.com/python/
+8. NLTK Documentation. https://www.nltk.org/
+9. mlxtend Documentation. https://rasbt.github.io/mlxtend/
+
+---
+
+## Project Information
+
+**Project Title:** Integrated Hotel Analytics for Hotel Success, Amenities & Customer Experience
+
+**Course:** Business Analytics (23CSE452)
+
+**Institution:** Amrita Vishwa Vidyapeetham
+
+**Team:** Team 5
+
+**Academic Year:** 2026
+
+**GitHub Repository:**  
+https://github.com/DurgamPoojitha/Integrated-Hotel-Analytics-for-Hotel-Success-Amenities-Customer-Experience-
+
+**Developed as part of the Business Analytics Final Project 2026.**
